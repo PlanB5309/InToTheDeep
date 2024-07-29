@@ -211,11 +211,8 @@ public class RobotHardware {
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         droneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
+        
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
 
     }
     public void auto_init() {
