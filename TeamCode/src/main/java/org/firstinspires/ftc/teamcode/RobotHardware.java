@@ -34,10 +34,14 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevTouchSensor;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
@@ -98,6 +102,7 @@ public class RobotHardware {
     public Rev2mDistanceSensor rearRightDistanceSensor = null;
     public Rev2mDistanceSensor rearLeftDistanceSensor = null;
     public RevTouchSensor armTouchSensor = null;
+    public SparkFunOTOS myOtos = null;
 
     //Servo Constants
     //Pixel Locks
@@ -184,7 +189,9 @@ public class RobotHardware {
         rearRightDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "rearRightDistanceSensor");
         rearLeftDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "rearLeftDistanceSensor");
         armTouchSensor = hwMap.get(RevTouchSensor.class,"armTouchSensor");
+        myOtos = hwMap.get(SparkFunOTOS.class, "myOtos");
 
+        configureOtos();
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -232,5 +239,24 @@ public class RobotHardware {
         rightClawServo.setPosition(RIGHT_CLAW_CLOSE);
         armServo.setPosition(SHORT_ARM);
         hookServo.setPosition(HOOK_IN);
+    }
+    private void configureOtos() {
+        myOtos.setLinearUnit(DistanceUnit.INCH);
+        myOtos.setAngularUnit(AngleUnit.DEGREES);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(5.75, -8.75, 0);
+        myOtos.setOffset(offset);
+        myOtos.resetTracking();
+        //They can be any value
+        // from 0.872 to 1.127 in increments of 0.001 (0.1%).
+        // linear scalar: move the
+        // robot a known distance and measure the error; do this multiple times at
+        // multiple speeds to get an average, then set the linear scalar to the
+        // inverse of the error. For example, if you move the robot 100 inches and
+        // the sensor reports 103 inches, set the linear scalar to 100/103 = 0.971
+        myOtos.setLinearScalar(1);
+        myOtos.setAngularScalar(.993);
+        myOtos.calibrateImu();
+        //resets the tracking position to the origin
+
     }
 }

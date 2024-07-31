@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -82,11 +83,12 @@ public class Teleop extends OpMode {
         robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_UNLOCK);
         robot.rightPixelLockServo.setPosition(robot.RIGHT_PIXEL_UNLOCK);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
-
     }
 
     @Override
     public void loop() {
+
+        SparkFunOTOS.Pose2D pos = robot.myOtos.getPosition();
 
         //Slow Mode
         //strafe and turn right slowly with dpad
@@ -293,6 +295,9 @@ public class Teleop extends OpMode {
             telemetry.addData("State of preload", preloadState);
             telemetry.addData("State of LoadPixel", loadpixelState);
             telemetry.addData("State of armTouchSensor", robot.armTouchSensor.getValue());
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
+            telemetry.addData("Heading angle", pos.h);
             telemetry.addData("Say", "Happy Little Pixels");
 //            telemetry.addData("Left Distance Sensor",robot.leftDistanceSensor.getDistance(DistanceUnit.CM));
 //            telemetry.addData("Right Distance Sensor",robot.rightDistanceSensor.getDistance(DistanceUnit.CM));
