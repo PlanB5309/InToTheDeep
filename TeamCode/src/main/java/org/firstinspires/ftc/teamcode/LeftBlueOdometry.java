@@ -11,6 +11,8 @@ public class LeftBlueOdometry extends OpMode {
 
 
     RobotHardware robot = new RobotHardware();
+    Move move;
+    MotorSpeeds motorSpeeds;
     Target findProp = new Target(0, 27.25, 0, .2);
     Target placePurpleCenter = new Target(0, 34.5, 0, .1);
     Target backupCenter = new Target(0, 21.5, 0, .1);
@@ -30,6 +32,8 @@ public class LeftBlueOdometry extends OpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        motorSpeeds = new MotorSpeeds(robot);
+        move = new Move(robot, telemetry, motorSpeeds);
 
     }
 
@@ -38,7 +42,7 @@ public class LeftBlueOdometry extends OpMode {
 
         SparkFunOTOS.Pose2D pos = robot.myOtos.getPosition();
         SparkFunOTOS.Pose2D target = new SparkFunOTOS.Pose2D(27, 27, 0);
-        move(pos, target);
+        move.moveIt(pos, findProp);
 
         //Telemetry Data
         telemetry.addData("X coordinate", pos.x);
