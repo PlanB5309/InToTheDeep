@@ -11,6 +11,14 @@ public class LeftBlueOdometry extends OpMode {
 
 
     RobotHardware robot = new RobotHardware();
+    Target findProp = new Target(0, 27.25, 0, .2);
+    Target placePurpleCenter = new Target(0, 34.5, 0, .1);
+    Target backupCenter = new Target(0, 21.5, 0, .1);
+    Target turnToBoard = new Target(3, 21.5, 90, .2);
+    Target backupToBoard = new Target();
+    Target strafeToCenter = new Target();
+    Target strafeToParkCenter = new Target();
+    
 
 
     /*
@@ -38,94 +46,7 @@ public class LeftBlueOdometry extends OpMode {
         telemetry.addData("Heading angle", pos.h);
         telemetry.addData("Say", "Happy Little Pixels");
         telemetry.update();
-    }
 
-    private void move (SparkFunOTOS.Pose2D pos, SparkFunOTOS.Pose2D target) {
-        double rx;
-        double y;
-        double x;
-        double frontLeftPower;
-        double backLeftPower;
-        double frontRightPower;
-        double backRightPower;
-        double powerScaleFactor = .5;
-        double denominator;
-        double diffX = (target.x - pos.x);
-        double diffY = (target.y - pos.y);
-        double diffH = -(target.h - pos.h);
-        y = diffY;
-        x = diffX;
-        rx = diffH;
-        if (Math.abs(diffX) < .5 && Math.abs(diffY) < .5 && Math.abs(diffH) < .5) {
-            robot.frontLeftMotor.setPower(0);
-            robot.frontRightMotor.setPower (0);
-            robot.backLeftMotor.setPower(0);
-            robot.backRightMotor.setPower(0);
-        }
-        else {
-            denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), .1);
-            frontLeftPower = (y + x + rx) / denominator;
-            backLeftPower = (y - x + rx) / denominator;
-            frontRightPower = (y - x - rx) / denominator;
-            backRightPower = (y + x - rx) / denominator;
-
-            robot.frontLeftMotor.setPower(frontLeftPower * .1);
-            robot.frontRightMotor.setPower(frontRightPower * .1);
-            robot.backLeftMotor.setPower(backLeftPower * .1);
-            robot.backRightMotor.setPower(backRightPower * .1);
-        }
 
     }
 }
-//    private boolean move (SparkFunOTOS.Pose2D pos, SparkFunOTOS.Pose2D target ) {
-//        boolean done = false;
-//        double diffX = (target.x - pos.x);
-//        double diffY = (target.y - pos.y);
-//        double diffH = (target.h - pos.h);
-//        double frontLeftPower;
-//        double backLeftPower;
-//        double frontRightPower;
-//        double backRightPower;
-//        double powerScaleFactor = .5;
-//        double denominator;
-//        double rx;
-//        double y;
-//        double x;
-//
-//        if (Math.abs(diffX) < .5 && Math.abs(diffY) < .5 && Math.abs(diffH) < .5) {
-//            done = true;
-//            return done;
-//        }
-//        double distance_to_target = (diffX * diffX) + (diffY * diffY);
-//        distance_to_target = Math.sqrt(distance_to_target);
-//        y = diffY;
-//        x = diffX;
-//        rx = diffH;
-//
-//        if (distance_to_target > 8) {
-//            y = diffY;
-//            x = diffX;
-//            rx = diffH;
-//            denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), .5);
-//            frontLeftPower = (y + x + rx) / denominator;
-//            backLeftPower = (y - x + rx) / denominator;
-//            frontRightPower = (y - x - rx) / denominator;
-//            backRightPower = (y + x - rx) / denominator;
-//        }
-//        else {
-//            powerScaleFactor = (distance_to_target / 8) * .5;
-//            denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), .5);
-//            frontLeftPower = (y + x + rx) / denominator;
-//            backLeftPower = (y - x + rx) / denominator;
-//            frontRightPower = (y - x - rx) / denominator;
-//            backRightPower = (y + x - rx) / denominator;
-//
-//        }
-//        robot.frontLeftMotor.setPower(frontLeftPower);
-//        robot.frontRightMotor.setPower(frontRightPower);
-//        robot.backLeftMotor.setPower(backLeftPower);
-//        robot.backRightMotor.setPower(backRightPower);
-//    }
-
-
-
