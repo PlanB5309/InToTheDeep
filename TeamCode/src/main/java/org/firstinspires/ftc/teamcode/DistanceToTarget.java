@@ -26,7 +26,7 @@ public class DistanceToTarget {
     {
         diffx = target.x - pos.x;
         diffy = target.y - pos.y;
-        diffh = target.h - pos.h;
+        diffh = -(target.h - pos.h);
         vector = Math.sqrt(diffx * diffx + diffy * diffy);
         return this;
     }
