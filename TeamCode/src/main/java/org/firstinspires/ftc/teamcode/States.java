@@ -1,5 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 public enum States {
-
+    START,
+    FIND_PROP_S,
+    CENTER_FORWARD_S,
+    CENTER_DROP_P_PIXEL_S,
+    CENTER_TURN_TO_BACKBOARD_S,
+    CENTER_DRIVE_CLOSE_TO_BACKBOARD_S,
+    CENTER_DRIVE_EXACTLY_TO_BACKBOARD_S,
+    CENTER_DROP_Y_PIXEL_S,
+    PARK
 }

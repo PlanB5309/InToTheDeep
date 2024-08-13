@@ -37,7 +37,7 @@ public class MotorSpeeds {
 
     public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, double maxSpeed){
         double denominator;
-        denominator = Math.max(Math.abs(dtt.diffy) + Math.abs(dtt.diffx) + Math.abs(dtt.diffh), .1);
+        denominator = Math.max(Math.abs(dtt.diffy) + Math.abs(dtt.diffx) + Math.abs(dtt.diffh), 1);
         frontLeftSpeed = (dtt.diffy + dtt.diffx + dtt.diffh) / denominator;
         frontRightSpeed = (dtt.diffy - dtt.diffx - dtt.diffh) / denominator;
         backLeftSpeed = (dtt.diffy - dtt.diffx + dtt.diffh) / denominator;

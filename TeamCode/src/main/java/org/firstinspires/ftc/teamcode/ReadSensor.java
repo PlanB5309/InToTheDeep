@@ -18,6 +18,12 @@ public class ReadSensor {
         this.telemetry = telemetry;
         this.linearOpMode = linearOpMode;
     }
+
+    public ReadSensor(RobotHardware robot, Telemetry telemetry){
+        this.robot = robot;
+        this.telemetry = telemetry;
+    }
+
     public double distance(Rev2mDistanceSensor Sensor) {
         double distance[] = new double[5];
         double result;

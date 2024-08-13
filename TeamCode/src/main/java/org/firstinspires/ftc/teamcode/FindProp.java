@@ -11,11 +11,17 @@ public class FindProp {
     ReadSensor readSensor;
     PropLocation propLocation;
 
-    public FindProp(RobotHardware robot, Telemetry telemetry, LinearOpMode linearOpMode) {
+    public FindProp (RobotHardware robot, Telemetry telemetry, LinearOpMode linearOpMode) {
         this.robot = robot;
         this.telemetry = telemetry;
         this.linearOpMode = linearOpMode;
         this.readSensor = new ReadSensor(robot, telemetry, linearOpMode);
+    }
+
+    public FindProp (RobotHardware robot, Telemetry telemetry) {
+        this.robot = robot;
+        this.telemetry = telemetry;
+        this.readSensor = new ReadSensor(robot, telemetry);
     }
 
     public PropLocation FindPropForward(){

@@ -22,10 +22,11 @@ public class Move {
         distanceToTarget = distanceToTarget.find(pos, target);
         motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed);
         done = distanceToTarget.closeEnough(distanceToTarget);
-        if (done == true){
+        if (done == true)
             motorSpeeds.setMotorSpeeds(motorSpeeds, 0);
-        }
-        motorSpeeds.setMotorSpeeds(motorSpeeds, target.maxSpeed);
-        return false;
+
+        else
+            motorSpeeds.setMotorSpeeds(motorSpeeds, target.maxSpeed);
+        return done;
     }
 }
