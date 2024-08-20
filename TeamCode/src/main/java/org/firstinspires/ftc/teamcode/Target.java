@@ -19,4 +19,11 @@ public class Target {
         h = 0;
         maxSpeed = 0;
     }
+
+    public void set (double x, double y, double h, double maxSpeed){
+        this.x = x;
+        this.y = y;
+        this.h = h;
+        this.maxSpeed = maxSpeed;
+    }
 }

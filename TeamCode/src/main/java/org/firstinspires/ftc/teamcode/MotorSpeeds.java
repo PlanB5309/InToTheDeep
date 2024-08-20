@@ -35,25 +35,54 @@ public class MotorSpeeds {
         this.backRightSpeed = backRightSpeed;
     }
 
-    public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, double maxSpeed){
+    public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, double maxSpeed, double currentAngle){
+        double sin;
+        double cos;
         double denominator;
+        sin = Math.sin(Math.toRadians(-currentAngle));
+        cos = Math.cos(Math.toRadians(-currentAngle));
+        //x2=cosβx1−sinβy1
+        //y2=sinβx1+cosβy1
+        double x2 = (cos * dtt.diffx) - (sin * dtt.diffy);
+        double y2 = (sin * dtt.diffx) + (cos * dtt.diffy);
         denominator = Math.max(Math.abs(dtt.diffy) + Math.abs(dtt.diffx) + Math.abs(dtt.diffh), 1);
-        frontLeftSpeed = (dtt.diffy + dtt.diffx + dtt.diffh) / denominator;
-        frontRightSpeed = (dtt.diffy - dtt.diffx - dtt.diffh) / denominator;
-        backLeftSpeed = (dtt.diffy - dtt.diffx + dtt.diffh) / denominator;
-        backRightSpeed = (dtt.diffy + dtt.diffx - dtt.diffh) / denominator;
+        frontLeftSpeed = (y2 + x2 + dtt.diffh) / denominator;
+        frontRightSpeed = (y2 - x2 - dtt.diffh) / denominator;
+        backLeftSpeed = (y2 - x2 + dtt.diffh) / denominator;
+        backRightSpeed = (y2 + x2 - dtt.diffh) / denominator;
 
-        if (dtt.vector > 8){
+        if (dtt.vector > 8 || dtt.vector < -8){
             speedFactor = maxSpeed;
         }
 
         else {
             speedFactor = dtt.vector / 8 * maxSpeed;
         }
+
         frontLeftSpeed = frontLeftSpeed * speedFactor;
         frontRightSpeed = frontRightSpeed * speedFactor;
         backLeftSpeed = backLeftSpeed * speedFactor;
         backRightSpeed = backRightSpeed * speedFactor;
+
+        if (frontLeftSpeed > 0 && frontLeftSpeed < .1)
+            frontLeftSpeed = .1;
+        else if (frontLeftSpeed < 0 && frontLeftSpeed > -.1)
+            frontLeftSpeed = -.1;
+
+        if (frontRightSpeed > 0 && frontRightSpeed < .1)
+            frontRightSpeed = .1;
+        else if (frontRightSpeed < 0 && frontRightSpeed > -.1)
+            frontRightSpeed = -.1;
+
+        if (backLeftSpeed > 0 && backLeftSpeed < .1)
+            backLeftSpeed = .1;
+        else if (backLeftSpeed < 0 && backLeftSpeed > -.1)
+            backLeftSpeed = -.1;
+
+        if (backRightSpeed > 0 && backRightSpeed < .1)
+            backRightSpeed = .1;
+        else if (backRightSpeed < 0 && backRightSpeed > -.1)
+            backRightSpeed = -.1;
         return this;
     }
 

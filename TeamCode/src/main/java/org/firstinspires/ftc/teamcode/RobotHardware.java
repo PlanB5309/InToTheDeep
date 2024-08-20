@@ -137,7 +137,6 @@ public class RobotHardware {
 
     //Sensor Values
     public static final double PROP_THRESHOLD = 12;
-    //DISTANCES NEED TO BE FOUND
     public static final int ONE_PIXEL_BOARD_DISTANCE = 21;
     public static final int TWO_PIXEL_BOARD_DISTANCE = 18;
 

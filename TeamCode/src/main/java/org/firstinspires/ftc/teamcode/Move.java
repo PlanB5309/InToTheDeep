@@ -20,7 +20,7 @@ public class Move {
     public boolean moveIt (SparkFunOTOS.Pose2D pos, Target target){
         boolean done = false;
         distanceToTarget = distanceToTarget.find(pos, target);
-        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed);
+        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed, pos.h);
         done = distanceToTarget.closeEnough(distanceToTarget);
         if (done == true)
             motorSpeeds.setMotorSpeeds(motorSpeeds, 0);
