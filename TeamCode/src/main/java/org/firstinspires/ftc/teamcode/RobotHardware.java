@@ -70,76 +70,38 @@ public class RobotHardware {
     public DcMotor frontLeftMotor   = null;
     public DcMotor frontRightMotor = null;
     public DcMotor armMotor = null;
-    public DcMotor intakeMotor = null;
-    public DcMotor droneMotor = null;
+    public DcMotor specimenMotor = null;
+    public DcMotor sampleMotor = null;
 
     // Motor Constants
     //Actual number needs to be found
-    public static final int ARM_RESET = 0;
-    public static final int ARM_PIXEL_DROP = -530;
-    public static final int ARM_UP = 235;
-    public static final int ARM_PIXEL_SCORE = 4515;
-    public static final int ARM_PIXEL_SCORE_HIGH = 4215;
 
-    //Create  Motors
 
     //Create Servos
-    public Servo wristServo = null;
+    public Servo intakeServo = null;
     public Servo leftClawServo = null;
     public Servo rightClawServo = null;
-    public Servo armServo = null;
-    public Servo hookServo = null;
-    public Servo leftPixelLockServo = null;
-    public Servo rightPixelLockServo = null;
 
     //Create Lights
     public RevBlinkinLedDriver lights;
 
     //Create Sensors
     BNO055IMU imu;
-    public Rev2mDistanceSensor rightDistanceSensor = null;
-    public Rev2mDistanceSensor leftDistanceSensor = null;
-    public Rev2mDistanceSensor rearRightDistanceSensor = null;
-    public Rev2mDistanceSensor rearLeftDistanceSensor = null;
-    public RevTouchSensor armTouchSensor = null;
     public SparkFunOTOS myOtos = null;
 
     //Servo Constants
-    //Pixel Locks
-    public static final double LEFT_PIXEL_UNLOCK = .75;
-    public static final double LEFT_PIXEL_LOCK = .25;
-    public static final double RIGHT_PIXEL_UNLOCK = .25;
-    public static final double RIGHT_PIXEL_LOCK = .75;
     //Claws
-    public static final double RIGHT_CLAW_CLOSE = 0.83;
-    public static final double RIGHT_CLAW_OPEN = 0.5;
-    public static final double LEFT_CLAW_CLOSE = 0.72;
-    public static final double LEFT_CLAW_OPEN = 0.25;
-    //Wrist
-    public static final double UPWARDS_WRIST = .75;
-    public static final double RESTING_WRIST = .619;
-    public static final double GRAB_WRIST = .48;
-    public static final double WRIST_SCORE_PIXEL = .8;
-    public static final double WRIST_SCORE_TWO_PIXEL = .83;
-    public static final double WRIST_PRE_GRAB = .54;
-    //Hook
-    public static final double HOOK_IN = .65;
-    public static final double HOOK_OUT = .4;
+    public static final double RIGHT_CLAW_CLOSE = 0.0;
+    public static final double RIGHT_CLAW_OPEN = 0.3;
+    public static final double LEFT_CLAW_CLOSE = 0.3;
+    public static final double LEFT_CLAW_OPEN = 0.0;
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
 
     //Rates
-    public static final double WRIST_SERVO_CHANGE_RATE = .004;
-    public static final double ARM_SERVO_CHANGE_RATE = .003;
     public static final int CLICKS_PER_CENTIMETER = 18;
     public static final int STRAFE_CLICKS_PER_CENTIMETER = 20;
-
-    //Sensor Values
-    public static final double PROP_THRESHOLD = 12;
-    public static final int ONE_PIXEL_BOARD_DISTANCE = 21;
-    public static final int TWO_PIXEL_BOARD_DISTANCE = 18;
-
 
     //Turning Speeds
     public final double HIGH_TURN_POWER = 0.6;
@@ -170,24 +132,15 @@ public class RobotHardware {
         frontLeftMotor = hwMap.get(DcMotor.class, "frontLeftMotor");
         frontRightMotor = hwMap.get(DcMotor.class, "frontRightMotor");
         armMotor = hwMap.get(DcMotor.class, "armMotor");
-        intakeMotor = hwMap.get(DcMotor.class, "intakeMotor");
-        droneMotor = hwMap.get(DcMotor.class, "droneMotor");
+        specimenMotor = hwMap.get(DcMotor.class, "specimenMotor");
+        sampleMotor = hwMap.get(DcMotor.class, "sampleMotor");
 
-        wristServo = hwMap.get(Servo.class, "wristServo");
+        intakeServo = hwMap.get(Servo.class, "intakeServo");
         leftClawServo = hwMap.get(Servo.class, "leftClawServo");
         rightClawServo = hwMap.get(Servo.class, "rightClawServo");
-        armServo = hwMap.get(Servo.class, "armServo");
-        hookServo = hwMap.get(Servo.class, "hookServo");
-        rightPixelLockServo = hwMap.get(Servo.class, "rightPixelLockServo");
-        leftPixelLockServo = hwMap.get(Servo.class, "leftPixelLockServo");
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
-        leftDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "leftDistanceSensor");
-        rightDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "rightDistanceSensor");
-        rearRightDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "rearRightDistanceSensor");
-        rearLeftDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "rearLeftDistanceSensor");
-        armTouchSensor = hwMap.get(RevTouchSensor.class,"armTouchSensor");
         myOtos = hwMap.get(SparkFunOTOS.class, "myOtos");
 
         configureOtos();
@@ -199,8 +152,7 @@ public class RobotHardware {
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.FORWARD);
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         //Using Encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -214,9 +166,9 @@ public class RobotHardware {
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sampleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        droneMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -236,8 +188,7 @@ public class RobotHardware {
 
         //Initalize Servos
         rightClawServo.setPosition(RIGHT_CLAW_CLOSE);
-        armServo.setPosition(SHORT_ARM);
-        hookServo.setPosition(HOOK_IN);
+        leftClawServo.setPosition(LEFT_CLAW_CLOSE);
     }
     private void configureOtos() {
         myOtos.setLinearUnit(DistanceUnit.INCH);

@@ -54,7 +54,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @TeleOp(name="Robot: Teleop", group="Robot")
 public class Teleop extends OpMode {
     RobotHardware robot = new RobotHardware();
-    double WristPosition = robot.RESTING_WRIST;
     double ArmLength = robot.SHORT_ARM;
     long time_arm_move;
     long time_close_claws;
@@ -77,11 +76,8 @@ public class Teleop extends OpMode {
         robot.init(hardwareMap);
         robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.hookServo.setPosition(robot.HOOK_IN);
         robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
         robot.rightClawServo.setPosition(robot.RIGHT_CLAW_OPEN);
-        robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_UNLOCK);
-        robot.rightPixelLockServo.setPosition(robot.RIGHT_PIXEL_UNLOCK);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
     }
 
@@ -166,143 +162,29 @@ public class Teleop extends OpMode {
             robot.backRightMotor.setPower(backRightPower);
         }
 
-        //Drone Launch Controls
-        if (gamepad1.right_trigger > .5)
-            robot.droneMotor.setPower(1);
-        else robot.droneMotor.setPower(0);
-
-        //Hook Servo
-        if (gamepad1.x) {
-            robot.hookServo.setPosition(robot.HOOK_IN);
-        }
-        if (gamepad1.y) {
-            robot.hookServo.setPosition(robot.HOOK_OUT);
-        }
-
-        //Attachments
-
-
-
-        //Right Claw Controls
-        if (gamepad2.right_trigger > .5) {
-            robot.rightClawServo.setPosition(robot.RIGHT_CLAW_CLOSE);
-        }
         if (gamepad2.right_bumper) {
+            robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
             robot.rightClawServo.setPosition(robot.RIGHT_CLAW_OPEN);
         }
 
-        //Left Claw Controls
-        if (gamepad2.left_trigger > .5) {
+        if (gamepad2.right_trigger>.5){
             robot.leftClawServo.setPosition(robot.LEFT_CLAW_CLOSE);
-        }
-        if (gamepad2.left_bumper) {
-            robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
+            robot.rightClawServo.setPosition(robot.RIGHT_CLAW_CLOSE);
         }
 
-        //Wrist Controls
-        if (gamepad2.dpad_up && WristPosition < 1) {
-            WristPosition = WristPosition + robot.WRIST_SERVO_CHANGE_RATE;
-            robot.wristServo.setPosition(WristPosition + robot.WRIST_SERVO_CHANGE_RATE);
-            wrist_controlled = true;
-        }
-        if (gamepad2.dpad_down && WristPosition > 0) {
-            WristPosition = WristPosition - robot.WRIST_SERVO_CHANGE_RATE;
-            robot.wristServo.setPosition(WristPosition - robot.WRIST_SERVO_CHANGE_RATE);
-            wrist_controlled = true;
-        }
+        robot.specimenMotor.setPower(gamepad2.right_stick_y);
+        robot.sampleMotor.setPower(gamepad2.left_stick_y);
 
-        if (robot.armMotor.getCurrentPosition() > 3014 &&
-                wrist_controlled == false &&
-                preloadState == PreloadStates.NOT_RUNNING){
-            WristPosition = -1.76E-04*(robot.armMotor.getCurrentPosition()) + 1.61;
-            robot.wristServo.setPosition(WristPosition);
-        }
+        if (gamepad2.y)
+            robot.intakeServo.setPosition(1);
 
-        //Pixel Lock Controls
-        //Upwards on gamepad
-        if(gamepad2.left_stick_y < -.5){
-            robot.rightPixelLockServo.setPosition(robot.RIGHT_PIXEL_LOCK);
-            robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_LOCK);
-            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.DARK_GREEN);
-        }
-        //Downwards on gamepad
-        if (gamepad2.left_stick_y > .5){
-            robot.rightPixelLockServo.setPosition(robot.RIGHT_PIXEL_UNLOCK);
-            robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_UNLOCK);
-            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-        }
+        if (gamepad2.b)
+            robot.intakeServo.setPosition(0);
 
-        //Panic Button
-        if(gamepad2.left_stick_button){
-            loadpixelState = LoadPixelStates.NOT_RUNNING;
-            preloadState = PreloadStates.NOT_RUNNING;
-            robot.armMotor.setPower(0);
-            robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-
-
-
-        //AutoLoad Controls
-
-        //Preload
-        Preload();
-        if (preloadState == PreloadStates.NOT_RUNNING &&
-            loadpixelState == LoadPixelStates.NOT_RUNNING &&
-            gamepad2.x) {
-                wrist_controlled = false;
-                preloadState = PreloadStates.MOVE_SERVOS;
-        }
-
-        //LoadPixel
-        LoadPixel();
-        if (loadpixelState == LoadPixelStates.NOT_RUNNING &&
-            preloadState == PreloadStates.NOT_RUNNING &&
-            gamepad2.y) {
-                loadpixelState = LoadPixelStates.ARM_OUT;
-        }
-
-        if (loadpixelState == LoadPixelStates.NOT_RUNNING &&
-            preloadState == PreloadStates.NOT_RUNNING){
-                robot.armMotor.setPower(gamepad2.right_stick_y);
-        }
-
-            //Intake Controls
-            if (gamepad2.b) {
-                robot.intakeMotor.setPower(-1);
-            } else if (gamepad2.a) {
-                robot.intakeMotor.setPower(1);
-            } else {
-                robot.intakeMotor.setPower(0);
-            }
-
-            //Extend armservo
-            if (gamepad2.dpad_right && ArmLength < 1) {
-                ArmLength = ArmLength + robot.ARM_SERVO_CHANGE_RATE;
-                robot.armServo.setPosition(ArmLength + robot.ARM_SERVO_CHANGE_RATE);
-            }
-            if (gamepad2.dpad_left && ArmLength > 0) {
-                ArmLength = ArmLength - robot.ARM_SERVO_CHANGE_RATE;
-                robot.armServo.setPosition(ArmLength - robot.ARM_SERVO_CHANGE_RATE);
-            }
-
-            //Telemetry Data
-//            telemetry.addData("LeftOdometryWheel", robot.leftOdometry.getCurrentPosition());
-//            telemetry.addData("MiddleOdometryWheel", robot.middleOdometry.getCurrentPosition());
-//            telemetry.addData("RightOdometryWheel", robot.rightOdometry.getCurrentPosition());
-            telemetry.addData("Wrist Value: ", robot.wristServo.getPosition());
-            telemetry.addData("Arm (Up/Down) Value: ", robot.armMotor.getCurrentPosition());
-            telemetry.addData("Arm (In/Out) Value", robot.armServo.getPosition());
-            telemetry.addData("State of preload", preloadState);
-            telemetry.addData("State of LoadPixel", loadpixelState);
-            telemetry.addData("State of armTouchSensor", robot.armTouchSensor.getValue());
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.addData("Say", "Happy Little Pixels");
-//            telemetry.addData("Left Distance Sensor",robot.leftDistanceSensor.getDistance(DistanceUnit.CM));
-//            telemetry.addData("Right Distance Sensor",robot.rightDistanceSensor.getDistance(DistanceUnit.CM));
-//            telemetry.addData("Rear Distance Sensor",robot.rearDistanceSensor.getDistance(DistanceUnit.CM));
-            telemetry.update();
+        telemetry.addData("X coordinate", pos.x);
+        telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
+        telemetry.addData("Heading angle", pos.h);
+        telemetry.update();
 
 
 
@@ -311,107 +193,8 @@ public class Teleop extends OpMode {
              * Code to run ONCE after the driver hits STOP
              */
         }
-        private void Preload() {
-            switch (preloadState) {
-
-                case MOVE_SERVOS:
-                    time_arm_move = System.currentTimeMillis() + 500;
-                    robot.wristServo.setPosition(robot.WRIST_PRE_GRAB);
-                    robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
-                    robot.rightClawServo.setPosition(robot.RIGHT_CLAW_OPEN);
-                    robot.armServo.setPosition(robot.SHORT_ARM);
-                    preloadState = PreloadStates.MOVE_ARM;
-                    robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
-                    break;
-
-                case MOVE_ARM:
-                    if (System.currentTimeMillis() > time_arm_move) {
-                        /*
-                        robot.armMotor.setTargetPosition(robot.ARM_READY);
-                        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        */
-                        robot.armMotor.setPower(-1);
-                        preloadState = PreloadStates.WAIT_FOR_ARM;
-                    }
-                    break;
-
-                case WAIT_FOR_ARM:
-
-                    if (robot.armTouchSensor.isPressed()){
-
-                    //if (robot.armMotor.isBusy() == false) {
-                        robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        preloadState = PreloadStates.NOT_RUNNING;
-                    }
-                    break;
-
-                case NOT_RUNNING:
-                    break;
-            }
-
-        }
-
-    private void LoadPixel() {
-        switch (loadpixelState) {
-            case ARM_OUT:
-                time_arm_move_out = System.currentTimeMillis() + 500;
-                robot.armServo.setPosition(robot.GRAB_ARM);
-                robot.wristServo.setPosition(robot.GRAB_WRIST);
-                loadpixelState = LoadPixelStates.CLOSE_CLAWS;
-                robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-                break;
-
-            case CLOSE_CLAWS:
-                if (System.currentTimeMillis() > time_arm_move_out) {
-                    time_close_claws = System.currentTimeMillis() + 250;
-                    robot.leftClawServo.setPosition(robot.LEFT_CLAW_CLOSE);
-                    robot.rightClawServo.setPosition(robot.RIGHT_CLAW_CLOSE);
-                    loadpixelState = LoadPixelStates.UNLOCK_PIXEL_SERVOS;
-                }
-                break;
-
-            case UNLOCK_PIXEL_SERVOS:
-                if (System.currentTimeMillis() > time_close_claws){
-                    time_claws_grab_confident = System.currentTimeMillis() + 500;
-                    robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_UNLOCK);
-                    robot.rightPixelLockServo.setPosition(robot.RIGHT_PIXEL_UNLOCK);
-                    loadpixelState = LoadPixelStates.MOVE_SERVOS;
-                }
-                break;
-
-            case MOVE_SERVOS:
-                if (System.currentTimeMillis() > time_claws_grab_confident) {
-                    robot.armServo.setPosition(robot.SHORT_ARM);
-                    robot.wristServo.setPosition(robot.UPWARDS_WRIST);
-                    loadpixelState = LoadPixelStates.MOVE_ARM;
-                    time_arm_move = System.currentTimeMillis() + 1000;
-                }
-                break;
-
-            case MOVE_ARM:
-                if (System.currentTimeMillis() > time_arm_move) {
-                    robot.armMotor.setTargetPosition(robot.ARM_UP);
-                    robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    robot.armMotor.setPower(.7);
-                    loadpixelState = LoadPixelStates.WAIT_FOR_ARM;
-                }
-                break;
-
-            case WAIT_FOR_ARM:
-                if (robot.armMotor.isBusy() == false) {
-                    robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    WristPosition = robot.wristServo.getPosition();
-                    loadpixelState = loadpixelState.NOT_RUNNING;
-                }
-                break;
-
-            case NOT_RUNNING:
-                break;
-
-        }
 
     }
-}
+
 
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 @TeleOp(name="Robot: LeftBlueOdometry", group="Robot")
@@ -15,27 +16,22 @@ public class LeftBlueOdometry extends OpMode {
     States state;
     PropLocation propLocation;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
-    FindProp findProp = new FindProp(robot, telemetry);
     Target findProp_T = new Target(0, 22.25, 0, .3);
     Target centerforward_T = new Target(0, 25.5, 0, .25);
     Target centerDropPurple_T = new Target(0, 18.5, 0, .25);
     Target centerTurnToBoard_T = new Target(0, 18.5, -90, .4);
     Target centerBackupCloseToBoard_T = new Target(-18, 20.5, -90, .5);
     Target backupExactlyToBoard_T = new Target();
-    Target park_T = new Target(-15,0,0,.2);
+    Target park_T = new Target(-20,3,-90,.1);
     Target target = new Target();
-
-    
-
-
 
     @Override
     public void init() {
         robot.init(hardwareMap);
         robot.rightClawServo.setPosition(robot.RIGHT_CLAW_CLOSE);
-        robot.armServo.setPosition(robot.SHORT_ARM);
-        robot.hookServo.setPosition(robot.HOOK_IN);
-        robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_LOCK);
+//        robot.armServo.setPosition(robot.SHORT_ARM);
+//        robot.hookServo.setPosition(robot.HOOK_IN);
+//        robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_LOCK);
         motorSpeeds = new MotorSpeeds(robot);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
@@ -46,7 +42,7 @@ public class LeftBlueOdometry extends OpMode {
      */
     @Override
     public void start() {
-        robot.wristServo.setPosition(robot.UPWARDS_WRIST);
+
     }
 
     @Override
@@ -60,7 +56,7 @@ public class LeftBlueOdometry extends OpMode {
                 break;
 
             case FIND_PROP_S:
-                propLocation = findProp.FindPropForward();
+                propLocation = PropLocation.CENTER;
                 switch (propLocation){
                     case LEFT:
                         break;
@@ -77,8 +73,7 @@ public class LeftBlueOdometry extends OpMode {
                 break;
 
             case CENTER_FORWARD_S:
-                robot.intakeMotor.setPower(-.25);
-                robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_UNLOCK);
+
                 if (move.moveIt(pos, target)) {
                     target = centerDropPurple_T;
                     state = States.CENTER_DROP_P_PIXEL_S;
@@ -93,7 +88,6 @@ public class LeftBlueOdometry extends OpMode {
                 break;
 
             case CENTER_TURN_TO_BACKBOARD_S:
-                robot.intakeMotor.setPower(0);
                 if (move.moveIt(pos, target)) {
                     state = States.CENTER_DRIVE_CLOSE_TO_BACKBOARD_S;
                     target = centerBackupCloseToBoard_T;
@@ -102,22 +96,26 @@ public class LeftBlueOdometry extends OpMode {
 
             case CENTER_DRIVE_CLOSE_TO_BACKBOARD_S:
                 if (move.moveIt(pos, target)) {
-                    state = States.CENTER_DRIVE_EXACTLY_TO_BACKBOARD_S;
-                    target = backupExactlyToBoard_T;
+                    state = States.READ_DISTANCE_SENSOR_S;
+
+                    robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    robot.armMotor.setPower(-1);
+                    //target = backupExactlyToBoard_T;
                 }
                 break;
 
             case READ_DISTANCE_SENSOR_S:
-                robot.myOtos.resetTracking();
-                double distanceToBackboard = readSensor.distance(robot.rearRightDistanceSensor) - 8.25;
-                backupExactlyToBoard_T.set(0, distanceToBackboard, 0, .2);
+                //robot.myOtos.resetTracking();
+                //backupExactlyToBoard_T.set(x, pos.y, -90, .2);
                 target = backupExactlyToBoard_T;
                 state = States.CENTER_DRIVE_EXACTLY_TO_BACKBOARD_S;
+                //state = States.DONE_FOR_NOW;
                 break;
 
             case CENTER_DRIVE_EXACTLY_TO_BACKBOARD_S:
                 if (move.moveIt(pos, target))
-                    state = States.CENTER_DROP_Y_PIXEL_S;
+                    //state = States.CENTER_DROP_Y_PIXEL_S;
+                    state = States.DONE_FOR_NOW;
                 break;
 
             case CENTER_DROP_Y_PIXEL_S:
@@ -133,7 +131,12 @@ public class LeftBlueOdometry extends OpMode {
                     robot.backRightMotor.setPower(0);
                 }
                 break;
-
+            case DONE_FOR_NOW:
+                robot.frontLeftMotor.setPower(0);
+                robot.frontRightMotor.setPower(0);
+                robot.backLeftMotor.setPower(0);
+                robot.backRightMotor.setPower(0);
+                break;
         }
 
         //Telemetry Data

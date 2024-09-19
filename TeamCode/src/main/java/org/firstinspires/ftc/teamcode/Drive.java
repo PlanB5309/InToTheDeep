@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotHardware.ONE_PIXEL_BOARD_DISTANCE;
+//import static org.firstinspires.ftc.teamcode.RobotHardware.ONE_PIXEL_BOARD_DISTANCE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -82,33 +82,33 @@ public class Drive {
         driveTrain.stop();
     }
 
-    public void move_to_backboard_one_pixel (int back_distance){
-        if (!linearOpMode.opModeIsActive())
-            return;
-        if (back_distance > robot.ONE_PIXEL_BOARD_DISTANCE){
-            backward (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE), .2);
-            telemetry.addData("amountMovedBackward", (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE)));
-            telemetry.update();
-        }
-        if (back_distance < robot.ONE_PIXEL_BOARD_DISTANCE){
-            forward (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE), .2);
-            telemetry.addData("amountMovedForward", (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE)));
-        }
-    }
-
-    public void move_to_backboard_two_pixel (int back_distance){
-        if (!linearOpMode.opModeIsActive())
-            return;
-        if (back_distance > robot.TWO_PIXEL_BOARD_DISTANCE){
-            backward (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE), .2);
-            telemetry.addData("amountMovedBackward", (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE)));
-            telemetry.update();
-        }
-        if (back_distance < robot.TWO_PIXEL_BOARD_DISTANCE){
-            forward (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE), .2);
-            telemetry.addData("amountMovedForward", (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE)));
-        }
-    }
+//    public void move_to_backboard_one_pixel (int back_distance){
+//        if (!linearOpMode.opModeIsActive())
+//            return;
+//        if (back_distance > robot.ONE_PIXEL_BOARD_DISTANCE){
+//            backward (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE), .2);
+//            telemetry.addData("amountMovedBackward", (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE)));
+//            telemetry.update();
+//        }
+//        if (back_distance < robot.ONE_PIXEL_BOARD_DISTANCE){
+//            forward (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE), .2);
+//            telemetry.addData("amountMovedForward", (Math.abs((int)back_distance- robot.ONE_PIXEL_BOARD_DISTANCE)));
+//        }
+//    }
+//
+//    public void move_to_backboard_two_pixel (int back_distance){
+//        if (!linearOpMode.opModeIsActive())
+//            return;
+//        if (back_distance > robot.TWO_PIXEL_BOARD_DISTANCE){
+//            backward (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE), .2);
+//            telemetry.addData("amountMovedBackward", (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE)));
+//            telemetry.update();
+//        }
+//        if (back_distance < robot.TWO_PIXEL_BOARD_DISTANCE){
+//            forward (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE), .2);
+//            telemetry.addData("amountMovedForward", (Math.abs((int)back_distance- robot.TWO_PIXEL_BOARD_DISTANCE)));
+//        }
+//    }
 }
 
 
