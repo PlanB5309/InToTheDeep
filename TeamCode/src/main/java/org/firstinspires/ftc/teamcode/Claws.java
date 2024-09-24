@@ -18,26 +18,26 @@ public class Claws {
     public void LeftClawOpen (){
         if (!linearOpMode.opModeIsActive())
             return;
-        robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
     }
 
     public void RightClawOpen (){
         if (!linearOpMode.opModeIsActive())
             return;
-        robot.rightClawServo.setPosition(robot.RIGHT_CLAW_OPEN);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
     }
 
     public void LeftClawClose (){
         if (!linearOpMode.opModeIsActive())
             return;
-        robot.leftClawServo.setPosition(robot.LEFT_CLAW_CLOSE);
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
 
 
     }
     public void RightClawClose (){
         if (!linearOpMode.opModeIsActive())
             return;
-        robot.rightClawServo.setPosition(robot.RIGHT_CLAW_CLOSE);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
     }
 
 }

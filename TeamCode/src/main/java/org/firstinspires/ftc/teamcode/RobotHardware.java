@@ -31,12 +31,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -79,8 +76,8 @@ public class RobotHardware {
 
     //Create Servos
     public Servo intakeServo = null;
-    public Servo leftClawServo = null;
-    public Servo rightClawServo = null;
+    public Servo frontClawServo = null;
+    public Servo backClawServo = null;
 
     //Create Lights
     public RevBlinkinLedDriver lights;
@@ -91,10 +88,10 @@ public class RobotHardware {
 
     //Servo Constants
     //Claws
-    public static final double RIGHT_CLAW_CLOSE = 0.0;
-    public static final double RIGHT_CLAW_OPEN = 0.3;
-    public static final double LEFT_CLAW_CLOSE = 0.3;
-    public static final double LEFT_CLAW_OPEN = 0.0;
+    public static final double BACK_CLAW_CLOSE = 0.3;
+    public static final double BACK_CLAW_OPEN = 0.63;
+    public static final double FRONT_CLAW_CLOSE = 0.63;
+    public static final double FRONT_CLAW_OPEN = 0.3;
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
@@ -136,8 +133,8 @@ public class RobotHardware {
         sampleMotor = hwMap.get(DcMotor.class, "sampleMotor");
 
         intakeServo = hwMap.get(Servo.class, "intakeServo");
-        leftClawServo = hwMap.get(Servo.class, "leftClawServo");
-        rightClawServo = hwMap.get(Servo.class, "rightClawServo");
+        frontClawServo = hwMap.get(Servo.class, "frontClawServo");
+        backClawServo = hwMap.get(Servo.class, "backClawServo");
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
@@ -187,8 +184,8 @@ public class RobotHardware {
         imu.initialize(parameters);
 
         //Initalize Servos
-        rightClawServo.setPosition(RIGHT_CLAW_CLOSE);
-        leftClawServo.setPosition(LEFT_CLAW_CLOSE);
+        backClawServo.setPosition(BACK_CLAW_CLOSE);
+        frontClawServo.setPosition(FRONT_CLAW_CLOSE);
     }
     private void configureOtos() {
         myOtos.setLinearUnit(DistanceUnit.INCH);

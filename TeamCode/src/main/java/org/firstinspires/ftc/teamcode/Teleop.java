@@ -35,9 +35,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 /**
  * This particular OpMode executes a Tank Drive control TeleOp a direct drive robot
  * The code is structured as an Iterative OpMode
@@ -61,9 +58,6 @@ public class Teleop extends OpMode {
     long time_claws_grab_confident;
     boolean wrist_controlled = false;
     boolean slow_mode;
-    Claws claws;
-    PreloadStates preloadState = PreloadStates.NOT_RUNNING;
-    LoadPixelStates loadpixelState = LoadPixelStates.NOT_RUNNING;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -76,8 +70,8 @@ public class Teleop extends OpMode {
         robot.init(hardwareMap);
         robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
-        robot.rightClawServo.setPosition(robot.RIGHT_CLAW_OPEN);
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
     }
 
@@ -163,13 +157,13 @@ public class Teleop extends OpMode {
         }
 
         if (gamepad2.right_bumper) {
-            robot.leftClawServo.setPosition(robot.LEFT_CLAW_OPEN);
-            robot.rightClawServo.setPosition(robot.RIGHT_CLAW_OPEN);
+            robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
+            robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
         }
 
         if (gamepad2.right_trigger>.5){
-            robot.leftClawServo.setPosition(robot.LEFT_CLAW_CLOSE);
-            robot.rightClawServo.setPosition(robot.RIGHT_CLAW_CLOSE);
+            robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+            robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         }
 
         robot.specimenMotor.setPower(gamepad2.right_stick_y);
@@ -180,6 +174,18 @@ public class Teleop extends OpMode {
 
         if (gamepad2.b)
             robot.intakeServo.setPosition(0);
+
+        if (gamepad2.b == false && gamepad2.y == false)
+            robot.intakeServo.setPosition(.5);
+
+        if (gamepad2.dpad_up)
+            robot.armMotor.setPower(.1);
+
+        if (gamepad2.dpad_down)
+            robot.armMotor.setPower(-.1);
+
+        if (gamepad2.dpad_down == false && gamepad2.dpad_up == false)
+            robot.armMotor.setPower(0);
 
         telemetry.addData("X coordinate", pos.x);
         telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
