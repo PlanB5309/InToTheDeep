@@ -93,27 +93,27 @@ public class Teleop extends OpMode {
             if (gamepad1.dpad_right) {
                 //turn right slowly with dpad
                 if (gamepad1.b) {
-                    robot.frontLeftMotor.setPower(-0.12);
-                    robot.frontRightMotor.setPower(0.12);
-                    robot.backLeftMotor.setPower(-0.12);
-                    robot.backRightMotor.setPower(0.12);
+                    robot.frontLeftMotor.setPower(0.12);
+                    robot.frontRightMotor.setPower(-0.12);
+                    robot.backLeftMotor.setPower(0.12);
+                    robot.backRightMotor.setPower(-0.12);
                 }
                 //strafe right slowly with dpad
                 else {
-                    robot.frontLeftMotor.setPower(.24);
-                    robot.frontRightMotor.setPower(-.24);
-                    robot.backLeftMotor.setPower(-.24);
-                    robot.backRightMotor.setPower(.24);
+                    robot.frontLeftMotor.setPower(-.24);
+                    robot.frontRightMotor.setPower(.24);
+                    robot.backLeftMotor.setPower(.24);
+                    robot.backRightMotor.setPower(-.24);
                 }
 
                 //strafe and turn left slowly with dpad
             } else if (gamepad1.dpad_left) {
                 //turn left slowly with dpad
                 if (gamepad1.b) {
-                    robot.frontLeftMotor.setPower(0.12);
-                    robot.frontRightMotor.setPower(-0.12);
-                    robot.backLeftMotor.setPower(0.12);
-                    robot.backRightMotor.setPower(-0.12);
+                    robot.frontLeftMotor.setPower(-0.12);
+                    robot.frontRightMotor.setPower(0.12);
+                    robot.backLeftMotor.setPower(-0.12);
+                    robot.backRightMotor.setPower(0.12);
                 }
                 //strafe left slowly with dpad
                 else {
