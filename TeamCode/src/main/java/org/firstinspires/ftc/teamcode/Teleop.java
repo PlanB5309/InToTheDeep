@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 /**
  * This particular OpMode executes a Tank Drive control TeleOp a direct drive robot
  * The code is structured as an Iterative OpMode
@@ -78,7 +80,7 @@ public class Teleop extends OpMode {
     @Override
     public void loop() {
 
-        SparkFunOTOS.Pose2D pos = robot.myOtos.getPosition();
+//        SparkFunOTOS.Pose2D pos = robot.myOtos.getPosition();
 
         //Slow Mode
         //strafe and turn right slowly with dpad
@@ -91,48 +93,48 @@ public class Teleop extends OpMode {
             if (gamepad1.dpad_right) {
                 //turn right slowly with dpad
                 if (gamepad1.b) {
-                    robot.frontLeftMotor.setPower(0.12);
-                    robot.frontRightMotor.setPower(-0.12);
-                    robot.backLeftMotor.setPower(0.12);
-                    robot.backRightMotor.setPower(-0.12);
-                }
-                //strafe right slowly with dpad
-                else {
-                    robot.frontLeftMotor.setPower(-.24);
-                    robot.frontRightMotor.setPower(.24);
-                    robot.backLeftMotor.setPower(.24);
-                    robot.backRightMotor.setPower(-.24);
-                }
-
-                //strafe and turn left slowly with dpad
-            } else if (gamepad1.dpad_left) {
-                //turn left slowly with dpad
-                if (gamepad1.b) {
                     robot.frontLeftMotor.setPower(-0.12);
                     robot.frontRightMotor.setPower(0.12);
                     robot.backLeftMotor.setPower(-0.12);
                     robot.backRightMotor.setPower(0.12);
                 }
-                //strafe left slowly with dpad
+                //strafe right slowly with dpad
                 else {
                     robot.frontLeftMotor.setPower(.24);
                     robot.frontRightMotor.setPower(-.24);
                     robot.backLeftMotor.setPower(-.24);
                     robot.backRightMotor.setPower(.24);
                 }
+
+                //strafe and turn left slowly with dpad
+            } else if (gamepad1.dpad_left) {
+                //turn left slowly with dpad
+                if (gamepad1.b) {
+                    robot.frontLeftMotor.setPower(0.12);
+                    robot.frontRightMotor.setPower(-0.12);
+                    robot.backLeftMotor.setPower(0.12);
+                    robot.backRightMotor.setPower(-0.12);
+                }
+                //strafe left slowly with dpad
+                else {
+                    robot.frontLeftMotor.setPower(-.24);
+                    robot.frontRightMotor.setPower(.24);
+                    robot.backLeftMotor.setPower(.24);
+                    robot.backRightMotor.setPower(-.24);
+                }
                 //drive backward slowly with dpad
             } else if (gamepad1.dpad_up) {
-                robot.frontLeftMotor.setPower(-.18);
-                robot.frontRightMotor.setPower(-.18);
-                robot.backLeftMotor.setPower(-.18);
-                robot.backRightMotor.setPower(-.18);
-
-                //drive forward slowly with dpad
-            } else if (gamepad1.dpad_down) {
                 robot.frontLeftMotor.setPower(.18);
                 robot.frontRightMotor.setPower(.18);
                 robot.backLeftMotor.setPower(.18);
                 robot.backRightMotor.setPower(.18);
+
+                //drive forward slowly with dpad
+            } else if (gamepad1.dpad_down) {
+                robot.frontLeftMotor.setPower(-.18);
+                robot.frontRightMotor.setPower(-.18);
+                robot.backLeftMotor.setPower(-.18);
+                robot.backRightMotor.setPower(-.18);
             }
         } else slow_mode = false;
 
@@ -156,42 +158,56 @@ public class Teleop extends OpMode {
             robot.backRightMotor.setPower(backRightPower);
         }
 
-        if (gamepad2.right_bumper) {
+        if (gamepad2.left_bumper) {
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
             robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
         }
 
-        if (gamepad2.right_trigger>.5){
+        if (gamepad2.left_trigger>=.5){
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
             robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         }
 
-        robot.specimenMotor.setPower(gamepad2.right_stick_y);
-        robot.sampleMotor.setPower(gamepad2.left_stick_y);
-
-        if (gamepad2.y)
-            robot.intakeServo.setPosition(1);
-
-        if (gamepad2.b)
-            robot.intakeServo.setPosition(0);
-
-        if (gamepad2.b == false && gamepad2.y == false)
-            robot.intakeServo.setPosition(.5);
+        robot.armMotor.setPower(gamepad2.right_stick_y);
 
         if (gamepad2.dpad_up)
-            robot.armMotor.setPower(.1);
+            robot.specimenMotor.setPower(-1);
 
         if (gamepad2.dpad_down)
-            robot.armMotor.setPower(-.1);
+            robot.specimenMotor.setPower(1);
 
-        if (gamepad2.dpad_down == false && gamepad2.dpad_up == false)
-            robot.armMotor.setPower(0);
+        if (gamepad2.dpad_up == false && gamepad2.dpad_down == false)
+            robot.specimenMotor.setPower(0);
 
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
-        telemetry.addData("Heading angle", pos.h);
+        if (gamepad2.right_bumper)
+            robot.intakeServo.setPosition(1);
+
+        if (gamepad2.right_trigger>.5)
+            robot.intakeServo.setPosition(0);
+
+        if (gamepad2.right_bumper == false && gamepad2.right_trigger < .5)
+            robot.intakeServo.setPosition(.5);
+
+        if (gamepad2.dpad_left)
+            robot.sampleMotor.setPower(1);
+
+        if (gamepad2.dpad_right)
+            robot.sampleMotor.setPower(-1);
+
+        if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
+            robot.sampleMotor.setPower(0);
+
+        telemetry.addData("front Left encoder",robot.frontLeftMotor.getCurrentPosition());
+        telemetry.addData("front Right encoder",robot.frontRightMotor.getCurrentPosition());
+        telemetry.addData("Back Left encoder",robot.backLeftMotor.getCurrentPosition());
+        telemetry.addData("Back Right encoder",robot.backRightMotor.getCurrentPosition());
         telemetry.update();
 
+//        telemetry.addData("X coordinate", pos.x);
+//        telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
+//        telemetry.addData("Heading angle", pos.h);
+//        telemetry.update();
+//
 
 
 
