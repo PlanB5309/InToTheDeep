@@ -3,11 +3,16 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import java.util.Locale;
 
 
 @TeleOp(name="Robot: LeftBlueOdometry", group="Robot")
-public class LeftBlueOdometry extends OpMode {
+public class RightBlueOdometery extends OpMode {
 
 
     RobotHardware robot = new RobotHardware();
@@ -15,10 +20,12 @@ public class LeftBlueOdometry extends OpMode {
     MotorSpeeds motorSpeeds;
     States state;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
+    double oldTime = 0;
     Target driveToSubmersible = new Target(28, 0, 0, .3);
     Target backAwayFromSubmersible = new Target(27,0,0,.1);
     Target park = new Target(0,60,0,.1);
     Target target = new Target();
+
 
     @Override
     public void init() {
@@ -42,7 +49,22 @@ public class LeftBlueOdometry extends OpMode {
 
     @Override
     public void loop() {
-        SparkFunOTOS.Pose2D pos = robot.myOtos.getPosition();
+        robot.odo.bulkUpdate();
+        double newTime = getRuntime();
+        double loopTime = newTime-oldTime;
+        double frequency = 1/loopTime;
+        
+
+        oldTime = newTime;
+        Pose2D pos = robot.odo.getPosition();
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",
+                pos.getX(DistanceUnit.MM),
+                pos.getY(DistanceUnit.MM),
+                pos.getHeading(AngleUnit.DEGREES));
+        Pose2D vel = robot.odo.getVelocity();
+        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel.getX(DistanceUnit.MM), vel.getY(DistanceUnit.MM), vel.getHeading(AngleUnit.DEGREES));
+
+
         switch (state){
             case START:
                 break;
@@ -115,14 +137,22 @@ public class LeftBlueOdometry extends OpMode {
         }
 
         //Telemetry Data
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", (pos.y));
-        telemetry.addData("Heading angle", pos.h);
         telemetry.addData("Current State", state);
         telemetry.addData("TargetX", target.x);
         telemetry.addData("TargetY", target.y);
         telemetry.addData("TargetH", target.h);
         telemetry.addData("Target Maxspeed", target.maxSpeed);
+        telemetry.addData("Position", data);
+        telemetry.addData("Velocity", velocity);
+        //gets the raw data from the X encoder
+        telemetry.addData("X Encoder:", robot.odo.getEncoderX());
+        //gets the raw data from the Y encoder
+        telemetry.addData("Y Encoder:",robot.odo.getEncoderY());
+        //prints/gets the current refresh rate of the Pinpoint
+        telemetry.addData("Pinpoint Frequency", robot.odo.getFrequency());
+        telemetry.addData("Status", robot.odo.getDeviceStatus());
+        //prints the control system refresh rate
+        telemetry.addData("REV Hub Frequency: ", frequency);
         telemetry.update();
 
 

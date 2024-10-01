@@ -36,6 +36,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import java.util.Locale;
 
 /**
  * This particular OpMode executes a Tank Drive control TeleOp a direct drive robot
@@ -61,6 +66,7 @@ public class Teleop extends OpMode {
     boolean wrist_controlled = false;
     boolean slow_mode;
 
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -75,12 +81,13 @@ public class Teleop extends OpMode {
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
         robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+
     }
 
     @Override
     public void loop() {
 
-//        SparkFunOTOS.Pose2D pos = robot.myOtos.getPosition();
+        robot.odo.bulkUpdate();
 
         //Slow Mode
         //strafe and turn right slowly with dpad
@@ -100,10 +107,10 @@ public class Teleop extends OpMode {
                 }
                 //strafe right slowly with dpad
                 else {
-                    robot.frontLeftMotor.setPower(-.24);
-                    robot.frontRightMotor.setPower(.24);
-                    robot.backLeftMotor.setPower(.24);
-                    robot.backRightMotor.setPower(-.24);
+                    robot.frontLeftMotor.setPower(.24);
+                    robot.frontRightMotor.setPower(-.24);
+                    robot.backLeftMotor.setPower(-.24);
+                    robot.backRightMotor.setPower(.24);
                 }
 
                 //strafe and turn left slowly with dpad
@@ -124,17 +131,17 @@ public class Teleop extends OpMode {
                 }
                 //drive backward slowly with dpad
             } else if (gamepad1.dpad_up) {
-                robot.frontLeftMotor.setPower(.18);
-                robot.frontRightMotor.setPower(.18);
-                robot.backLeftMotor.setPower(.18);
-                robot.backRightMotor.setPower(.18);
-
-                //drive forward slowly with dpad
-            } else if (gamepad1.dpad_down) {
                 robot.frontLeftMotor.setPower(-.18);
                 robot.frontRightMotor.setPower(-.18);
                 robot.backLeftMotor.setPower(-.18);
                 robot.backRightMotor.setPower(-.18);
+
+                //drive forward slowly with dpad
+            } else if (gamepad1.dpad_down) {
+                robot.frontLeftMotor.setPower(.18);
+                robot.frontRightMotor.setPower(.18);
+                robot.backLeftMotor.setPower(.18);
+                robot.backRightMotor.setPower(.18);
             }
         } else slow_mode = false;
 
@@ -142,8 +149,8 @@ public class Teleop extends OpMode {
         //set the power to the wheels
         if (slow_mode == false) {
             double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad1.right_stick_x;
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when
             // at least one is out of the range [-1, 1]
@@ -197,20 +204,14 @@ public class Teleop extends OpMode {
         if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
             robot.sampleMotor.setPower(0);
 
-        telemetry.addData("front Left encoder",robot.frontLeftMotor.getCurrentPosition());
-        telemetry.addData("front Right encoder",robot.frontRightMotor.getCurrentPosition());
-        telemetry.addData("Back Left encoder",robot.backLeftMotor.getCurrentPosition());
-        telemetry.addData("Back Right encoder",robot.backRightMotor.getCurrentPosition());
+        Pose2D pos = robot.odo.getPosition();
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",
+                pos.getX(DistanceUnit.INCH),
+                pos.getY(DistanceUnit.INCH),
+                pos.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Position", data);
+        telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
         telemetry.update();
-
-//        telemetry.addData("X coordinate", pos.x);
-//        telemetry.addData("Y coordinate", (pos.y * 1.25)) ;
-//        telemetry.addData("Heading angle", pos.h);
-//        telemetry.update();
-//
-
-
-
             /*
              * Code to run ONCE after the driver hits STOP
              */

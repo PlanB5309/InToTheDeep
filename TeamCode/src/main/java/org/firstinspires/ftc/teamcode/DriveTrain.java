@@ -73,7 +73,7 @@ public class DriveTrain {
         return true;
     }
 
-    public void stop_and_reset_enconders() {
+    public void stop_and_reset_encoders() {
         if (!linearOpMode.opModeIsActive())
             return;
         robot.backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

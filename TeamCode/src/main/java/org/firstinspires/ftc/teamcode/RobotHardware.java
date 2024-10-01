@@ -85,7 +85,9 @@ public class RobotHardware {
 
     //Create Sensors
     BNO055IMU imu;
-    public SparkFunOTOS myOtos = null;
+    // Declare OpMode member for the Odometry Computer
+    public GoBildaPinpointDriver odo = null;
+
 
     //Servo Constants
     //Claws
@@ -104,6 +106,11 @@ public class RobotHardware {
     //Turning Speeds
     public final double HIGH_TURN_POWER = 0.6;
     public final double LOW_TURN_POWER = 0.07;
+
+
+
+
+
 
 
 
@@ -139,6 +146,8 @@ public class RobotHardware {
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
+        odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
+
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -146,6 +155,9 @@ public class RobotHardware {
         frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
 
 
         //Using Encoders
@@ -166,6 +178,9 @@ public class RobotHardware {
         
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        //Odometery
+        odo.setOffsets(-84.0, -168.0);
+        odo.resetPosAndIMU();
     }
     public void auto_init() {
         // GyroTurn initialization
@@ -183,5 +198,6 @@ public class RobotHardware {
         //Initalize Servos
         backClawServo.setPosition(BACK_CLAW_CLOSE);
         frontClawServo.setPosition(FRONT_CLAW_CLOSE);
+
     }
 }

@@ -24,7 +24,7 @@ public class Strafe {
     public void left (int distance, double speed){
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_enconders();
+        driveTrain.stop_and_reset_encoders();
         driveTrain.run_using_encoder();
         robot.frontRightMotor.setTargetPosition(robot.STRAFE_CLICKS_PER_CENTIMETER * distance);
         robot.backRightMotor.setTargetPosition(robot.STRAFE_CLICKS_PER_CENTIMETER * -distance);
@@ -44,7 +44,7 @@ public class Strafe {
     public void right (int distance, double speed){
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_enconders();
+        driveTrain.stop_and_reset_encoders();
         driveTrain.run_using_encoder();
         robot.frontRightMotor.setTargetPosition(robot.STRAFE_CLICKS_PER_CENTIMETER * -distance);
         robot.backRightMotor.setTargetPosition(robot.STRAFE_CLICKS_PER_CENTIMETER * distance);

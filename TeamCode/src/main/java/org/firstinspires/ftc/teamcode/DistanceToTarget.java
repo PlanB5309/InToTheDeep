@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class DistanceToTarget {
     double diffx;
@@ -22,11 +24,11 @@ public class DistanceToTarget {
         vector = 0;
     }
 
-    public DistanceToTarget find(SparkFunOTOS.Pose2D pos, Target target)
+    public DistanceToTarget find(Pose2D pos, Target target)
     {
-        diffx = target.x - pos.x;
-        diffy = target.y - pos.y;
-        diffh = -(target.h - pos.h);
+        diffx = target.x - pos.getX(DistanceUnit.INCH);
+        diffy = target.y - pos.getY(DistanceUnit.INCH);
+        diffh = -(target.h - pos.getHeading(AngleUnit.DEGREES));
         vector = Math.sqrt(diffx * diffx + diffy * diffy);
         return this;
     }

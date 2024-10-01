@@ -26,7 +26,7 @@ public class Drive {
     public void forward (int distance, double speed){
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_enconders();
+        driveTrain.stop_and_reset_encoders();
         driveTrain.run_using_encoder();
         driveTrain.setTargetPosition(robot.CLICKS_PER_CENTIMETER * distance);
         driveTrain.run_to_position();
@@ -39,7 +39,7 @@ public class Drive {
     public void backward (int distance, double speed){
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_enconders();
+        driveTrain.stop_and_reset_encoders();
         driveTrain.run_using_encoder();
         driveTrain.setTargetPosition(robot.CLICKS_PER_CENTIMETER * -distance);
         driveTrain.run_to_position();
@@ -51,7 +51,7 @@ public class Drive {
     public void backward_auto (int distance, double speed, int howHigh) throws InterruptedException {
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_enconders();
+        driveTrain.stop_and_reset_encoders();
         driveTrain.run_using_encoder();
         driveTrain.setTargetPosition(robot.CLICKS_PER_CENTIMETER * -distance);
         driveTrain.run_to_position();
@@ -68,7 +68,7 @@ public class Drive {
     public void forward_auto (int distance, double speed, int howHigh) throws InterruptedException {
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_enconders();
+        driveTrain.stop_and_reset_encoders();
         driveTrain.run_using_encoder();
         driveTrain.setTargetPosition(robot.CLICKS_PER_CENTIMETER * distance);
         driveTrain.run_to_position();

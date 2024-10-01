@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class Move {
     RobotHardware robot;
@@ -17,10 +16,10 @@ public class Move {
         distanceToTarget = new DistanceToTarget();
     }
 
-    public boolean moveIt (SparkFunOTOS.Pose2D pos, Target target){
+    public boolean moveIt (Pose2D pos, Target target){
         boolean done = false;
         distanceToTarget = distanceToTarget.find(pos, target);
-        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed, pos.h);
+        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed, pos.getHeading(AngleUnit.DEGREES));
         done = distanceToTarget.closeEnough(distanceToTarget);
         if (done == true)
             motorSpeeds.setMotorSpeeds(motorSpeeds, 0);
