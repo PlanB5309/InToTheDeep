@@ -79,6 +79,7 @@ public class RobotHardware {
     public Servo intakeServo = null;
     public Servo frontClawServo = null;
     public Servo backClawServo = null;
+    public Servo hookServo = null;
 
     //Create Lights
     public RevBlinkinLedDriver lights;
@@ -95,6 +96,8 @@ public class RobotHardware {
     public static final double BACK_CLAW_OPEN = 0.63;
     public static final double FRONT_CLAW_CLOSE = 0.63;
     public static final double FRONT_CLAW_OPEN = 0.3;
+    public static final double HOOK_IN = .6;
+    public static final double HOOK_OUT = .4;
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
@@ -143,6 +146,7 @@ public class RobotHardware {
         intakeServo = hwMap.get(Servo.class, "intakeServo");
         frontClawServo = hwMap.get(Servo.class, "frontClawServo");
         backClawServo = hwMap.get(Servo.class, "backClawServo");
+        hookServo = hwMap.get(Servo.class, "hookServo");
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
@@ -151,10 +155,10 @@ public class RobotHardware {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
 

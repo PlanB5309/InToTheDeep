@@ -88,69 +88,62 @@ public class Teleop extends OpMode {
     public void loop() {
 
         robot.odo.bulkUpdate();
-
-        //Slow Mode
-        //strafe and turn right slowly with dpad
+        //slow_mode
         if (gamepad1.dpad_right ||
                 gamepad1.dpad_left ||
                 gamepad1.dpad_up ||
                 gamepad1.dpad_down) {
             slow_mode = true;
 
-            if (gamepad1.dpad_right) {
-                //turn right slowly with dpad
-                if (gamepad1.b) {
-                    robot.frontLeftMotor.setPower(0.12);
-                    robot.frontRightMotor.setPower(-0.12);
-                    robot.backLeftMotor.setPower(0.12);
-                    robot.backRightMotor.setPower(-0.12);
-                }
-                //strafe right slowly with dpad
-                else {
-                    robot.frontLeftMotor.setPower(.24);
-                    robot.frontRightMotor.setPower(-.24);
-                    robot.backLeftMotor.setPower(-.24);
-                    robot.backRightMotor.setPower(.24);
-                }
-
-                //strafe and turn left slowly with dpad
-            } else if (gamepad1.dpad_left) {
-                //turn left slowly with dpad
-                if (gamepad1.b) {
-                    robot.frontLeftMotor.setPower(-0.12);
-                    robot.frontRightMotor.setPower(0.12);
-                    robot.backLeftMotor.setPower(-0.12);
-                    robot.backRightMotor.setPower(0.12);
-                }
-                //strafe left slowly with dpad
-                else {
-                    robot.frontLeftMotor.setPower(-.24);
-                    robot.frontRightMotor.setPower(.24);
-                    robot.backLeftMotor.setPower(.24);
-                    robot.backRightMotor.setPower(-.24);
-                }
-                //drive backward slowly with dpad
-            } else if (gamepad1.dpad_up) {
-                robot.frontLeftMotor.setPower(-.18);
-                robot.frontRightMotor.setPower(-.18);
-                robot.backLeftMotor.setPower(-.18);
-                robot.backRightMotor.setPower(-.18);
-
-                //drive forward slowly with dpad
-            } else if (gamepad1.dpad_down) {
-                robot.frontLeftMotor.setPower(.18);
-                robot.frontRightMotor.setPower(.18);
+            //Drives Forward Slowly
+            if (gamepad1.dpad_up) {
                 robot.backLeftMotor.setPower(.18);
+                robot.frontLeftMotor.setPower(.18);
                 robot.backRightMotor.setPower(.18);
+                robot.frontRightMotor.setPower(.18);
             }
-        } else slow_mode = false;
-
-
-        //set the power to the wheels
-        if (slow_mode == false) {
-            double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad1.right_stick_x;
+            //Drives Backward Slowly
+            if (gamepad1.dpad_down) {
+                robot.backLeftMotor.setPower(-.18);
+                robot.frontLeftMotor.setPower(-.18);
+                robot.backRightMotor.setPower(-.18);
+                robot.frontRightMotor.setPower(-.18);
+            }
+            //Strafes Right Slowly
+            if (gamepad1.dpad_right && !gamepad1.b) {
+                robot.backLeftMotor.setPower(.24);
+                robot.frontLeftMotor.setPower(-.24);
+                robot.backRightMotor.setPower(-.24);
+                robot.frontRightMotor.setPower(.24);
+            }
+            //Strafe Left Slowly
+            if (gamepad1.dpad_left && !gamepad1.b) {
+                robot.frontLeftMotor.setPower(.24);
+                robot.frontRightMotor.setPower(-.24);
+                robot.backLeftMotor.setPower(-.24);
+                robot.backRightMotor.setPower(.24);
+            }
+            //Turn Right Slowly
+            if (gamepad1.dpad_right && gamepad1.b) {
+                robot.frontLeftMotor.setPower(0.12);
+                robot.frontRightMotor.setPower(-0.12);
+                robot.backLeftMotor.setPower(0.12);
+                robot.backRightMotor.setPower(-0.12);
+            }
+            //Turns Left Slowly
+            if (gamepad1.dpad_left && gamepad1.b) {
+                robot.frontLeftMotor.setPower(-0.12);
+                robot.frontRightMotor.setPower(0.12);
+                robot.backLeftMotor.setPower(-0.12);
+                robot.backRightMotor.setPower(0.12);
+            }
+        }
+        //Drive with Joystick
+        else {
+            slow_mode=false;
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when
             // at least one is out of the range [-1, 1]
@@ -203,6 +196,12 @@ public class Teleop extends OpMode {
 
         if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
             robot.sampleMotor.setPower(0);
+
+        if (gamepad2.y)
+            robot.hookServo.setPosition(robot.HOOK_OUT);
+
+        if (gamepad2.b)
+            robot.hookServo.setPosition(robot.HOOK_IN);
 
         Pose2D pos = robot.odo.getPosition();
         String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",
