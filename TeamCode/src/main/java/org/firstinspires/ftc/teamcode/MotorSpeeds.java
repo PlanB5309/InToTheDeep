@@ -46,10 +46,10 @@ public class MotorSpeeds {
         double x2 = (cos * dtt.diffx) - (sin * dtt.diffy);
         double y2 = (sin * dtt.diffx) + (cos * dtt.diffy);
         denominator = Math.max(Math.abs(dtt.diffy) + Math.abs(dtt.diffx) + Math.abs(dtt.diffh), 1);
-        frontLeftSpeed = (y2 + x2 + dtt.diffh) / denominator;
-        frontRightSpeed = (y2 - x2 - dtt.diffh) / denominator;
-        backLeftSpeed = (y2 - x2 + dtt.diffh) / denominator;
-        backRightSpeed = (y2 + x2 - dtt.diffh) / denominator;
+        frontLeftSpeed = (x2 + y2 + dtt.diffh) / denominator;
+        frontRightSpeed = (x2 - y2 - dtt.diffh) / denominator;
+        backLeftSpeed = (x2 - y2 + dtt.diffh) / denominator;
+        backRightSpeed = (x2 + y2 - dtt.diffh) / denominator;
 
         if (dtt.vector > 8 || dtt.vector < -8){
             speedFactor = maxSpeed;

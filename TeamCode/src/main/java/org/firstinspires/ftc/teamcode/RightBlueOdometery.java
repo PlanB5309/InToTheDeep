@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import java.util.Locale;
 
 
-@TeleOp(name="Robot: LeftBlueOdometry", group="Robot")
+@TeleOp(name="Robot: RightBlueOdometry", group="Robot")
 public class RightBlueOdometery extends OpMode {
 
 
@@ -21,9 +21,12 @@ public class RightBlueOdometery extends OpMode {
     States state;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target driveToSubmersible = new Target(28, 0, 0, .3);
-    Target backAwayFromSubmersible = new Target(27,0,0,.1);
-    Target park = new Target(0,60,0,.1);
+    Target driveToSubmersible_T = new Target(14, -30, 0, .3);
+    Target backAwayFromSubmersible_T = new Target(14,-27,0,.2);
+    Target towardsSamples_T = new Target( -21, -27, 0, .2);
+    Target stalkKrill_T = new Target(-21,-51,0,.3);
+    Target eatKrill_T = new Target(-30,-51,0,.3);
+    Target park_T = new Target(-30,-1,0,.1);
     Target target = new Target();
 
 
@@ -31,9 +34,7 @@ public class RightBlueOdometery extends OpMode {
     public void init() {
         robot.init(hardwareMap);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-//        robot.armServo.setPosition(robot.SHORT_ARM);
-//        robot.hookServo.setPosition(robot.HOOK_IN);
-//        robot.leftPixelLockServo.setPosition(robot.LEFT_PIXEL_LOCK);
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
         motorSpeeds = new MotorSpeeds(robot);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
@@ -44,7 +45,10 @@ public class RightBlueOdometery extends OpMode {
      */
     @Override
     public void start() {
-
+        robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+        robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.specimenMotor.setPower(1);
+        target = driveToSubmersible_T;
     }
 
     @Override
@@ -67,61 +71,57 @@ public class RightBlueOdometery extends OpMode {
 
         switch (state){
             case START:
+                state = States.DRIVE_TO_BAR_S;
                 break;
 
-//            case CENTER_FORWARD_S:
-//
-//                if (move.moveIt(pos, target)) {
-//                    target = centerDropPurple_T;
-//                    state = States.CENTER_DROP_P_PIXEL_S;
-//                }
-//                break;
-//
-//            case CENTER_DROP_P_PIXEL_S:
-//                if (move.moveIt(pos, target)) {
-//                    target = centerTurnToBoard_T;
-//                    state = States.CENTER_TURN_TO_BACKBOARD_S;
-//                }
-//                break;
-//
-//            case CENTER_TURN_TO_BACKBOARD_S:
-//                if (move.moveIt(pos, target)) {
-//                    state = States.CENTER_DRIVE_CLOSE_TO_BACKBOARD_S;
-//                    target = centerBackupCloseToBoard_T;
-//                }
-//                break;
-//
-//            case CENTER_DRIVE_CLOSE_TO_BACKBOARD_S:
-//                if (move.moveIt(pos, target)) {
-//                    state = States.READ_DISTANCE_SENSOR_S;
-//
-//                    robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//                    robot.armMotor.setPower(-1);
-//                    //target = backupExactlyToBoard_T;
-//                }
-//                break;
-//
-//            case READ_DISTANCE_SENSOR_S:
-//                //robot.myOtos.resetTracking();
-//                //backupExactlyToBoard_T.set(x, pos.y, -90, .2);
-//                target = backupExactlyToBoard_T;
-//                state = States.CENTER_DRIVE_EXACTLY_TO_BACKBOARD_S;
-//                //state = States.DONE_FOR_NOW;
-//                break;
-//
-//            case CENTER_DRIVE_EXACTLY_TO_BACKBOARD_S:
-//                if (move.moveIt(pos, target))
-//                    //state = States.CENTER_DROP_Y_PIXEL_S;
-//                    state = States.DONE_FOR_NOW;
-//                break;
-//
-//            case CENTER_DROP_Y_PIXEL_S:
-//                state = States.PARK;
-//                target = park_T;
-//                break;
+            case DRIVE_TO_BAR_S:
+
+                if (move.moveIt(pos, target)) {
+                    state = States.LOWER_SPECIMEN_LIFT_S;
+                }
+                break;
+
+
+            case LOWER_SPECIMEN_LIFT_S:
+                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
+                while (robot.specimenMotor.isBusy()){
+                    robot.specimenMotor.setPower(-1);
+                }
+                state = States.OPEN_CLAWS_S;
+                break;
+
+            case OPEN_CLAWS_S:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
+                target = backAwayFromSubmersible_T;
+                    state = States.BACK_UP_FROM_SUBMERISBLE_S;
+                break;
+
+            case BACK_UP_FROM_SUBMERISBLE_S:
+                if (move.moveIt(pos, target)) {
+                    target = towardsSamples_T;
+                    state = States.HEAD_TOWARDS_KRILL_S;
+                }
+                break;
+
+            case HEAD_TOWARDS_KRILL_S:
+                if (move.moveIt(pos, target)) {
+                    target = stalkKrill_T;
+                    state = States.EAT_KRILL_S;
+                }
+                break;
+
+            case EAT_KRILL_S:
+                if (move.moveIt(pos, target)) {
+                    target = eatKrill_T;
+                    state = States.PARK;
+                }
+                break;
+
 
             case PARK:
                 if (move.moveIt(pos, target)) {
+                    target = park_T;
                     robot.frontLeftMotor.setPower(0);
                     robot.frontRightMotor.setPower(0);
                     robot.backLeftMotor.setPower(0);

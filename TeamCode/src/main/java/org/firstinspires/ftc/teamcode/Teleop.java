@@ -30,12 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -88,6 +86,7 @@ public class Teleop extends OpMode {
     public void loop() {
 
         robot.odo.bulkUpdate();
+        //Driver
         //slow_mode
         if (gamepad1.dpad_right ||
                 gamepad1.dpad_left ||
@@ -158,6 +157,7 @@ public class Teleop extends OpMode {
             robot.backRightMotor.setPower(backRightPower);
         }
 
+        //Attachments
         if (gamepad2.left_bumper) {
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
             robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
@@ -169,25 +169,30 @@ public class Teleop extends OpMode {
         }
 
         robot.armMotor.setPower(gamepad2.right_stick_y);
-
+        //SpecimenMotor
         if (gamepad2.dpad_up)
-            robot.specimenMotor.setPower(-1);
+            robot.specimenMotor.setPower(1);
 
         if (gamepad2.dpad_down)
-            robot.specimenMotor.setPower(1);
+            robot.specimenMotor.setPower(-1);
 
         if (gamepad2.dpad_up == false && gamepad2.dpad_down == false)
             robot.specimenMotor.setPower(0);
 
+        if (gamepad2.left_bumper)
+            robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+
+        //IntakeServo
         if (gamepad2.right_bumper)
-            robot.intakeServo.setPosition(1);
+            robot.intakeServo.setPosition(0);
 
         if (gamepad2.right_trigger>.5)
-            robot.intakeServo.setPosition(0);
+            robot.intakeServo.setPosition(1);
 
         if (gamepad2.right_bumper == false && gamepad2.right_trigger < .5)
             robot.intakeServo.setPosition(.5);
 
+        //SampleMotor
         if (gamepad2.dpad_left)
             robot.sampleMotor.setPower(1);
 
@@ -197,6 +202,8 @@ public class Teleop extends OpMode {
         if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
             robot.sampleMotor.setPower(0);
 
+
+        //HookServo
         if (gamepad2.y)
             robot.hookServo.setPosition(robot.HOOK_OUT);
 
