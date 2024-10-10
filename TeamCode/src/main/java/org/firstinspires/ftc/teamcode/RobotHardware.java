@@ -86,9 +86,9 @@ public class RobotHardware {
     public GoBildaPinpointDriver odo = null;
 
     //Motor Constants
-    public static final int ABOVE_SECOND_BAR = 10210;
+    public static final int ABOVE_SECOND_BAR = 1955;
     //NOT A ACCURATE NUMBER MUST BE FOUND OUT
-    public static final int BELOW_SECOND_BAR = 7281;
+    public static final int BELOW_SECOND_BAR = 1378;
 
 
     //Servo Constants

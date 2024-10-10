@@ -19,14 +19,15 @@ public class RightBlueOdometery extends OpMode {
     Move move;
     MotorSpeeds motorSpeeds;
     States state;
+    double timeToStop;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target driveToSubmersible_T = new Target(14, -30, 0, .3);
-    Target backAwayFromSubmersible_T = new Target(14,-27,0,.2);
-    Target towardsSamples_T = new Target( -21, -27, 0, .2);
-    Target stalkKrill_T = new Target(-21,-51,0,.3);
-    Target eatKrill_T = new Target(-30,-51,0,.3);
-    Target park_T = new Target(-30,-1,0,.1);
+    Target driveToSubmersible_T = new Target(14, -30, 0, .5);
+    Target backAwayFromSubmersible_T = new Target(14,-27,0,.4);
+    Target towardsSamples_T = new Target( -21, -27, 0, .4);
+    Target stalkKrill_T = new Target(-21,-51,0,.5);
+    Target eatKrill_T = new Target(-30,-51,0,.5);
+    Target park_T = new Target(-30,-2,0,.3);
     Target target = new Target();
 
 
@@ -45,6 +46,7 @@ public class RightBlueOdometery extends OpMode {
      */
     @Override
     public void start() {
+        timeToStop = System.currentTimeMillis()+30000;
         robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.specimenMotor.setPower(1);
@@ -155,6 +157,6 @@ public class RightBlueOdometery extends OpMode {
         telemetry.addData("REV Hub Frequency: ", frequency);
         telemetry.update();
 
-
+        if (timeToStop< System.currentTimeMillis()) stop();
     }
 }
