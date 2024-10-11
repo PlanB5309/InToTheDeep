@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import java.util.Locale;
 
 
-@TeleOp(name="Robot: RightBlueOdometry", group="Robot")
-public class RightBlueOdometery extends OpMode {
+@TeleOp(name="Robot: RightOdometry", group="Robot")
+public class RightOdometery extends OpMode {
 
 
     RobotHardware robot = new RobotHardware();
@@ -51,6 +51,7 @@ public class RightBlueOdometery extends OpMode {
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.specimenMotor.setPower(1);
         target = driveToSubmersible_T;
+        resetRuntime();
     }
 
     @Override
@@ -122,12 +123,14 @@ public class RightBlueOdometery extends OpMode {
 
 
             case PARK:
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                 if (move.moveIt(pos, target)) {
                     target = park_T;
                     robot.frontLeftMotor.setPower(0);
                     robot.frontRightMotor.setPower(0);
                     robot.backLeftMotor.setPower(0);
                     robot.backRightMotor.setPower(0);
+
                 }
                 break;
             case DONE_FOR_NOW:
@@ -157,6 +160,8 @@ public class RightBlueOdometery extends OpMode {
         telemetry.addData("REV Hub Frequency: ", frequency);
         telemetry.update();
 
-        if (timeToStop< System.currentTimeMillis()) stop();
+        if (getRuntime() >= 30){
+            terminateOpModeNow();
+        }
     }
 }

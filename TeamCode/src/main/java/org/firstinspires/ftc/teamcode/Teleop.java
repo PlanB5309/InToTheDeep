@@ -161,33 +161,44 @@ public class Teleop extends OpMode {
         if (gamepad2.left_bumper) {
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
             robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
+            robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.specimenMotor.setPower(1);
+
         }
 
         if (gamepad2.left_trigger>=.5){
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
             robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+            robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.specimenMotor.setPower(1);
         }
 
         robot.armMotor.setPower(gamepad2.right_stick_y);
         //SpecimenMotor
-        if (gamepad2.dpad_up)
+        if (gamepad2.dpad_up){
+            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.specimenMotor.setPower(1);
+        }
 
-        if (gamepad2.dpad_down)
+        if (gamepad2.dpad_down){
+            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.specimenMotor.setPower(-1);
+        }
 
-        if (gamepad2.dpad_up == false && gamepad2.dpad_down == false)
-            robot.specimenMotor.setPower(0);
-
-        if (gamepad2.left_bumper)
-            robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+        if (gamepad2.dpad_up == false &&
+            gamepad2.dpad_down == false &&
+            gamepad2.left_trigger<.5 &&
+            gamepad2.left_bumper == false)
+                robot.specimenMotor.setPower(0);
 
         //IntakeServo
         if (gamepad2.right_bumper)
-            robot.intakeServo.setPosition(0);
+            robot.intakeServo.setPosition(1);
 
         if (gamepad2.right_trigger>.5)
-            robot.intakeServo.setPosition(1);
+            robot.intakeServo.setPosition(0);
 
         if (gamepad2.right_bumper == false && gamepad2.right_trigger < .5)
             robot.intakeServo.setPosition(.5);

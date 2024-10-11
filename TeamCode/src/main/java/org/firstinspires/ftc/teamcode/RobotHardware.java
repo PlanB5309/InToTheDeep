@@ -87,16 +87,18 @@ public class RobotHardware {
 
     //Motor Constants
     public static final int ABOVE_SECOND_BAR = 1955;
-    //NOT A ACCURATE NUMBER MUST BE FOUND OUT
+    //THIS IS THE MOVEMENT TO SCORE THE SPECIMEN
     public static final int BELOW_SECOND_BAR = 1378;
+    //NOT ACCURATE
+    public static final int GRAB_SPECIMEN = 0;
 
 
     //Servo Constants
     //Claws
-    public static final double BACK_CLAW_CLOSE = 0.3;
-    public static final double BACK_CLAW_OPEN = 0.63;
+    public static final double BACK_CLAW_CLOSE = 0.33;
+    public static final double BACK_CLAW_OPEN = 0.65;
     public static final double FRONT_CLAW_CLOSE = 0.63;
-    public static final double FRONT_CLAW_OPEN = 0.3;
+    public static final double FRONT_CLAW_OPEN = 0.28;
     public static final double HOOK_IN = .6;
     public static final double HOOK_OUT = .4;
     //Arm
