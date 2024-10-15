@@ -176,6 +176,7 @@ public class Teleop extends OpMode {
         }
 
         robot.armMotor.setPower(gamepad2.right_stick_y);
+
         //SpecimenMotor
         if (gamepad2.dpad_up){
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -194,9 +195,11 @@ public class Teleop extends OpMode {
                 robot.specimenMotor.setPower(0);
 
         //IntakeServo
+        //Spitting Out
         if (gamepad2.right_bumper)
             robot.intakeServo.setPosition(1);
 
+        //Eating Krill
         if (gamepad2.right_trigger>.5)
             robot.intakeServo.setPosition(0);
 
@@ -204,11 +207,12 @@ public class Teleop extends OpMode {
             robot.intakeServo.setPosition(.5);
 
         //SampleMotor
+        //
         if (gamepad2.dpad_left)
-            robot.sampleMotor.setPower(1);
+            robot.sampleMotor.setPower(-1);
 
         if (gamepad2.dpad_right)
-            robot.sampleMotor.setPower(-1);
+            robot.sampleMotor.setPower(1);
 
         if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
             robot.sampleMotor.setPower(0);
@@ -228,6 +232,8 @@ public class Teleop extends OpMode {
                 pos.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Position", data);
         telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
+        telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
+        telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
         telemetry.update();
             /*
              * Code to run ONCE after the driver hits STOP

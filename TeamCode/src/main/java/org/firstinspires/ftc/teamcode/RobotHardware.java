@@ -91,6 +91,8 @@ public class RobotHardware {
     public static final int BELOW_SECOND_BAR = 1378;
     //NOT ACCURATE
     public static final int GRAB_SPECIMEN = 0;
+    public static final int EXTEND_ARM_TO_BASKET = 8135;
+    public static final int RAISE_ARM_TO_BASKET = 4985;
 
 
     //Servo Constants
@@ -159,6 +161,7 @@ public class RobotHardware {
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         specimenMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        sampleMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.FORWARD);

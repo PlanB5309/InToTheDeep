@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import java.util.Locale;
 
 
-@TeleOp(name="Robot: RightOdometry", group="Robot")
-public class RightOdometery extends OpMode {
+@TeleOp(name="Robot: LeftOdometery", group="Robot")
+public class LeftOdometery extends OpMode {
 
 
     RobotHardware robot = new RobotHardware();
@@ -22,12 +22,16 @@ public class RightOdometery extends OpMode {
     double timeToStop;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target driveToSubmersible_T = new Target(14, -30, 0, .5);
-    Target backAwayFromSubmersible_T = new Target(14,-27,0,.4);
-    Target towardsSamples_T = new Target( -21, -27, 0, .4);
-    Target stalkKrill_T = new Target(-21,-51,0,.5);
-    Target eatKrill_T = new Target(-30,-51,0,.5);
-    Target park_T = new Target(-30,-2,0,.3);
+    Target awayFromWall_T = new Target(0,-6,0,.2);
+    Target closeToBasket_T = new Target(10, -23, 45, .2);
+    Target atTheBasket_T = new Target (18.5, -15, 45, .2);
+    Target cripWalkAwayFromBasket_T = new Target (3,-22,0,.2);
+    Target stareKrillDown_T = new Target (3,-36,0,.2);
+    Target eatKrill_T = new Target (13.5,-36,0,.2);
+    Target stakeOutLair_T = new Target (3,-51,0,.2);
+    Target hideInLair_T = new Target (-7,-51,0,.2);
+
+
     Target target = new Target();
 
 
@@ -39,7 +43,6 @@ public class RightOdometery extends OpMode {
         motorSpeeds = new MotorSpeeds(robot);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
-//        target = findProp_T;
     }
     /*
      * Code to run ONCE when the driver hits PLAY
@@ -47,10 +50,10 @@ public class RightOdometery extends OpMode {
     @Override
     public void start() {
         timeToStop = System.currentTimeMillis()+30000;
-        robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-        robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.specimenMotor.setPower(1);
-        target = driveToSubmersible_T;
+        robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
+        robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
+        robot.sampleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         resetRuntime();
     }
 
@@ -60,7 +63,7 @@ public class RightOdometery extends OpMode {
         double newTime = getRuntime();
         double loopTime = newTime-oldTime;
         double frequency = 1/loopTime;
-        
+
 
         oldTime = newTime;
         Pose2D pos = robot.odo.getPosition();
@@ -71,65 +74,65 @@ public class RightOdometery extends OpMode {
         Pose2D vel = robot.odo.getVelocity();
         String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel.getX(DistanceUnit.MM), vel.getY(DistanceUnit.MM), vel.getHeading(AngleUnit.DEGREES));
 
-
         switch (state){
             case START:
-                state = States.DRIVE_TO_BAR_S;
+                target = awayFromWall_T;
+                state = States.RIDE_AT_DAWN_AWAY_FROM_WALL_S;
                 break;
 
-            case DRIVE_TO_BAR_S:
+            case RIDE_AT_DAWN_AWAY_FROM_WALL_S:
                 if (move.moveIt(pos, target)) {
-                    state = States.LOWER_SPECIMEN_LIFT_S;
+                    target = closeToBasket_T;
+                    state = States.DRIVE_CLOSE_TO_BASKET_S;
                 }
                 break;
 
-
-            case LOWER_SPECIMEN_LIFT_S:
-                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
-                while (robot.specimenMotor.isBusy()){
-                    robot.specimenMotor.setPower(-1);
-                }
-                state = States.OPEN_CLAWS_S;
-                break;
-
-            case OPEN_CLAWS_S:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
-                target = backAwayFromSubmersible_T;
-                    state = States.BACK_UP_FROM_SUBMERISBLE_S;
-                break;
-
-            case BACK_UP_FROM_SUBMERISBLE_S:
+            case DRIVE_CLOSE_TO_BASKET_S:
                 if (move.moveIt(pos, target)) {
-                    target = towardsSamples_T;
-                    state = States.HEAD_TOWARDS_KRILL_R_S;
+                    target = atTheBasket_T;
+                    state = States.MOVE_ARM_1_S;
                 }
                 break;
 
-            case HEAD_TOWARDS_KRILL_R_S:
+            case MOVE_ARM_1_S:
+                robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
+                robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
+                while (robot.sampleMotor.isBusy() || robot.armMotor.isBusy()){
+                    robot.sampleMotor.setPower(1);
+                    robot.armMotor.setPower(1);
+                }
+                    state = States.AT_THE_BASKET_S;
+                break;
+
+                //THYE INTAKE MOTOR NEEDS TIME TO RUN HAVE FUN <3
+            //GOTTA HAVE TIME TO THROW UP THAT KRILL
+
+            case AT_THE_BASKET_S:
                 if (move.moveIt(pos, target)) {
-                    target = stalkKrill_T;
-                    state = States.EAT_KRILL_R_S;
+                    target = cripWalkAwayFromBasket_T;
+                    state = States.SPIT_OUT_KRILL_1_S;                }
+                break;
+
+
+            case SPIT_OUT_KRILL_1_S:
+                robot.intakeServo.setPosition(1);
+                target = cripWalkAwayFromBasket_T;
+                    state = States.BACK_AWAY_FROM_BASKET_S;
+                break;
+
+            case BACK_AWAY_FROM_BASKET_S:
+                robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
+                while (robot.sampleMotor.isBusy()){
+                    robot.sampleMotor.setPower(-1);
+                }
+                if (move.moveIt(pos, target)) {
+                    target = stareKrillDown_T;
+                    state = States.HEAD_TOWARDS_KRILL_L_S;
                 }
                 break;
 
-            case EAT_KRILL_R_S:
-                if (move.moveIt(pos, target)) {
-                    target = eatKrill_T;
-                    state = States.PARK;
-                }
-                break;
-
-
-            case PARK:
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
-                if (move.moveIt(pos, target)) {
-                    target = park_T;
-                    robot.frontLeftMotor.setPower(0);
-                    robot.frontRightMotor.setPower(0);
-                    robot.backLeftMotor.setPower(0);
-                    robot.backRightMotor.setPower(0);
-                }
+            case HEAD_TOWARDS_KRILL_L_S:
+                state = States.DONE_FOR_NOW;
                 break;
 
             case DONE_FOR_NOW:
@@ -147,16 +150,7 @@ public class RightOdometery extends OpMode {
         telemetry.addData("TargetH", target.h);
         telemetry.addData("Target Maxspeed", target.maxSpeed);
         telemetry.addData("Position", data);
-        telemetry.addData("Velocity", velocity);
-        //gets the raw data from the X encoder
-        telemetry.addData("X Encoder:", robot.odo.getEncoderX());
-        //gets the raw data from the Y encoder
-        telemetry.addData("Y Encoder:",robot.odo.getEncoderY());
-        //prints/gets the current refresh rate of the Pinpoint
-        telemetry.addData("Pinpoint Frequency", robot.odo.getFrequency());
-        telemetry.addData("Status", robot.odo.getDeviceStatus());
-        //prints the control system refresh rate
-        telemetry.addData("REV Hub Frequency: ", frequency);
+
         telemetry.update();
 
         if (getRuntime() >= 30){
