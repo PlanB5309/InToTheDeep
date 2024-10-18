@@ -20,11 +20,12 @@ public class LeftOdometery extends OpMode {
     MotorSpeeds motorSpeeds;
     States state;
     double timeToStop;
+    double hawkTuahSpitOutThatThing;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target awayFromWall_T = new Target(0,-6,0,.2);
-    Target closeToBasket_T = new Target(10, -23, 45, .2);
-    Target atTheBasket_T = new Target (18.5, -15, 45, .2);
+    Target awayFromWall_T = new Target(0,-6,0,.4);
+    Target closeToBasket_T = new Target(9, -22, 45, .4);
+    Target atTheBasket_T = new Target (23, -7, 45, .2);
     Target cripWalkAwayFromBasket_T = new Target (3,-22,0,.2);
     Target stareKrillDown_T = new Target (3,-36,0,.2);
     Target eatKrill_T = new Target (13.5,-36,0,.2);
@@ -91,6 +92,10 @@ public class LeftOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     target = atTheBasket_T;
                     state = States.MOVE_ARM_1_S;
+                    robot.frontLeftMotor.setPower(0);
+                    robot.frontRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
                 }
                 break;
 
@@ -110,25 +115,37 @@ public class LeftOdometery extends OpMode {
             case AT_THE_BASKET_S:
                 if (move.moveIt(pos, target)) {
                     target = cripWalkAwayFromBasket_T;
-                    state = States.SPIT_OUT_KRILL_1_S;                }
+                    state = States.SPIT_OUT_KRILL_1_S;
+                    hawkTuahSpitOutThatThing = System.currentTimeMillis() + 1000;
+                }
                 break;
 
 
             case SPIT_OUT_KRILL_1_S:
                 robot.intakeServo.setPosition(1);
-                target = cripWalkAwayFromBasket_T;
+                if (System.currentTimeMillis() >= hawkTuahSpitOutThatThing)
+                {
+                    target = cripWalkAwayFromBasket_T;
+                    robot.intakeServo.setPosition(.5);
                     state = States.BACK_AWAY_FROM_BASKET_S;
+                }
                 break;
 
             case BACK_AWAY_FROM_BASKET_S:
-                robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
+
+                if (move.moveIt(pos, target)) {
+                    target = stareKrillDown_T;
+                    robot.armMotor.setTargetPosition(0);
+                    state = States.LOWER_ARM_S;
+                }
+                break;
+
+            case LOWER_ARM_S:
+                robot.sampleMotor.setTargetPosition(0);
                 while (robot.sampleMotor.isBusy()){
                     robot.sampleMotor.setPower(-1);
                 }
-                if (move.moveIt(pos, target)) {
-                    target = stareKrillDown_T;
-                    state = States.HEAD_TOWARDS_KRILL_L_S;
-                }
+                state = States.DONE_FOR_NOW;
                 break;
 
             case HEAD_TOWARDS_KRILL_L_S:

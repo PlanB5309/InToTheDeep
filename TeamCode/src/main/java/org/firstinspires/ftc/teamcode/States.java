@@ -26,4 +26,5 @@ public enum States {
     BACK_AWAY_FROM_BASKET_S,
     HEAD_TOWARDS_KRILL_L_S,
     EAT_KRILL_L_S,
+    LOWER_ARM_S;
 }
