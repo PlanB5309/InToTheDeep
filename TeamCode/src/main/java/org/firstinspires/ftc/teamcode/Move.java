@@ -19,8 +19,8 @@ public class Move {
     public boolean moveIt (Pose2D pos, Target target){
         boolean done = false;
         distanceToTarget = distanceToTarget.find(pos, target);
-        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed, pos.getHeading(AngleUnit.DEGREES));
-        done = distanceToTarget.closeEnough(distanceToTarget);
+        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed, pos.getHeading(AngleUnit.DEGREES), target.type);
+        done = distanceToTarget.closeEnough(distanceToTarget, target.type);
         if (done == true)
             motorSpeeds.setMotorSpeeds(motorSpeeds, 0);
 
@@ -28,4 +28,6 @@ public class Move {
             motorSpeeds.setMotorSpeeds(motorSpeeds, target.maxSpeed);
         return done;
     }
+
+
 }

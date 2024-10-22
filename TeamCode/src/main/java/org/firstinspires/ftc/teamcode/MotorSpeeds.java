@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class MotorSpeeds {
     RobotHardware robot;
     DistanceToTarget distanceToTarget;
+    Target target;
     double frontLeftSpeed;
     double frontRightSpeed;
     double backLeftSpeed;
@@ -35,7 +36,7 @@ public class MotorSpeeds {
         this.backRightSpeed = backRightSpeed;
     }
 
-    public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, double maxSpeed, double currentAngle){
+    public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, double maxSpeed, double currentAngle, Target.Destination type){
         double sin;
         double cos;
         double denominator;
@@ -45,13 +46,21 @@ public class MotorSpeeds {
         //y2=sinβx1+cosβy1
         double x2 = (cos * dtt.diffx) - (sin * dtt.diffy);
         double y2 = (sin * dtt.diffx) + (cos * dtt.diffy);
-        denominator = Math.max(Math.abs(dtt.diffy) + Math.abs(dtt.diffx) + Math.abs(dtt.diffh), 1);
-        frontLeftSpeed = (x2 + y2 + dtt.diffh) / denominator;
-        frontRightSpeed = (x2 - y2 - dtt.diffh) / denominator;
-        backLeftSpeed = (x2 - y2 + dtt.diffh) / denominator;
-        backRightSpeed = (x2 + y2 - dtt.diffh) / denominator;
+        denominator = Math.max(Math.abs(dtt.diffy) + Math.abs(dtt.diffx), 1);
+        frontLeftSpeed = (x2 + y2 ) / denominator;
+        frontRightSpeed = (x2 - y2 ) / denominator;
+        backLeftSpeed = (x2 - y2 ) / denominator;
+        backRightSpeed = (x2 + y2 ) / denominator;
 
-        if (dtt.vector > 8 || dtt.vector < -8){
+        double turnSpeed = TurnSpeed(dtt.diffh);
+        if (dtt.diffh < 0)
+            turnSpeed = -turnSpeed;
+        frontLeftSpeed = frontLeftSpeed + turnSpeed;
+        frontRightSpeed = frontRightSpeed - turnSpeed;
+        backLeftSpeed = backLeftSpeed + turnSpeed;
+        backRightSpeed = backRightSpeed - turnSpeed;
+
+        if ((dtt.vector > 8 || dtt.vector < -8) || Target.Destination.WAYPOINT == type){
             speedFactor = maxSpeed;
         }
 
@@ -91,5 +100,17 @@ public class MotorSpeeds {
         robot.frontRightMotor.setPower(motorSpeeds.frontRightSpeed);
         robot.backLeftMotor.setPower(motorSpeeds.backLeftSpeed);
         robot.backRightMotor.setPower(motorSpeeds.backRightSpeed);
+    }
+
+    private double TurnSpeed (double diff) {
+        diff = Math.abs(diff);
+        if (diff > 80) {
+            return robot.HIGH_TURN_POWER;
+        }
+        else if (diff < 5) {
+            return robot.LOW_TURN_POWER;
+        }
+        else
+            return .005667 * diff + .046667;
     }
 }
