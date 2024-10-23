@@ -19,16 +19,15 @@ public class RightOdometery extends OpMode {
     Move move;
     MotorSpeeds motorSpeeds;
     States state;
-    DriveTrain driveTrain;
     double timeToStop;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target driveToSubmersible_T = new Target(14, -30, 0, .5, Target.Destination.DESTINATION);
-    Target backAwayFromSubmersible_T = new Target(14,-27,0,.4, Target.Destination.DESTINATION);
-    Target towardsSamples_T = new Target( -21, -27, 0, .4, Target.Destination.DESTINATION);
-    Target stalkKrill_T = new Target(-21,-48,0,.5, Target.Destination.WAYPOINT);
-    Target eatKrill_T = new Target(-30,-51,0,.5, Target.Destination.WAYPOINT);
-    Target park_T = new Target(-30,-2,0,.3, Target.Destination.WAYPOINT);
+    Target driveToSubmersible_T = new Target(14, -30, 0, .5);
+    Target backAwayFromSubmersible_T = new Target(14,-27,0,.4);
+    Target towardsSamples_T = new Target( -21, -27, 0, .4);
+    Target stalkKrill_T = new Target(-21,-51,0,.5);
+    Target eatKrill_T = new Target(-30,-51,0,.5);
+    Target park_T = new Target(-30,-2,0,.3);
     Target target = new Target();
 
 
@@ -37,10 +36,6 @@ public class RightOdometery extends OpMode {
         robot.init(hardwareMap);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
-        //specimenMotor
-        robot.specimenMotor.setTargetPosition(0);
-        robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.specimenMotor.setPower(1);
         motorSpeeds = new MotorSpeeds(robot);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
@@ -130,14 +125,18 @@ public class RightOdometery extends OpMode {
                 robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                 if (move.moveIt(pos, target)) {
                     target = park_T;
+                    robot.frontLeftMotor.setPower(0);
+                    robot.frontRightMotor.setPower(0);
                     robot.backLeftMotor.setPower(0);
                     robot.backRightMotor.setPower(0);
-                    robot.frontRightMotor.setPower(0);
-                    robot.frontLeftMotor.setPower(0);
                 }
                 break;
 
             case DONE_FOR_NOW:
+                robot.frontLeftMotor.setPower(0);
+                robot.frontRightMotor.setPower(0);
+                robot.backLeftMotor.setPower(0);
+                robot.backRightMotor.setPower(0);
                 break;
         }
 

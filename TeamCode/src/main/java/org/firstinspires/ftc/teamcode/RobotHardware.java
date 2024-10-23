@@ -97,7 +97,7 @@ public class RobotHardware {
 
     //Servo Constants
     //Claws
-    public static final double BACK_CLAW_CLOSE = 0.36;
+    public static final double BACK_CLAW_CLOSE = 0.33;
     public static final double BACK_CLAW_OPEN = 0.65;
     public static final double FRONT_CLAW_CLOSE = 0.63;
     public static final double FRONT_CLAW_OPEN = 0.28;

@@ -23,14 +23,14 @@ public class LeftOdometery extends OpMode {
     double hawkTuahSpitOutThatThing;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target awayFromWall_T = new Target(0,-6,0,.4, Target.Destination.DESTINATION);
-    Target closeToBasket_T = new Target(9, -22, 45, .4, Target.Destination.DESTINATION);
-    Target atTheBasket_T = new Target (23, -7, 45, .2, Target.Destination.DESTINATION);
-    Target cripWalkAwayFromBasket_T = new Target (3,-22,0,.2, Target.Destination.DESTINATION);
-    Target stareKrillDown_T = new Target (3,-36,0,.2, Target.Destination.DESTINATION);
-    Target eatKrill_T = new Target (13.5,-36,0,.2, Target.Destination.DESTINATION);
-    Target stakeOutLair_T = new Target (3,-51,0,.2, Target.Destination.DESTINATION);
-    Target hideInLair_T = new Target (-7,-51,0,.2, Target.Destination.DESTINATION);
+    Target awayFromWall_T = new Target(0,-6,0,.4);
+    Target closeToBasket_T = new Target(9, -22, 45, .4);
+    Target atTheBasket_T = new Target (23, -7, 45, .2);
+    Target cripWalkAwayFromBasket_T = new Target (3,-22,0,.2);
+    Target stareKrillDown_T = new Target (3,-36,0,.2);
+    Target eatKrill_T = new Target (13.5,-36,0,.2);
+    Target stakeOutLair_T = new Target (3,-51,0,.2);
+    Target hideInLair_T = new Target (-7,-51,0,.2);
 
 
     Target target = new Target();
@@ -109,6 +109,9 @@ public class LeftOdometery extends OpMode {
                     state = States.AT_THE_BASKET_S;
                 break;
 
+                //THYE INTAKE MOTOR NEEDS TIME TO RUN HAVE FUN <3
+            //GOTTA HAVE TIME TO THROW UP THAT KRILL
+
             case AT_THE_BASKET_S:
                 if (move.moveIt(pos, target)) {
                     target = cripWalkAwayFromBasket_T;
@@ -126,11 +129,10 @@ public class LeftOdometery extends OpMode {
                     robot.intakeServo.setPosition(.5);
                     state = States.BACK_AWAY_FROM_BASKET_S;
                 }
-
                 break;
 
             case BACK_AWAY_FROM_BASKET_S:
-                robot.sampleMotor.setTargetPosition(0);
+
                 if (move.moveIt(pos, target)) {
                     target = stareKrillDown_T;
                     robot.armMotor.setTargetPosition(0);
@@ -139,6 +141,10 @@ public class LeftOdometery extends OpMode {
                 break;
 
             case LOWER_ARM_S:
+                robot.sampleMotor.setTargetPosition(0);
+                while (robot.sampleMotor.isBusy()){
+                    robot.sampleMotor.setPower(-1);
+                }
                 state = States.DONE_FOR_NOW;
                 break;
 

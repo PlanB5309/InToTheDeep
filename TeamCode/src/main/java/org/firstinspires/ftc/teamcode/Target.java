@@ -1,24 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 public class Target {
-    enum Destination {
-        WAYPOINT,
-        DESTINATION
-    }
     double x;
     double y;
     double h;
     double maxSpeed;
-    Destination type;
 
-
-
-    public Target(double x, double y, double h, double maxSpeed, Destination type){
+    public Target(double x, double y, double h, double maxSpeed){
         this.x = x;
         this.y = y;
         this.h = h;
         this.maxSpeed = maxSpeed;
-        this.type = type;
     }
 
     public Target(){
