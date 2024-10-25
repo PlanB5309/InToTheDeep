@@ -98,8 +98,8 @@ public class RightOdometery extends OpMode {
                 break;
 
             case OPEN_CLAWS_S:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
                 target = backAwayFromSubmersible_T;
                     state = States.BACK_UP_FROM_SUBMERISBLE_S;
                 break;

@@ -63,6 +63,7 @@ public class Teleop extends OpMode {
     long time_claws_grab_confident;
     boolean wrist_controlled = false;
     boolean slow_mode;
+    States state = States.NOT_RUNNING;
 
 
     /*
@@ -76,8 +77,8 @@ public class Teleop extends OpMode {
         robot.init(hardwareMap);
         robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
-        robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
 
     }
@@ -160,23 +161,24 @@ public class Teleop extends OpMode {
         //Attachments
         //Ready to grab a specimen
         if (gamepad2.left_bumper) {
-            robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN);
-            robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN);
+            robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+            robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
             robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.specimenMotor.setPower(1);
-
         }
+
+        if (gamepad2.x && state == States.LOADING)
+            state = States.SCORING;
+        score();
+
 
         //Grabbing a specimen
-        if (gamepad2.left_trigger>=.5){
-            robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
-            robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-            robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.specimenMotor.setPower(1);
-        }
+        if (gamepad2.left_trigger>=.5 && state != state.NOT_RUNNING)
+            state = States.LOADING;
+        load();
 
+        //Sample arm up and down
         robot.armMotor.setPower(gamepad2.right_stick_y);
 
         //SpecimenMotor
@@ -242,7 +244,41 @@ public class Teleop extends OpMode {
              */
         }
 
+        private void load(){
+            switch (state){
+                case NOT_RUNNING:
+                    break;
+                case LOADING:
+                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+                    robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+                    robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+                    robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    robot.specimenMotor.setPower(1);
+                    break;
+            }
+        }
+    private void score() {
+        switch (state) {
+            case NOT_RUNNING:
+                break;
+
+            case SCORING:
+                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
+                if (!robot.specimenMotor.isBusy())
+                  state = States.CLAWS_UP;
+                break;
+
+            case CLAWS_UP:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
+                break;
+
+            case LIFT_DOWN:
+                break;
+
+            case CLAWS_DOWN:
+                break;
+
+        }
     }
-
-
-
+}
