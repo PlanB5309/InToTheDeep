@@ -4,6 +4,8 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class MotorSpeeds {
     RobotHardware robot;
@@ -29,19 +31,19 @@ public class MotorSpeeds {
                         double frontRightSpeed,
                         double backLeftSpeed,
                         double backRightSpeed,
-                        RobotHardware robot ) {
+                        RobotHardware robot ){
         this.frontLeftSpeed = frontLeftSpeed;
         this.frontRightSpeed = frontRightSpeed;
         this.backLeftSpeed = backLeftSpeed;
         this.backRightSpeed = backRightSpeed;
     }
 
-    public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, double maxSpeed, double currentAngle, Target.Destination type){
+    public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, Pose2D pos, Target target){
         double sin;
         double cos;
         double denominator;
-        sin = Math.sin(Math.toRadians(-currentAngle));
-        cos = Math.cos(Math.toRadians(-currentAngle));
+        sin = Math.sin(-pos.getHeading(AngleUnit.RADIANS));
+        cos = Math.cos(-pos.getHeading(AngleUnit.RADIANS));
         //x2=cosβx1−sinβy1
         //y2=sinβx1+cosβy1
         double x2 = (cos * dtt.diffx) - (sin * dtt.diffy);
@@ -60,12 +62,12 @@ public class MotorSpeeds {
         backLeftSpeed = backLeftSpeed + turnSpeed;
         backRightSpeed = backRightSpeed - turnSpeed;
 
-        if ((dtt.vector > 8 || dtt.vector < -8) || Target.Destination.WAYPOINT == type){
-            speedFactor = maxSpeed;
+        if ((dtt.vector > 8 || dtt.vector < -8)){
+            speedFactor = target.tp.maxSpeed;
         }
 
         else {
-            speedFactor = dtt.vector / 8 * maxSpeed;
+            speedFactor = dtt.vector / 8 * target.tp.maxSpeed;
         }
 
         frontLeftSpeed = frontLeftSpeed * speedFactor;
@@ -73,29 +75,29 @@ public class MotorSpeeds {
         backLeftSpeed = backLeftSpeed * speedFactor;
         backRightSpeed = backRightSpeed * speedFactor;
 
-        if (frontLeftSpeed > 0 && frontLeftSpeed < .1)
-            frontLeftSpeed = .1;
-        else if (frontLeftSpeed < 0 && frontLeftSpeed > -.1)
-            frontLeftSpeed = -.1;
+        if (frontLeftSpeed > 0 && frontLeftSpeed < target.tp.minSpeed)
+            frontLeftSpeed = target.tp.minSpeed;
+        else if (frontLeftSpeed < 0 && frontLeftSpeed > -target.tp.minSpeed)
+            frontLeftSpeed = -target.tp.minSpeed;
 
-        if (frontRightSpeed > 0 && frontRightSpeed < .1)
-            frontRightSpeed = .1;
-        else if (frontRightSpeed < 0 && frontRightSpeed > -.1)
-            frontRightSpeed = -.1;
+        if (frontRightSpeed > 0 && frontRightSpeed < target.tp.minSpeed)
+            frontRightSpeed = target.tp.minSpeed;
+        else if (frontRightSpeed < 0 && frontRightSpeed > -target.tp.minSpeed)
+            frontRightSpeed = -target.tp.minSpeed;
 
-        if (backLeftSpeed > 0 && backLeftSpeed < .1)
-            backLeftSpeed = .1;
-        else if (backLeftSpeed < 0 && backLeftSpeed > -.1)
-            backLeftSpeed = -.1;
+        if (backLeftSpeed > 0 && backLeftSpeed < target.tp.minSpeed)
+            backLeftSpeed = target.tp.minSpeed;
+        else if (backLeftSpeed < 0 && backLeftSpeed > -target.tp.minSpeed)
+            backLeftSpeed = -target.tp.minSpeed;
 
-        if (backRightSpeed > 0 && backRightSpeed < .1)
-            backRightSpeed = .1;
-        else if (backRightSpeed < 0 && backRightSpeed > -.1)
-            backRightSpeed = -.1;
+        if (backRightSpeed > 0 && backRightSpeed < target.tp.minSpeed)
+            backRightSpeed = target.tp.minSpeed;
+        else if (backRightSpeed < 0 && backRightSpeed > -target.tp.minSpeed)
+            backRightSpeed = -target.tp.minSpeed;
         return this;
     }
 
-    public void setMotorSpeeds (MotorSpeeds motorSpeeds, double maxSpeed){
+    public void setMotorSpeeds (MotorSpeeds motorSpeeds){
         robot.frontLeftMotor.setPower(motorSpeeds.frontLeftSpeed);
         robot.frontRightMotor.setPower(motorSpeeds.frontRightSpeed);
         robot.backLeftMotor.setPower(motorSpeeds.backLeftSpeed);

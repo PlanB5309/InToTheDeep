@@ -32,11 +32,8 @@ public class DistanceToTarget {
         return this;
     }
 
-    public boolean closeEnough(DistanceToTarget dtt, Target.Destination type) {
-        if (type == Target.Destination.DESTINATION)
-            return (Math.abs(dtt.diffx) < .5 && Math.abs(dtt.diffy) < .5 && Math.abs(dtt.diffh) < .5);
-
-        return (Math.abs(dtt.diffx) < 2 && Math.abs(dtt.diffy) < 2 && Math.abs(dtt.diffh) < 2);
+    public boolean closeEnough(DistanceToTarget dtt, Target target) {
+        return (Math.abs(dtt.vector) <= target.tp.maxDistance && Math.abs(dtt.diffh) <= target.tp.maxAngle);
     }
 }
 

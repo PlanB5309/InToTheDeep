@@ -23,12 +23,14 @@ public class RightOdometery extends OpMode {
     double timeToStop;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target driveToSubmersible_T = new Target(14, -30, 0, .5, Target.Destination.DESTINATION);
-    Target backAwayFromSubmersible_T = new Target(14,-27,0,.4, Target.Destination.DESTINATION);
-    Target towardsSamples_T = new Target( -21, -27, 0, .4, Target.Destination.DESTINATION);
-    Target stalkKrill_T = new Target(-21,-48,0,.5, Target.Destination.WAYPOINT);
-    Target eatKrill_T = new Target(-30,-51,0,.5, Target.Destination.WAYPOINT);
-    Target park_T = new Target(-30,-2,0,.3, Target.Destination.WAYPOINT);
+    TargetProfile wayPoint = new TargetProfile(.6,.2,2,10,4);
+    TargetProfile close = new TargetProfile(.5, .1, .5, 1, 8);
+    Target driveToSubmersible_T = new Target(14, -30, 0, close);
+    Target backAwayFromSubmersible_T = new Target(14,-27,0, close);
+    Target towardsSamples_T = new Target( -21, -27, 0, wayPoint);
+    Target stalkKrill_T = new Target(-21,-48,0, wayPoint);
+    Target eatKrill_T = new Target(-30,-51,0, wayPoint);
+    Target park_T = new Target(-30,-2,0, wayPoint);
     Target target = new Target();
 
 
@@ -41,6 +43,10 @@ public class RightOdometery extends OpMode {
         robot.specimenMotor.setTargetPosition(0);
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.specimenMotor.setPower(1);
+        //sampleMotor
+        robot.sampleMotor.setTargetPosition(0);
+        robot.sampleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.sampleMotor.setPower(1);
         motorSpeeds = new MotorSpeeds(robot);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
@@ -52,6 +58,15 @@ public class RightOdometery extends OpMode {
     @Override
     public void start() {
         timeToStop = System.currentTimeMillis()+30000;
+        //sampleMotor
+        robot.sampleMotor.setTargetPosition(0);
+        robot.sampleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.sampleMotor.setPower(1);
+        //armMotor
+        robot.armMotor.setTargetPosition(100);
+        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotor.setPower(1);
+        //specimenMotor
         robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.specimenMotor.setPower(1);
@@ -146,7 +161,6 @@ public class RightOdometery extends OpMode {
         telemetry.addData("TargetX", target.x);
         telemetry.addData("TargetY", target.y);
         telemetry.addData("TargetH", target.h);
-        telemetry.addData("Target Maxspeed", target.maxSpeed);
         telemetry.addData("Position", data);
         telemetry.addData("Velocity", velocity);
         //gets the raw data from the X encoder

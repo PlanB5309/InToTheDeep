@@ -23,14 +23,15 @@ public class LeftOdometery extends OpMode {
     double hawkTuahSpitOutThatThing;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    Target awayFromWall_T = new Target(0,-6,0,.4, Target.Destination.DESTINATION);
-    Target closeToBasket_T = new Target(9, -22, 45, .4, Target.Destination.DESTINATION);
-    Target atTheBasket_T = new Target (23, -7, 45, .2, Target.Destination.DESTINATION);
-    Target cripWalkAwayFromBasket_T = new Target (3,-22,0,.2, Target.Destination.DESTINATION);
-    Target stareKrillDown_T = new Target (3,-36,0,.2, Target.Destination.DESTINATION);
-    Target eatKrill_T = new Target (13.5,-36,0,.2, Target.Destination.DESTINATION);
-    Target stakeOutLair_T = new Target (3,-51,0,.2, Target.Destination.DESTINATION);
-    Target hideInLair_T = new Target (-7,-51,0,.2, Target.Destination.DESTINATION);
+    TargetProfile close = new TargetProfile(.4, .1, 2, 2, 4);
+    Target awayFromWall_T = new Target(0,-6,0, close);
+    Target closeToBasket_T = new Target(9, -22, 45, close);
+    Target atTheBasket_T = new Target (23, -7, 45, close);
+    Target cripWalkAwayFromBasket_T = new Target (3,-22,0, close);
+    Target stareKrillDown_T = new Target (3,-36,0, close);
+    Target eatKrill_T = new Target (13.5,-36,0, close);
+    Target stakeOutLair_T = new Target (3,-51,0, close);
+    Target hideInLair_T = new Target (-7,-51,0, close);
 
 
     Target target = new Target();
@@ -159,7 +160,6 @@ public class LeftOdometery extends OpMode {
         telemetry.addData("TargetX", target.x);
         telemetry.addData("TargetY", target.y);
         telemetry.addData("TargetH", target.h);
-        telemetry.addData("Target Maxspeed", target.maxSpeed);
         telemetry.addData("Position", data);
 
         telemetry.update();

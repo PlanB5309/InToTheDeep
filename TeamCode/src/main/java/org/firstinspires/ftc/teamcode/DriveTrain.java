@@ -7,12 +7,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class DriveTrain {
     RobotHardware robot;
-    Telemetry telemetry;
 
 
-    public DriveTrain(RobotHardware robot, Telemetry telemetry){
+
+    public DriveTrain(RobotHardware robot){
         this.robot = robot;
-        this.telemetry = telemetry;
+
 
     }
 

@@ -24,7 +24,7 @@ public class GyroTurn {
         this.robot = robot;
         this.telemetry = telemetry;
         this.linearOpMode = linearOpMode;
-        driveTrain = new DriveTrain(robot, telemetry);
+        driveTrain = new DriveTrain(robot);
     }
 
     public void goodEnough(double target) {
