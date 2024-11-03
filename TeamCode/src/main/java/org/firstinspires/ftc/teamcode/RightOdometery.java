@@ -25,11 +25,26 @@ public class RightOdometery extends OpMode {
     double oldTime = 0;
     TargetProfile wayPoint = new TargetProfile(.6,.2,2,10,4);
     TargetProfile close = new TargetProfile(.5, .1, .5, 1, 8);
-    Target driveToSubmersible_T = new Target(14, -30, 0, close);
-    Target backAwayFromSubmersible_T = new Target(14,-27,0, close);
-    Target towardsSamples_T = new Target( -21, -27, 0, wayPoint);
-    Target stalkKrill_T = new Target(-21,-48,0, wayPoint);
-    Target eatKrill_T = new Target(-30,-51,0, wayPoint);
+    Target driveToSubmersible_T = new Target(32, 14, 90, close);
+    Target turnCorrectly_T = new Target (28, 14, 0, wayPoint);
+    Target backAwayFromSubmersible_T = new Target(23,14,-90, close);
+
+
+    Target towardsSamples_T = new Target( 26, -21, -90, wayPoint);
+    Target lineUpSamples_T = new Target(38,-21,-90, wayPoint);
+    Target eatKrill_T = new Target(38,-25,-90, wayPoint);
+    //possibly need another to drive forward and eat krill
+    Target driveToWall_T = new Target (4,-39,-90, close);
+    //spit out block afterwards
+    Target pickUpSpecimen_T = new Target (1, -32, -90, close);
+    Target scoreSecondSpecimen_T = new Target (32, 11, 90, close);
+    Target turnCorrectly2_T = new Target (28, 14, 0, wayPoint);
+    Target towardsSamples2_T = new Target( 26, -30, -90, wayPoint);
+    Target lineUpSamples2_T = new Target (26, -30, -90, close);
+    Target eatKrill2_T = new Target (26, -35, -90, close);
+    Target drivetoWall2_T = new Target (4, -32, -90, close);
+    Target pickUpThirdSpecimen_T = new Target (1, -32, -90, close);
+    Target scoreThirdSpecimen_T = new Target (32, 16, 90, close);
     Target park_T = new Target(-30,-2,0, wayPoint);
     Target target = new Target();
 
@@ -128,16 +143,24 @@ public class RightOdometery extends OpMode {
 
             case HEAD_TOWARDS_KRILL_R_S:
                 if (move.moveIt(pos, target)) {
-                    target = stalkKrill_T;
+                    target = lineUpSamples_T;
                     state = States.EAT_KRILL_R_S;
                 }
                 break;
 
             case EAT_KRILL_R_S:
+                robot.intakeServo.setPosition(0);
                 if (move.moveIt(pos, target)) {
                     target = eatKrill_T;
-                    state = States.PARK;
+                    state = States.HEAD_TOWARDS_OBSERVATION_S;
                 }
+                break;
+
+            case HEAD_TOWARDS_OBSERVATION_S:
+                robot.intakeServo.setPosition(.5);
+                if (move.moveIt(pos, target)) {
+                    target = eatKrill_T;
+                    state = States.PARK;                }
                 break;
 
 

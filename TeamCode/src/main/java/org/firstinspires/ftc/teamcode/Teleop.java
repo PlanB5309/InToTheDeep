@@ -64,7 +64,7 @@ public class Teleop extends OpMode {
     boolean wrist_controlled = false;
     boolean slow_mode;
     States state = States.NOT_RUNNING;
-
+    double liftTime = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -77,8 +77,8 @@ public class Teleop extends OpMode {
         robot.init(hardwareMap);
         robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-        robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
 
     }
@@ -174,7 +174,7 @@ public class Teleop extends OpMode {
 
 
         //Grabbing a specimen
-        if (gamepad2.left_trigger>=.5 && state != state.NOT_RUNNING)
+        if (gamepad2.left_trigger>=.5 && state == state.NOT_RUNNING)
             state = States.LOADING;
         load();
 
@@ -195,15 +195,16 @@ public class Teleop extends OpMode {
         if (gamepad2.dpad_up == false &&
             gamepad2.dpad_down == false &&
             gamepad2.left_trigger<.5 &&
-            gamepad2.left_bumper == false)
+            gamepad2.left_bumper == false &&
+            state == States.NOT_RUNNING)
                 robot.specimenMotor.setPower(0);
 
         //IntakeServo
-        //Spitting Out
+        //Spitting Out Samples
         if (gamepad2.right_bumper)
             robot.intakeServo.setPosition(1);
 
-        //Eating Krill
+        //Eating Samples
         if (gamepad2.right_trigger>.5)
             robot.intakeServo.setPosition(0);
 
@@ -238,6 +239,7 @@ public class Teleop extends OpMode {
         telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
         telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
         telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
+        telemetry.addData("State", state.name());
         telemetry.update();
             /*
              * Code to run ONCE after the driver hits STOP
@@ -264,19 +266,29 @@ public class Teleop extends OpMode {
 
             case SCORING:
                 robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy())
-                  state = States.CLAWS_UP;
+                if (!robot.specimenMotor.isBusy()) {
+                    liftTime = System.currentTimeMillis() + 250;
+                    state = States.CLAWS_UP;
+                }
                 break;
 
             case CLAWS_UP:
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
+                if (System.currentTimeMillis() >= liftTime)
+                    state = States.LIFT_DOWN;
                 break;
 
             case LIFT_DOWN:
+                    robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                if (!robot.specimenMotor.isBusy())
+                    state = States.CLAWS_DOWN;
                 break;
 
             case CLAWS_DOWN:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                state = States.NOT_RUNNING;
                 break;
 
         }
