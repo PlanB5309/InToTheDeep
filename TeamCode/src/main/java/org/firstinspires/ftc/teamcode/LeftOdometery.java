@@ -42,7 +42,7 @@ public class LeftOdometery extends OpMode {
         robot.init(hardwareMap);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
-        motorSpeeds = new MotorSpeeds(robot);
+        motorSpeeds = new MotorSpeeds(robot, telemetry);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
     }

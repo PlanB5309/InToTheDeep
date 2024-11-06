@@ -112,8 +112,11 @@ public class RobotHardware {
     public static final int STRAFE_CLICKS_PER_CENTIMETER = 20;
 
     //Turning Speeds
-    public final double HIGH_TURN_POWER = 0.6;
-    public final double LOW_TURN_POWER = 0.07;
+    public final double HIGH_TURN_POWER = 0.5;
+    public final double MEDIUM_TURN_POWER = .3;
+    public final double LOW_TURN_POWER = 0.1;
+
+    public double turnSpeed;
 
 
 

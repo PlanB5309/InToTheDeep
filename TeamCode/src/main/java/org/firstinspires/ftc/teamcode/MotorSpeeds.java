@@ -11,6 +11,7 @@ public class MotorSpeeds {
     RobotHardware robot;
     DistanceToTarget distanceToTarget;
     Target target;
+    Telemetry telemetry;
     double frontLeftSpeed;
     double frontRightSpeed;
     double backLeftSpeed;
@@ -19,23 +20,26 @@ public class MotorSpeeds {
 
 
 
-    public MotorSpeeds (RobotHardware robot) {
+    public MotorSpeeds (RobotHardware robot, Telemetry telemetry) {
         this.robot = robot;
         frontLeftSpeed = 0;
         frontRightSpeed = 0;
         backLeftSpeed = 0;
         backRightSpeed = 0;
+        this.telemetry = telemetry;
     }
 
     public MotorSpeeds (double frontLeftSpeed,
                         double frontRightSpeed,
                         double backLeftSpeed,
                         double backRightSpeed,
-                        RobotHardware robot ){
+                        RobotHardware robot
+                        ){
         this.frontLeftSpeed = frontLeftSpeed;
         this.frontRightSpeed = frontRightSpeed;
         this.backLeftSpeed = backLeftSpeed;
         this.backRightSpeed = backRightSpeed;
+
     }
 
     public MotorSpeeds findMotorSpeeds (DistanceToTarget dtt, Pose2D pos, Target target){
@@ -54,13 +58,15 @@ public class MotorSpeeds {
         backLeftSpeed = (x2 - y2 ) / denominator;
         backRightSpeed = (x2 + y2 ) / denominator;
 
-        double turnSpeed = TurnSpeed(dtt.diffh);
+        robot.turnSpeed = TurnSpeed(dtt.diffh, target.tp.maxAngle);
         if (dtt.diffh < 0)
-            turnSpeed = -turnSpeed;
-        frontLeftSpeed = frontLeftSpeed + turnSpeed;
-        frontRightSpeed = frontRightSpeed - turnSpeed;
-        backLeftSpeed = backLeftSpeed + turnSpeed;
-        backRightSpeed = backRightSpeed - turnSpeed;
+            robot.turnSpeed = -robot.turnSpeed;
+        frontLeftSpeed = frontLeftSpeed + robot.turnSpeed;
+        frontRightSpeed = frontRightSpeed - robot.turnSpeed;
+        backLeftSpeed = backLeftSpeed + robot.turnSpeed;
+        backRightSpeed = backRightSpeed - robot.turnSpeed;
+
+
 
         if ((dtt.vector > 8 || dtt.vector < -8)){
             speedFactor = target.tp.maxSpeed;
@@ -104,15 +110,18 @@ public class MotorSpeeds {
         robot.backRightMotor.setPower(motorSpeeds.backRightSpeed);
     }
 
-    private double TurnSpeed (double diff) {
+    private double TurnSpeed (double diff, double maxAngleDiff) {
         diff = Math.abs(diff);
-        if (diff > 80) {
+        if (diff > 60) {
             return robot.HIGH_TURN_POWER;
         }
-        else if (diff < 5) {
+        if (diff < 10 && diff > maxAngleDiff)
             return robot.LOW_TURN_POWER;
+        
+        else{
+            if (diff < maxAngleDiff)
+                return 0;
         }
-        else
-            return .005667 * diff + .046667;
+            return robot.MEDIUM_TURN_POWER;
     }
 }

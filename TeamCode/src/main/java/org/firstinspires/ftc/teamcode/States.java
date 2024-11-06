@@ -15,6 +15,7 @@ public enum States {
     HEAD_TOWARDS_KRILL_R_S,
     EAT_KRILL_R_S,
     HEAD_TOWARDS_OBSERVATION_S,
+    TURN_NEAR_SUBMERSIBLE_S,
 
     //LeftOdometery States
     RIDE_AT_DAWN_AWAY_FROM_WALL_S,

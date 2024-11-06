@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,13 +24,18 @@ public class RightOdometery extends OpMode {
     double timeToStop;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    TargetProfile wayPoint = new TargetProfile(.6,.2,2,10,4);
-    TargetProfile close = new TargetProfile(.5, .1, .5, 1, 8);
-    Target driveToSubmersible_T = new Target(32, 14, 90, close);
+
+
+    //Target Profiles
+    TargetProfile wayPoint = new TargetProfile(.6,.2,4,10,3);
+    TargetProfile close = new TargetProfile(.45, .1, 2, 5, 5);
+    TargetProfile prettyClose = new TargetProfile(.3, .1, 1,2, 8);
+
+    //Targets
+    Target driveToSubmersible_T = new Target(30, 14, 90, prettyClose);
+    Target turnForSubmersible_T = new Target (25, 14, 90, close);
     Target turnCorrectly_T = new Target (28, 14, 0, wayPoint);
     Target backAwayFromSubmersible_T = new Target(23,14,-90, close);
-
-
     Target towardsSamples_T = new Target( 26, -21, -90, wayPoint);
     Target lineUpSamples_T = new Target(38,-21,-90, wayPoint);
     Target eatKrill_T = new Target(38,-25,-90, wayPoint);
@@ -62,7 +68,7 @@ public class RightOdometery extends OpMode {
         robot.sampleMotor.setTargetPosition(0);
         robot.sampleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.sampleMotor.setPower(1);
-        motorSpeeds = new MotorSpeeds(robot);
+        motorSpeeds = new MotorSpeeds(robot, telemetry);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
 //        target = findProp_T;
@@ -85,7 +91,7 @@ public class RightOdometery extends OpMode {
         robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.specimenMotor.setPower(1);
-        target = driveToSubmersible_T;
+        target = turnForSubmersible_T;
         resetRuntime();
     }
 
@@ -95,7 +101,7 @@ public class RightOdometery extends OpMode {
         double newTime = getRuntime();
         double loopTime = newTime-oldTime;
         double frequency = 1/loopTime;
-        
+        double liftTime = 0;
 
         oldTime = newTime;
         Pose2D pos = robot.odo.getPosition();
@@ -109,30 +115,53 @@ public class RightOdometery extends OpMode {
 
         switch (state){
             case START:
-                state = States.DRIVE_TO_BAR_S;
+                target = turnForSubmersible_T;
+                state = States.TURN_NEAR_SUBMERSIBLE_S;
+                break;
+
+            case TURN_NEAR_SUBMERSIBLE_S:
+
+                if (move.moveIt(pos, target)) {
+                    target = driveToSubmersible_T;
+                    state = States.DRIVE_TO_BAR_S;
+                }
                 break;
 
             case DRIVE_TO_BAR_S:
-                if (move.moveIt(pos, target)) {
-                    state = States.LOWER_SPECIMEN_LIFT_S;
-                }
+                move.moveIt(pos, target);
+                state = States.DONE_FOR_NOW;
+//                if (move.moveIt(pos, target)) {
+//                    state = States.SCORING;
+//                }
                 break;
 
-
-            case LOWER_SPECIMEN_LIFT_S:
+            case SCORING:
                 robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
-                while (robot.specimenMotor.isBusy()){
-                    robot.specimenMotor.setPower(-1);
+                if (!robot.specimenMotor.isBusy()) {
+                    liftTime = System.currentTimeMillis() + 250;
+                    state = States.CLAWS_UP;
                 }
-                state = States.OPEN_CLAWS_S;
                 break;
 
-            case OPEN_CLAWS_S:
+            case CLAWS_UP:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
+                if (System.currentTimeMillis() >= liftTime)
+                    state = States.LIFT_DOWN;
+                break;
+
+            case LIFT_DOWN:
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                if (!robot.specimenMotor.isBusy())
+                    state = States.CLAWS_DOWN;
+                break;
+
+            case CLAWS_DOWN:
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-                target = backAwayFromSubmersible_T;
-                    state = States.BACK_UP_FROM_SUBMERISBLE_S;
+                state = States.BACK_UP_FROM_SUBMERISBLE_S;
                 break;
+
 
             case BACK_UP_FROM_SUBMERISBLE_S:
                 if (move.moveIt(pos, target)) {
@@ -140,28 +169,28 @@ public class RightOdometery extends OpMode {
                     state = States.HEAD_TOWARDS_KRILL_R_S;
                 }
                 break;
-
-            case HEAD_TOWARDS_KRILL_R_S:
-                if (move.moveIt(pos, target)) {
-                    target = lineUpSamples_T;
-                    state = States.EAT_KRILL_R_S;
-                }
-                break;
-
-            case EAT_KRILL_R_S:
-                robot.intakeServo.setPosition(0);
-                if (move.moveIt(pos, target)) {
-                    target = eatKrill_T;
-                    state = States.HEAD_TOWARDS_OBSERVATION_S;
-                }
-                break;
-
-            case HEAD_TOWARDS_OBSERVATION_S:
-                robot.intakeServo.setPosition(.5);
-                if (move.moveIt(pos, target)) {
-                    target = eatKrill_T;
-                    state = States.PARK;                }
-                break;
+//
+//            case HEAD_TOWARDS_KRILL_R_S:
+//                if (move.moveIt(pos, target)) {
+//                    target = lineUpSamples_T;
+//                    state = States.EAT_KRILL_R_S;
+//                }
+//                break;
+//
+//            case EAT_KRILL_R_S:
+//                robot.intakeServo.setPosition(0);
+//                if (move.moveIt(pos, target)) {
+//                    target = eatKrill_T;
+//                    state = States.HEAD_TOWARDS_OBSERVATION_S;
+//                }
+//                break;
+//
+//            case HEAD_TOWARDS_OBSERVATION_S:
+//                robot.intakeServo.setPosition(.5);
+//                if (move.moveIt(pos, target)) {
+//                    target = eatKrill_T;
+//                    state = States.PARK;                }
+//                break;
 
 
             case PARK:
@@ -176,6 +205,10 @@ public class RightOdometery extends OpMode {
                 break;
 
             case DONE_FOR_NOW:
+                robot.backLeftMotor.setPower(0);
+                robot.backRightMotor.setPower(0);
+                robot.frontRightMotor.setPower(0);
+                robot.frontLeftMotor.setPower(0);
                 break;
         }
 
@@ -195,6 +228,7 @@ public class RightOdometery extends OpMode {
         telemetry.addData("Status", robot.odo.getDeviceStatus());
         //prints the control system refresh rate
         telemetry.addData("REV Hub Frequency: ", frequency);
+        telemetry.addData("turnSpeed", robot.turnSpeed);
         telemetry.update();
 
         if (getRuntime() >= 30){
