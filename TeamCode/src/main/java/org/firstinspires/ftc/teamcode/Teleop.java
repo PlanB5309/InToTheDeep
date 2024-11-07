@@ -185,11 +185,13 @@ public class Teleop extends OpMode {
         if (gamepad2.dpad_up){
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.specimenMotor.setPower(1);
+            state = States.NOT_RUNNING;
         }
 
         if (gamepad2.dpad_down){
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.specimenMotor.setPower(-1);
+            state = States.NOT_RUNNING;
         }
 
         if (gamepad2.dpad_up == false &&
@@ -242,6 +244,7 @@ public class Teleop extends OpMode {
         telemetry.addData("State", state.name());
         telemetry.update();
 
+        //touch sensor for specimen lift
         if (robot.SpecimenTouchSensor.isPressed() && state != States.LOADING) {
             robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

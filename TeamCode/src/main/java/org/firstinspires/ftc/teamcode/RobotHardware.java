@@ -120,8 +120,6 @@ public class RobotHardware {
     public final double MEDIUM_TURN_POWER = .3;
     public final double LOW_TURN_POWER = 0.1;
 
-    public double turnSpeed;
-
 
 
 

@@ -228,7 +228,6 @@ public class RightOdometery extends OpMode {
         telemetry.addData("Status", robot.odo.getDeviceStatus());
         //prints the control system refresh rate
         telemetry.addData("REV Hub Frequency: ", frequency);
-        telemetry.addData("turnSpeed", robot.turnSpeed);
         telemetry.update();
 
         if (getRuntime() >= 30){
