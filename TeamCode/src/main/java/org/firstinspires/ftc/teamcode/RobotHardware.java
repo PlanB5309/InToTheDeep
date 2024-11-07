@@ -31,10 +31,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 
 /**
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
@@ -81,6 +84,7 @@ public class RobotHardware {
 
     //Create Sensors
     BNO055IMU imu;
+    public RevTouchSensor SpecimenTouchSensor;
     // Declare OpMode member for the Odometry Computer
     public GoBildaPinpointDriver odo = null;
 
@@ -159,6 +163,7 @@ public class RobotHardware {
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
+        SpecimenTouchSensor = hwMap.get(RevTouchSensor.class, "SpecimenTouchSensor");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.

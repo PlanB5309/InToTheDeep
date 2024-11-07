@@ -241,10 +241,12 @@ public class Teleop extends OpMode {
         telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
         telemetry.addData("State", state.name());
         telemetry.update();
-            /*
-             * Code to run ONCE after the driver hits STOP
-             */
+
+        if (robot.SpecimenTouchSensor.isPressed() && state != States.LOADING) {
+            robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+    } //end of loop
 
         private void load(){
             switch (state){
