@@ -20,27 +20,30 @@ public class RightOdometery extends OpMode {
     Move move;
     MotorSpeeds motorSpeeds;
     States state;
-    DriveTrain driveTrain;
+    DriveTrain driveTrain = new DriveTrain(robot);
     double timeToStop;
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
+    double spitTime = 0;
 
 
     //Target Profiles
     TargetProfile wayPoint = new TargetProfile(.6,.2,4,10,3);
     TargetProfile close = new TargetProfile(.45, .1, 2, 5, 5);
     TargetProfile prettyClose = new TargetProfile(.3, .1, 1,2, 8);
+    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,5, 2);
+    TargetProfile specimenPickup = new TargetProfile(.7, .1, 1,3, 2);
+
 
     //Targets
-    Target driveToSubmersible_T = new Target(30, 14, 90, prettyClose);
-    Target turnForSubmersible_T = new Target (25, 14, 90, close);
+    Target turnNearSubmersible_T = new Target (28, 14, 75, close);
+    Target driveToBar_T = new Target(30.75, 14, 90, prettyClose);
     Target turnCorrectly_T = new Target (28, 14, 0, wayPoint);
-    Target backAwayFromSubmersible_T = new Target(23,14,-90, close);
-    Target towardsSamples_T = new Target( 26, -21, -90, wayPoint);
-    Target lineUpSamples_T = new Target(38,-21,-90, wayPoint);
-    Target eatKrill_T = new Target(38,-25,-90, wayPoint);
-    //possibly need another to drive forward and eat krill
-    Target driveToWall_T = new Target (4,-39,-90, close);
+    Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
+    Target driveTowardsSamples_T = new Target( 26, -16.5, -90, wayPoint);
+    Target lineUpSamples_T = new Target(36.5,-16.5,-90, wayPoint);
+    Target pickUpSample_T = new Target(36.5,-30,-90, samplePickup);
+    Target driveToSpecimen_T = new Target (2,-34,-90, specimenPickup);
     //spit out block afterwards
     Target pickUpSpecimen_T = new Target (1, -32, -90, close);
     Target scoreSecondSpecimen_T = new Target (32, 11, 90, close);
@@ -91,7 +94,7 @@ public class RightOdometery extends OpMode {
         robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.specimenMotor.setPower(1);
-        target = turnForSubmersible_T;
+        target = turnNearSubmersible_T;
         resetRuntime();
     }
 
@@ -115,30 +118,27 @@ public class RightOdometery extends OpMode {
 
         switch (state){
             case START:
-                target = turnForSubmersible_T;
+                target = turnNearSubmersible_T;
                 state = States.TURN_NEAR_SUBMERSIBLE_S;
                 break;
 
             case TURN_NEAR_SUBMERSIBLE_S:
-
                 if (move.moveIt(pos, target)) {
-                    target = driveToSubmersible_T;
+                    target = driveToBar_T;
                     state = States.DRIVE_TO_BAR_S;
                 }
                 break;
 
             case DRIVE_TO_BAR_S:
-                move.moveIt(pos, target);
-                state = States.DONE_FOR_NOW;
-//                if (move.moveIt(pos, target)) {
-//                    state = States.SCORING;
-//                }
+                if (move.moveIt(pos, target)) {
+                    state = States.SCORING;
+                    driveTrain.stop();
+                }
                 break;
 
             case SCORING:
                 robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
                 if (!robot.specimenMotor.isBusy()) {
-                    liftTime = System.currentTimeMillis() + 250;
                     state = States.CLAWS_UP;
                 }
                 break;
@@ -159,56 +159,79 @@ public class RightOdometery extends OpMode {
             case CLAWS_DOWN:
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                target = backUpFromSubmersible_T;
                 state = States.BACK_UP_FROM_SUBMERISBLE_S;
                 break;
 
 
             case BACK_UP_FROM_SUBMERISBLE_S:
                 if (move.moveIt(pos, target)) {
-                    target = towardsSamples_T;
-                    state = States.HEAD_TOWARDS_KRILL_R_S;
+                    target = driveTowardsSamples_T;
+                    state = States.DRIVE_TOWARDS_SAMPLE_S;
                 }
                 break;
-//
-//            case HEAD_TOWARDS_KRILL_R_S:
-//                if (move.moveIt(pos, target)) {
-//                    target = lineUpSamples_T;
-//                    state = States.EAT_KRILL_R_S;
-//                }
-//                break;
-//
-//            case EAT_KRILL_R_S:
-//                robot.intakeServo.setPosition(0);
-//                if (move.moveIt(pos, target)) {
-//                    target = eatKrill_T;
-//                    state = States.HEAD_TOWARDS_OBSERVATION_S;
-//                }
-//                break;
-//
-//            case HEAD_TOWARDS_OBSERVATION_S:
-//                robot.intakeServo.setPosition(.5);
-//                if (move.moveIt(pos, target)) {
-//                    target = eatKrill_T;
-//                    state = States.PARK;                }
-//                break;
 
+            case DRIVE_TOWARDS_SAMPLE_S:
+                if (move.moveIt(pos, target)) {
+                    target = lineUpSamples_T;
+                    state = States.LINE_UP_ON_SAMPLE_S;
+                }
+                break;
+
+            case LINE_UP_ON_SAMPLE_S:
+                if (move.moveIt(pos,target)){
+                    target = pickUpSample_T;
+                    state = States.PICK_UP_SAMPLE_S;
+                }
+
+            case PICK_UP_SAMPLE_S:
+                robot.intakeServo.setPosition(0);
+                if (move.moveIt(pos, target)) {
+                    robot.intakeServo.setPosition(.5);
+                    target = driveToSpecimen_T;
+                    state = States.DRIVE_TO_SPECIMEN_S;
+                }
+                break;
+
+            case DRIVE_TO_SPECIMEN_S:
+                robot.intakeServo.setPosition(.5);
+                if (move.moveIt(pos, target)) {
+                    target = pickUpSpecimen_T;
+                    state = States.DROP_SAMPLE_S;
+                    spitTime = System.currentTimeMillis() + 250;
+                    driveTrain.stop();
+                }
+                break;
+
+            case DROP_SAMPLE_S:
+                robot.intakeServo.setPosition(1);
+                if (System.currentTimeMillis() >= spitTime) {
+                    target = pickUpSpecimen_T;
+                    state = States.DONE_FOR_NOW;
+//                    state = States.LOADING;
+                }
+                break;
+
+            case LOADING:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+                robot.specimenMotor.setPower(1);
+                if (!robot.specimenMotor.isBusy()){
+                    //target = turnNearSubmersible_T;
+                    state = States.DONE_FOR_NOW;
+                }
 
             case PARK:
                 robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                 if (move.moveIt(pos, target)) {
                     target = park_T;
-                    robot.backLeftMotor.setPower(0);
-                    robot.backRightMotor.setPower(0);
-                    robot.frontRightMotor.setPower(0);
-                    robot.frontLeftMotor.setPower(0);
+                   driveTrain.stop();
                 }
                 break;
 
             case DONE_FOR_NOW:
-                robot.backLeftMotor.setPower(0);
-                robot.backRightMotor.setPower(0);
-                robot.frontRightMotor.setPower(0);
-                robot.frontLeftMotor.setPower(0);
+                driveTrain.stop();
                 break;
         }
 
