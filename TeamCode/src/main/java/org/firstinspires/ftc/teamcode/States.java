@@ -8,6 +8,7 @@ public enum States {
 
     //RightOdometery States
     DRIVE_TO_BAR_S,
+    DRIVE_TO_BAR_JR_S,
     RAISE_TO_HIGH_BAR_S,
     LOWER_SPECIMEN_LIFT_S,
     OPEN_CLAWS_S,
@@ -18,6 +19,8 @@ public enum States {
     DRIVE_TO_SPECIMEN_S,
     DROP_SAMPLE_S,
     TURN_NEAR_SUBMERSIBLE_S,
+    TURN_NEAR_SUBMERSIBLE_JR_S,
+    BACK_UP_FROM_WALL_S,
 
     //LeftOdometery States
     RIDE_AT_DAWN_AWAY_FROM_WALL_S,
@@ -37,7 +40,11 @@ public enum States {
     NOT_RUNNING,
     LOADING,
     SCORING,
+    SCORING_JR,
     CLAWS_UP,
+    CLAWS_UP_JR,
     LIFT_DOWN,
-    CLAWS_DOWN;
+    LIFT_DOWN_JR,
+    CLAWS_DOWN,
+    CLAWS_DOWN_JR,
 }
