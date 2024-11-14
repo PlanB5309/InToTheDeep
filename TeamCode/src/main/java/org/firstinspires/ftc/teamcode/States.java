@@ -23,18 +23,16 @@ public enum States {
     BACK_UP_FROM_WALL_S,
 
     //LeftOdometery States
-    RIDE_AT_DAWN_AWAY_FROM_WALL_S,
-    DRIVE_CLOSE_TO_BASKET_S,
-    AT_THE_BASKET_S,
-    MOVE_ARM_1_S,
-    MOVE_ARM_2_S,
-    SPIT_OUT_KRILL_1_S,
-    SPIT_OUT_KRILL_2_S,
-    BACK_AWAY_FROM_BASKET_S,
-    HEAD_TOWARDS_KRILL_L_S,
-    EAT_KRILL_L_S,
-    LOWER_ARM_S,
-
+    TO_BASKET_1_S,
+    AT_BASKET_1_S,
+    RAISE_EXTEND_ARM_S,
+    SCORE_SAMPLE_1_S,
+    RETRACT_ARM_1_S,
+    TO_BASKET_2_S,
+    AT_BASKET_2_S,
+    LINEUP_SAMPLE_1_S,
+    LOAD_SAMPLE_1_S,
+    TO_BASKET_3_S,
 
     //SpecimenClawStates
     NOT_RUNNING,

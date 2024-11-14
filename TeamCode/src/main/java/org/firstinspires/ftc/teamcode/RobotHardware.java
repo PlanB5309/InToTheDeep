@@ -94,7 +94,7 @@ public class RobotHardware {
     public static final int BELOW_SECOND_BAR = 1450;
     public static final int GRAB_SPECIMEN = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
-    public static final int RAISE_ARM_TO_BASKET = 4885;
+    public static final int RAISE_ARM_TO_BASKET = 5050;
 
 
     //Servo Constants
