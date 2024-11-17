@@ -9,6 +9,7 @@ public enum States {
     //RightOdometery States
     DRIVE_TO_BAR_S,
     DRIVE_TO_BAR_JR_S,
+    DRIVE_TO_BAR_THIRD_S,
     RAISE_TO_HIGH_BAR_S,
     LOWER_SPECIMEN_LIFT_S,
     OPEN_CLAWS_S,
@@ -16,11 +17,15 @@ public enum States {
     DRIVE_TOWARDS_SAMPLE_S,
     LINE_UP_ON_SAMPLE_S,
     PICK_UP_SAMPLE_S,
+    LINE_UP_ON_SPECIMEN_S,
     DRIVE_TO_SPECIMEN_S,
+    DRIVE_TO_SPECIMEN_JR_S,
     DROP_SAMPLE_S,
     TURN_NEAR_SUBMERSIBLE_S,
     TURN_NEAR_SUBMERSIBLE_JR_S,
+    TURN_NEAR_SUBMERSIBLE_THIRD_S,
     BACK_UP_FROM_WALL_S,
+    BACK_UP_FROM_WALL_JR_S,
 
     //LeftOdometery States
     TO_BASKET_1_S,
@@ -37,12 +42,17 @@ public enum States {
     //SpecimenClawStates
     NOT_RUNNING,
     LOADING,
+    LOADING_JR,
     SCORING,
     SCORING_JR,
+    SCORING_THIRD,
     CLAWS_UP,
     CLAWS_UP_JR,
+    CLAWS_UP_THIRD,
     LIFT_DOWN,
     LIFT_DOWN_JR,
+    LIFT_DOWN_THIRD,
     CLAWS_DOWN,
     CLAWS_DOWN_JR,
+    CLAWS_DOWN_THIRD,
 }

@@ -99,7 +99,7 @@ public class RobotHardware {
 
     //Servo Constants
     //Claws
-    public static final double BACK_CLAW_CLOSE = 0.5;
+    public static final double BACK_CLAW_CLOSE = 0.48;
     public static final double BACK_CLAW_OPEN_DOWN = .85;
     public static final double BACK_CLAW_OPEN_UP = .13;
     public static final double FRONT_CLAW_CLOSE = 0.5;
@@ -116,7 +116,7 @@ public class RobotHardware {
     public static final int STRAFE_CLICKS_PER_CENTIMETER = 20;
 
     //Turning Speeds
-    public final double HIGH_TURN_POWER = 0.5;
+    public final double HIGH_TURN_POWER = 0.52;
     public final double MEDIUM_TURN_POWER = .3;
     public final double LOW_TURN_POWER = 0.1;
 

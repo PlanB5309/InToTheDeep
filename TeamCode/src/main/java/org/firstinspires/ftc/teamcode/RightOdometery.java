@@ -27,32 +27,32 @@ public class RightOdometery extends OpMode {
 
 
     //Target Profiles
-    TargetProfile wayPoint = new TargetProfile(.7,.2,5,10,3);
+    TargetProfile wayPoint = new TargetProfile(.85,.2,5,10,3);
     TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
-    TargetProfile closeEnough = new TargetProfile(.3, .1, 2,2, 8);
-    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,5, 2);
-    TargetProfile specimenPickup = new TargetProfile(.6, .1, 2,3, 5);
+    TargetProfile closer = new TargetProfile(.3, .1, 1.5,3, 8);
+    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,4, 2);
+    TargetProfile specimenPickup = new TargetProfile(.85, .1, 2,3, 5);
 
 
     //Targets
-    Target turnNearSubmersible_T = new Target (28, 14, 60, wayPoint);
-    Target driveToBar_T = new Target(32, 14, 90, closeEnough);
-    Target driveToBarAgain_T = new Target (32, 10, 90, closeEnough);
+    Target turnNearSubmersible_T = new Target (25, 15, 60, wayPoint);
+    Target turnNearSubmersibleAgain_T = new Target (25, 8, 60, wayPoint);
+    Target driveToBar_T = new Target(32, 17, 90, closer);
+    Target driveToBarAgain_T = new Target (32, 13, 90, closer);
+    Target driveToBarAgainAgain_T = new Target (32, 10, 90, closer);
     Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
     Target driveTowardsSamples_T = new Target( 26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36.5,-18,-90, wayPoint);
-    Target pickUpSample_T = new Target(36.5,-30,-90, samplePickup);
+    Target lineUpSamples_T = new Target(36,-18,-90, wayPoint);
+    Target pickUpSample_T = new Target(36,-30,-90, samplePickup);
     Target driveToSpecimen_T = new Target (2,-34,-90, specimenPickup);
+    Target lineUpOnSpecimen_T = new Target (5, -33, -90, specimenPickup);
     //spit out block afterwards
-    Target pickUpSpecimen_T = new Target (1, -30, -90, closeEnough);
+    Target pickUpSpecimen_T = new Target (.5, -30, -90, closer);
     Target backUpFromWall_T = new Target (10, -30, -90, wayPoint);
-
     Target turnCorrectly2_T = new Target (28, 14, 0, wayPoint);
     Target towardsSamples2_T = new Target( 26, -30, -90, wayPoint);
     Target lineUpSamples2_T = new Target (26, -30, -90, close);
-    Target eatKrill2_T = new Target (26, -35, -90, close);
-    Target drivetoWall2_T = new Target (4, -32, -90, close);
-    Target pickUpThirdSpecimen_T = new Target (1, -32, -90, close);
+    Target pickUpThirdSpecimen_T = new Target (0, -33, -90, specimenPickup);
     Target scoreThirdSpecimen_T = new Target (32, 16, 90, close);
     Target park_T = new Target(-30,-2,0, wayPoint);
     Target target = new Target();
@@ -186,7 +186,7 @@ public class RightOdometery extends OpMode {
                 }
 
             case PICK_UP_SAMPLE_S:
-                robot.armMotor.setTargetPosition(150);
+                robot.armMotor.setTargetPosition(100);
                 robot.intakeServo.setPosition(0);
                 if (move.moveIt(pos, target)) {
                     robot.intakeServo.setPosition(.5);
@@ -273,9 +273,83 @@ public class RightOdometery extends OpMode {
             case CLAWS_DOWN_JR:
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-                target = backUpFromSubmersible_T;
+                target = lineUpOnSpecimen_T;
+                state = States.DRIVE_TO_SPECIMEN_JR_S;
+                break;
+
+            case DRIVE_TO_SPECIMEN_JR_S:
+                if (move.moveIt(pos, target)){
+                    target = pickUpThirdSpecimen_T;
+                    state = States.LINE_UP_ON_SPECIMEN_S;
+                }
+                break;
+
+            case LINE_UP_ON_SPECIMEN_S:
+                if (move.moveIt(pos, target)){
+                    state = States.LOADING_JR;
+                }
+                break;
+
+            case LOADING_JR:
+                robot.intakeServo.setPosition(.5);
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.specimenMotor.setPower(1);
+                if (!robot.specimenMotor.isBusy()){
+                    target = backUpFromWall_T;
+                    state = States.BACK_UP_FROM_WALL_JR_S;
+                }
+                break;
+
+            case BACK_UP_FROM_WALL_JR_S:
+                if (move.moveIt(pos, target)){
+                    target = turnNearSubmersibleAgain_T;
+                    state = States.TURN_NEAR_SUBMERSIBLE_THIRD_S;
+                }
+                break;
+
+            case TURN_NEAR_SUBMERSIBLE_THIRD_S:
+                if (move.moveIt(pos, target)){
+                    target = driveToBarAgainAgain_T;
+                    state = States.DRIVE_TO_BAR_THIRD_S;
+                }
+                break;
+
+            case DRIVE_TO_BAR_THIRD_S:
+                if (move.moveIt(pos, target)){
+                    state = States.SCORING_THIRD;
+                }
+                break;
+
+            case SCORING_THIRD:
+                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
+                if (!robot.specimenMotor.isBusy()) {
+                    state = States.CLAWS_UP_THIRD;
+                }
+                break;
+
+            case CLAWS_UP_THIRD:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
+                if (System.currentTimeMillis() >= liftTime)
+                    state = States.LIFT_DOWN_THIRD;
+                break;
+
+            case LIFT_DOWN_THIRD:
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                if (!robot.specimenMotor.isBusy())
+                state = States.CLAWS_DOWN_THIRD;
+                break;
+
+            case CLAWS_DOWN_THIRD:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                target = lineUpOnSpecimen_T;
                 state = States.DONE_FOR_NOW;
                 break;
+
 
             case PARK:
                 robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
