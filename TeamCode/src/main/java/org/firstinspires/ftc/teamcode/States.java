@@ -14,6 +14,8 @@ public enum States {
     BACK_UP_FROM_SUBMERISBLE_S,
     HEAD_TOWARDS_KRILL_R_S,
     EAT_KRILL_R_S,
+    HEAD_TOWARDS_OBSERVATION_S,
+    TURN_NEAR_SUBMERSIBLE_S,
 
     //LeftOdometery States
     RIDE_AT_DAWN_AWAY_FROM_WALL_S,
@@ -26,5 +28,14 @@ public enum States {
     BACK_AWAY_FROM_BASKET_S,
     HEAD_TOWARDS_KRILL_L_S,
     EAT_KRILL_L_S,
-    LOWER_ARM_S;
+    LOWER_ARM_S,
+
+
+    //SpecimenClawStates
+    NOT_RUNNING,
+    LOADING,
+    SCORING,
+    CLAWS_UP,
+    LIFT_DOWN,
+    CLAWS_DOWN;
 }

@@ -8,24 +8,28 @@ public class Move {
     Telemetry telemetry;
     MotorSpeeds motorSpeeds;
     DistanceToTarget distanceToTarget;
+    DriveTrain driveTrain;
 
     public Move (RobotHardware robot, Telemetry telemetry, MotorSpeeds motorSpeeds){
         this.robot = robot;
         this.telemetry = telemetry;
         this.motorSpeeds = motorSpeeds;
         distanceToTarget = new DistanceToTarget();
+        driveTrain = new DriveTrain(robot);
     }
 
     public boolean moveIt (Pose2D pos, Target target){
         boolean done = false;
         distanceToTarget = distanceToTarget.find(pos, target);
-        motorSpeeds.findMotorSpeeds(distanceToTarget, target.maxSpeed, pos.getHeading(AngleUnit.DEGREES));
-        done = distanceToTarget.closeEnough(distanceToTarget);
+
+        motorSpeeds.findMotorSpeeds(distanceToTarget, pos, target);
+        done = distanceToTarget.closeEnough(distanceToTarget, target);
         if (done == true)
-            motorSpeeds.setMotorSpeeds(motorSpeeds, 0);
+            driveTrain.stop();
 
         else
-            motorSpeeds.setMotorSpeeds(motorSpeeds, target.maxSpeed);
+            motorSpeeds.setMotorSpeeds(motorSpeeds);
+
         return done;
     }
 }

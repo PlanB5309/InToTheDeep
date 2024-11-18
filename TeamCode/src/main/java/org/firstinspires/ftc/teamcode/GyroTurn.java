@@ -24,7 +24,8 @@ public class GyroTurn {
         this.robot = robot;
         this.telemetry = telemetry;
         this.linearOpMode = linearOpMode;
-        driveTrain = new DriveTrain(robot, telemetry, linearOpMode);
+
+        driveTrain = new DriveTrain(robot);
     }
 
     public void goodEnough(double target) {
@@ -34,8 +35,6 @@ public class GyroTurn {
 
         if (!linearOpMode.opModeIsActive())
             return;
-        driveTrain.stop_and_reset_encoders();
-        driveTrain.run_using_encoder();
         updateHeading();
 
         while (Math.abs(currHeading - target) > 1 && linearOpMode.opModeIsActive()) {

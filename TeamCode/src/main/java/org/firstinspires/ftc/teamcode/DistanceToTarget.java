@@ -33,7 +33,8 @@ public class DistanceToTarget {
         return this;
     }
 
-    public boolean closeEnough (DistanceToTarget dtt){
-        return (Math.abs(dtt.diffx) < .5 && Math.abs(dtt.diffy) < .5 && Math.abs(dtt.diffh) < .5);
+
+    public boolean closeEnough(DistanceToTarget dtt, Target target) {
+        return (Math.abs(dtt.vector) <= target.tp.maxDistance && Math.abs(dtt.diffh) <= target.tp.maxAngle);
     }
 }
