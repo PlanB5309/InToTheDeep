@@ -30,12 +30,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 
 /**
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
@@ -82,6 +84,7 @@ public class RobotHardware {
 
     //Create Sensors
     BNO055IMU imu;
+    public RevTouchSensor SpecimenTouchSensor;
     // Declare OpMode member for the Odometry Computer
     public GoBildaPinpointDriver odo = null;
 
@@ -89,18 +92,19 @@ public class RobotHardware {
     public static final int ABOVE_SECOND_BAR = 1955;
     //THIS IS THE MOVEMENT TO SCORE THE SPECIMEN
     public static final int BELOW_SECOND_BAR = 1450;
-    //NOT ACCURATE
     public static final int GRAB_SPECIMEN = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
-    public static final int RAISE_ARM_TO_BASKET = 4885;
+    public static final int RAISE_ARM_TO_BASKET = 5050;
 
 
     //Servo Constants
     //Claws
-    public static final double BACK_CLAW_CLOSE = 0.33;
-    public static final double BACK_CLAW_OPEN = 0.65;
-    public static final double FRONT_CLAW_CLOSE = 0.63;
-    public static final double FRONT_CLAW_OPEN = 0.28;
+    public static final double BACK_CLAW_CLOSE = 0.48;
+    public static final double BACK_CLAW_OPEN_DOWN = .85;
+    public static final double BACK_CLAW_OPEN_UP = .13;
+    public static final double FRONT_CLAW_CLOSE = 0.5;
+    public static final double FRONT_CLAW_OPEN_DOWN = .13;
+    public static final double FRONT_CLAW_OPEN_UP = .85;
     public static final double HOOK_IN = .6;
     public static final double HOOK_OUT = .4;
     //Arm
@@ -112,8 +116,9 @@ public class RobotHardware {
     public static final int STRAFE_CLICKS_PER_CENTIMETER = 20;
 
     //Turning Speeds
-    public final double HIGH_TURN_POWER = 0.6;
-    public final double LOW_TURN_POWER = 0.07;
+    public final double HIGH_TURN_POWER = 0.52;
+    public final double MEDIUM_TURN_POWER = .3;
+    public final double LOW_TURN_POWER = 0.1;
 
 
 
@@ -156,6 +161,7 @@ public class RobotHardware {
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
+        SpecimenTouchSensor = hwMap.get(RevTouchSensor.class, "SpecimenTouchSensor");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
