@@ -47,12 +47,6 @@ public enum States {
     SCORING_JR,
     SCORING_THIRD,
     CLAWS_UP,
-    CLAWS_UP_JR,
-    CLAWS_UP_THIRD,
     LIFT_DOWN,
-    LIFT_DOWN_JR,
-    LIFT_DOWN_THIRD,
     CLAWS_DOWN,
-    CLAWS_DOWN_JR,
-    CLAWS_DOWN_THIRD,
 }

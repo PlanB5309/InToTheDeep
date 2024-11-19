@@ -37,18 +37,18 @@ public class RightOdometery extends OpMode {
     //Targets
     Target turnNearSubmersible_T = new Target (25, 15, 60, wayPoint);
     Target turnNearSubmersibleAgain_T = new Target (25, 8, 60, wayPoint);
-    Target driveToBar_T = new Target(32, 17, 90, closer);
-    Target driveToBarAgain_T = new Target (32, 13, 90, closer);
-    Target driveToBarAgainAgain_T = new Target (32, 10, 90, closer);
+    Target driveToBar_T = new Target(31.75, 17, 90, closer);
+    Target driveToBarAgain_T = new Target (31.75, 14, 90, closer);
+    Target driveToBarAgainAgain_T = new Target (31.75, 11, 90, closer);
     Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
     Target driveTowardsSamples_T = new Target( 26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36,-18,-90, wayPoint);
+    Target lineUpSamples_T = new Target(34,-19,-90, close);
     Target pickUpSample_T = new Target(36,-30,-90, samplePickup);
     Target driveToSpecimen_T = new Target (2,-34,-90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target (5, -33, -90, specimenPickup);
     //spit out block afterwards
-    Target pickUpSpecimen_T = new Target (.5, -30, -90, closer);
-    Target backUpFromWall_T = new Target (10, -30, -90, wayPoint);
+    Target pickUpSpecimen_T = new Target (0, -30.5, -90, closer);
+    Target backUpFromWall_T = new Target (10, -30.5, -90, wayPoint);
     Target turnCorrectly2_T = new Target (28, 14, 0, wayPoint);
     Target towardsSamples2_T = new Target( 26, -30, -90, wayPoint);
     Target lineUpSamples2_T = new Target (26, -30, -90, close);
@@ -105,7 +105,7 @@ public class RightOdometery extends OpMode {
         double newTime = getRuntime();
         double loopTime = newTime-oldTime;
         double frequency = 1/loopTime;
-        double liftTime = 0;
+        double timer = 0;
 
         oldTime = newTime;
         Pose2D pos = robot.odo.getPosition();
@@ -138,28 +138,7 @@ public class RightOdometery extends OpMode {
                 break;
 
             case SCORING:
-                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy()) {
-                    state = States.CLAWS_UP;
-                }
-                break;
-
-            case CLAWS_UP:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
-                if (System.currentTimeMillis() >= liftTime)
-                    state = States.LIFT_DOWN;
-                break;
-
-            case LIFT_DOWN:
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
-                if (!robot.specimenMotor.isBusy())
-                    state = States.CLAWS_DOWN;
-                break;
-
-            case CLAWS_DOWN:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                score();
                 target = backUpFromSubmersible_T;
                 state = States.BACK_UP_FROM_SUBMERISBLE_S;
                 break;
@@ -173,6 +152,8 @@ public class RightOdometery extends OpMode {
                 break;
 
             case DRIVE_TOWARDS_SAMPLE_S:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
                 if (move.moveIt(pos, target)) {
                     target = lineUpSamples_T;
                     state = States.LINE_UP_ON_SAMPLE_S;
@@ -251,34 +232,18 @@ public class RightOdometery extends OpMode {
                 break;
 
             case SCORING_JR:
-                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy()) {
-                    state = States.CLAWS_UP_JR;
-                }
-                break;
-
-            case CLAWS_UP_JR:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
-                if (System.currentTimeMillis() >= liftTime)
-                    state = States.LIFT_DOWN_JR;
-                break;
-
-            case LIFT_DOWN_JR:
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
-                if (!robot.specimenMotor.isBusy())
-                    state = States.CLAWS_DOWN_JR;
-                break;
-
-            case CLAWS_DOWN_JR:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                score();
                 target = lineUpOnSpecimen_T;
                 state = States.DRIVE_TO_SPECIMEN_JR_S;
+                timer = (System.currentTimeMillis()+ 1000);
                 break;
 
             case DRIVE_TO_SPECIMEN_JR_S:
-                if (move.moveIt(pos, target)){
+                if (System.currentTimeMillis() > timer) {
+                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                    robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                }
+                if (move.moveIt(pos, target)) {
                     target = pickUpThirdSpecimen_T;
                     state = States.LINE_UP_ON_SPECIMEN_S;
                 }
@@ -324,32 +289,9 @@ public class RightOdometery extends OpMode {
                 break;
 
             case SCORING_THIRD:
-                robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy()) {
-                    state = States.CLAWS_UP_THIRD;
-                }
+               score();
+               state = States.DONE_FOR_NOW;
                 break;
-
-            case CLAWS_UP_THIRD:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
-                if (System.currentTimeMillis() >= liftTime)
-                    state = States.LIFT_DOWN_THIRD;
-                break;
-
-            case LIFT_DOWN_THIRD:
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
-                if (!robot.specimenMotor.isBusy())
-                state = States.CLAWS_DOWN_THIRD;
-                break;
-
-            case CLAWS_DOWN_THIRD:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-                target = lineUpOnSpecimen_T;
-                state = States.DONE_FOR_NOW;
-                break;
-
 
             case PARK:
                 robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
@@ -386,4 +328,27 @@ public class RightOdometery extends OpMode {
             terminateOpModeNow();
         }
     }
+    private void score() {
+        boolean done = false;
+        States scoreState = States.SCORING;
+
+        while (!done){
+            switch (scoreState) {
+                case SCORING:
+                    robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
+                    if (!robot.specimenMotor.isBusy()) {
+                        scoreState = States.CLAWS_UP;
+                    }
+                    break;
+
+                case CLAWS_UP:
+                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_UP);
+                    robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_UP);
+                        robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                        done = true;
+                    break;
+            }
+        }
+    }
 }
+
