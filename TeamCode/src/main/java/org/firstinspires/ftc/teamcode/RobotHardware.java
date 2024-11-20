@@ -106,7 +106,7 @@ public class RobotHardware {
     public static final double FRONT_CLAW_OPEN_DOWN = .13;
     public static final double FRONT_CLAW_OPEN_UP = .85;
     public static final double HOOK_IN = .6;
-    public static final double HOOK_OUT = .4;
+    public static final double HOOK_OUT = 0;
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
@@ -174,6 +174,8 @@ public class RobotHardware {
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        //Schuy's one and only contribution
+        hookServo.setPosition(HOOK_IN);
 
 
 

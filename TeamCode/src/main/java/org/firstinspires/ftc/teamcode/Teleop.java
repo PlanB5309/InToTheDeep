@@ -226,10 +226,10 @@ public class Teleop extends OpMode {
 
 
         //HookServo
-        if (gamepad2.y)
+        if (gamepad1.right_bumper)
             robot.hookServo.setPosition(robot.HOOK_OUT);
 
-        if (gamepad2.b)
+        if (gamepad1.left_bumper)
             robot.hookServo.setPosition(robot.HOOK_IN);
 
         Pose2D pos = robot.odo.getPosition();
