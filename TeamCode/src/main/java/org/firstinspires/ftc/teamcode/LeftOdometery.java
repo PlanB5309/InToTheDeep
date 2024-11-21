@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -28,8 +29,12 @@ public class LeftOdometery extends OpMode {
     TargetProfile samplePickup = new TargetProfile(.2, .1, 1,5, 2);
     Target toBasket_T = new Target (0,-17,0,close);
     Target atBasket_T = new Target (11.5,-17,0,close);
-    Target lineupSample1_T = new Target(-24.44,-22.33,-45,close);
-    Target loadSample1_T = new Target(-11,-29,-45,samplePickup);
+    Target lineupSample1_T = new Target(-22,-24,-45,close);
+    Target loadSample1_T = new Target(-17,-31,-45,samplePickup);
+    Target lineupSample2_T = new Target(-17,-31,-45,close);
+    Target loadSample2_T = new Target (-9,-38,-45,samplePickup);
+    Target lineupSample3_T = new Target (-9,-38,-45,close);
+    Target loadSample3_T = new Target (-4,-42,-25,samplePickup);
 
 
     Target target = new Target();
@@ -77,59 +82,14 @@ public class LeftOdometery extends OpMode {
 
         switch (state){
             case START:
+                robot.armMotor.setTargetPosition(robot.DRIVE_HEIGHT);
                 target = toBasket_T;
                 state = States.TO_BASKET_1_S;
                 break;
 
             case TO_BASKET_1_S:
                 if (move.moveIt(pos, target)) {
-                    state = States.RAISE_EXTEND_ARM_S;
-                    driveTrain.stop();
-                }
-                break;
-
-            case RAISE_EXTEND_ARM_S:
-
-                robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
-                robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
-                robot.armMotor.setPower(1);
-                while (robot.armMotor.isBusy())
-                    Thread.yield();
-                robot.sampleMotor.setPower(1);
-                while (robot.sampleMotor.isBusy())
-                    Thread.yield();
-                state =States.AT_BASKET_1_S;
-                target = atBasket_T;
-                break;
-
-            case AT_BASKET_1_S:
-                if (move.moveIt(pos, target)) {
-                    state = States.SCORE_SAMPLE_1_S;
-                   spitTime = System.currentTimeMillis() + 1500;
-                }
-                break;
-
-            case SCORE_SAMPLE_1_S:
-                robot.intakeServo.setPosition(1);
-                if (System.currentTimeMillis() >= spitTime) {
-                    robot.intakeServo.setPosition(.5);
-                    state = States.RETRACT_ARM_1_S;
-                }
-                break;
-
-            case RETRACT_ARM_1_S:
-                robot.sampleMotor.setTargetPosition(100);
-                while (robot.sampleMotor.isBusy())
-                    Thread.yield();
-                target = toBasket_T;
-                state = States.TO_BASKET_2_S;
-                break;
-
-            case TO_BASKET_2_S:
-                if (move.moveIt(pos, target)) {
-                    robot.armMotor.setTargetPosition(200);
-                    while (robot.armMotor.isBusy())
-                        Thread.yield();
+                    scoreSample();
                     state = States.LINEUP_SAMPLE_1_S;
                     target = lineupSample1_T;
                 }
@@ -144,6 +104,31 @@ public class LeftOdometery extends OpMode {
 
             case LOAD_SAMPLE_1_S:
                 robot.intakeServo.setPosition(0);
+                robot.armMotor.setTargetPosition(150);
+                if (move.moveIt(pos,target)){
+                    state = States.TO_BASKET_2_S;
+                    target = toBasket_T;
+                }
+                break;
+
+            case TO_BASKET_2_S:
+               if (move.moveIt(pos, target)){
+                   scoreSample();
+                   target = lineupSample2_T;
+                   state = States.LINEUP_SAMPLE_2_S;
+               }
+               break;
+
+            case LINEUP_SAMPLE_2_S:
+                if (move.moveIt(pos,target)) {
+                    state = States.LOAD_SAMPLE_2_S;
+                    target = loadSample2_T;
+                }
+                break;
+
+            case LOAD_SAMPLE_2_S:
+                robot.intakeServo.setPosition(0);
+                robot.armMotor.setTargetPosition(150);
                 if (move.moveIt(pos,target)){
                     state = States.TO_BASKET_3_S;
                     target = toBasket_T;
@@ -151,10 +136,35 @@ public class LeftOdometery extends OpMode {
                 break;
 
             case TO_BASKET_3_S:
-               if (move.moveIt(pos, target)){
-                   state = States.DONE_FOR_NOW;
-               }
-               break;
+                if(move.moveIt(pos,target)){
+                    scoreSample();
+                    target = lineupSample3_T;
+                    state = States.LINEUP_SAMPLE_3_S;
+                }
+                break;
+
+            case LINEUP_SAMPLE_3_S:
+                if(move.moveIt(pos,target)){
+                    state = States.LOAD_SAMPLE_3_S;
+                    target = loadSample3_T;
+                }
+                break;
+
+            case LOAD_SAMPLE_3_S:
+                robot.intakeServo.setPosition(0);
+                robot.armMotor.setTargetPosition(150);
+                if(move.moveIt(pos,target)){
+                    state = States.TO_BASKET_4_S;
+                    target = toBasket_T;
+                }
+                break;
+
+            case TO_BASKET_4_S:
+                if (move.moveIt(pos,target)){
+                    scoreSample();
+                    state = States.DONE_FOR_NOW;
+                }
+                break;
 
             case DONE_FOR_NOW:
                 driveTrain.stop();
@@ -174,4 +184,65 @@ public class LeftOdometery extends OpMode {
             terminateOpModeNow();
         }
     }
+    private void scoreSample(){
+        boolean done = false;
+        States score_s = States.RAISE_EXTEND_ARM_S;
+        while (!done){
+            robot.odo.bulkUpdate();
+            Pose2D pos = robot.odo.getPosition();
+            switch (score_s){
+                case RAISE_EXTEND_ARM_S:
+
+                    robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
+                    robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
+                    robot.armMotor.setPower(1);
+                    while (robot.armMotor.isBusy())
+                        Thread.yield();
+                    robot.sampleMotor.setPower(1);
+                    while (robot.sampleMotor.isBusy())
+                        Thread.yield();
+                    score_s =States.AT_BASKET_1_S;
+                    target = atBasket_T;
+                    break;
+
+                case AT_BASKET_1_S:
+                    if (move.moveIt(pos, target)) {
+                        score_s = States.SCORE_SAMPLE_1_S;
+                        spitTime = System.currentTimeMillis() + 1500;
+                    }
+                    break;
+
+                case SCORE_SAMPLE_1_S:
+                    robot.intakeServo.setPosition(1);
+                    if (System.currentTimeMillis() >= spitTime) {
+                        robot.intakeServo.setPosition(.5);
+                        score_s = States.RETRACT_ARM_1_S;
+                    }
+                    break;
+
+                case RETRACT_ARM_1_S:
+                    robot.sampleMotor.setTargetPosition(100);
+                    while (robot.sampleMotor.isBusy())
+                        Thread.yield();
+                    target = toBasket_T;
+                    score_s = States.AWAY_FROM_BASKET_S;
+                    break;
+
+                case AWAY_FROM_BASKET_S:
+                    if (move.moveIt(pos, target)) {
+                        robot.armMotor.setTargetPosition(robot.DRIVE_HEIGHT);
+                        while (robot.armMotor.isBusy())
+                            Thread.yield();
+                        score_s = States.LINEUP_SAMPLE_1_S;
+                        target = lineupSample1_T;
+                        done = true;
+                    }
+                    break;
+
+
+            } //end switch
+            telemetry.addData("current state",score_s);
+            telemetry.update();
+        } //end while
+    } //end private void
 }

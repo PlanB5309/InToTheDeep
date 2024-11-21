@@ -33,11 +33,19 @@ public enum States {
     RAISE_EXTEND_ARM_S,
     SCORE_SAMPLE_1_S,
     RETRACT_ARM_1_S,
-    TO_BASKET_2_S,
+    AWAY_FROM_BASKET_S,
     AT_BASKET_2_S,
     LINEUP_SAMPLE_1_S,
     LOAD_SAMPLE_1_S,
+    TO_BASKET_2_S,
+    LINEUP_SAMPLE_2_S,
+    LINEUP_SAMPLE_3_S,
+    LOAD_SAMPLE_2_S,
+    LOAD_SAMPLE_3_S,
     TO_BASKET_3_S,
+    TO_BASKET_4_S,
+
+
 
     //SpecimenClawStates
     NOT_RUNNING,
