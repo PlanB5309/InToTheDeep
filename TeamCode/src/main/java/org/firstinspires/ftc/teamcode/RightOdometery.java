@@ -106,6 +106,7 @@ public class RightOdometery extends OpMode {
         double loopTime = newTime-oldTime;
         double frequency = 1/loopTime;
         double timer = 0;
+        double distanceToWall;
 
         oldTime = newTime;
         Pose2D pos = robot.odo.getPosition();
@@ -194,8 +195,20 @@ public class RightOdometery extends OpMode {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(300);
                     target = pickUpSpecimen_T;
-                    state = States.LOADING;
+                    state = States.REACH_WALL_EXACTLY_S;
                 }
+                break;
+
+            case REACH_WALL_EXACTLY_S:
+                distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
+                while (distanceToWall > robot.AT_THE_WALL){
+                    robot.backLeftMotor.setPower(.1);
+                    robot.frontLeftMotor.setPower(-.1);
+                    robot.backRightMotor.setPower(-.1);
+                    robot.frontRightMotor.setPower(.1);
+                    distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
+                }
+                state = States.LOADING;
                 break;
 
             case LOADING:
@@ -205,7 +218,7 @@ public class RightOdometery extends OpMode {
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
                 robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.specimenMotor.setPower(1);
-                if (!robot.specimenMotor.isBusy()){
+                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL){
                     target = backUpFromWall_T;
                     state = States.BACK_UP_FROM_WALL_S;
                 }
@@ -262,7 +275,7 @@ public class RightOdometery extends OpMode {
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
                 robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.specimenMotor.setPower(1);
-                if (!robot.specimenMotor.isBusy()){
+                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL){
                     target = backUpFromWall_T;
                     state = States.BACK_UP_FROM_WALL_JR_S;
                 }

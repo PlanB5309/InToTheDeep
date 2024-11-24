@@ -26,6 +26,8 @@ public enum States {
     TURN_NEAR_SUBMERSIBLE_THIRD_S,
     BACK_UP_FROM_WALL_S,
     BACK_UP_FROM_WALL_JR_S,
+    REACH_WALL_EXACTLY_S,
+    REACH_WALL_EXACTLY_JR_S,
 
     //LeftOdometery States
     TO_BASKET_1_S,

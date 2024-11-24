@@ -28,7 +28,7 @@ public class ReadSensor {
         double distance[] = new double[5];
         double result;
         for (int i = 0; i < 5; i++) {
-            distance[i] = Sensor.getDistance(DistanceUnit.CM);
+            distance[i] = Sensor.getDistance(DistanceUnit.INCH);
         }
         Arrays.sort(distance);
         result = (distance[1] + distance[2] + distance[3]) / 3;

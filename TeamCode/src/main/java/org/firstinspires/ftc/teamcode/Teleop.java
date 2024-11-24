@@ -57,11 +57,7 @@ import java.util.Locale;
 public class Teleop extends OpMode {
     RobotHardware robot = new RobotHardware();
     double ArmLength = robot.SHORT_ARM;
-    long time_arm_move;
-    long time_close_claws;
-    long time_arm_move_out;
-    long time_claws_grab_confident;
-    boolean wrist_controlled = false;
+    boolean retractArm = false;
     boolean slow_mode;
     States state = States.NOT_RUNNING;
     double liftTime = 0;
@@ -159,6 +155,7 @@ public class Teleop extends OpMode {
         }
 
         //Attachments
+
         //Ready to grab a specimen
         if (gamepad2.left_bumper) {
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
@@ -215,15 +212,24 @@ public class Teleop extends OpMode {
 
         //SampleMotor
         //
-        if (gamepad2.dpad_left)
+        //Hold the Arm Extension Motor at Low Power
+        if (gamepad2.left_stick_button) {
+            robot.sampleMotor.setPower(-.1);
+            retractArm = true;
+        }
+        if (gamepad2.dpad_left) {
             robot.sampleMotor.setPower(-1);
-
-        if (gamepad2.dpad_right)
+            retractArm = false;
+        }
+        if (gamepad2.dpad_right) {
             robot.sampleMotor.setPower(1);
+            retractArm = false;
+        }
 
-        if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
+        if (gamepad2.dpad_left == false &&
+            gamepad2.dpad_right == false  &&
+            retractArm == false)
             robot.sampleMotor.setPower(0);
-
 
         //HookServo
         if (gamepad1.right_bumper)
