@@ -200,15 +200,17 @@ public class RightOdometery extends OpMode {
                 break;
 
             case REACH_WALL_EXACTLY_S:
-                distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
-                while (distanceToWall > robot.AT_THE_WALL){
+                timer = (System.currentTimeMillis()+ 750);
+                while (readSensor.distance(robot.SpecimenDistanceSensor) > robot.AT_THE_WALL){
                     robot.backLeftMotor.setPower(.1);
                     robot.frontLeftMotor.setPower(-.1);
                     robot.backRightMotor.setPower(-.1);
                     robot.frontRightMotor.setPower(.1);
-                    distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
+                    if (System.currentTimeMillis() > timer) {
+                        driveTrain.stop();
+                        state = States.LOADING;
+                    }
                 }
-                state = States.LOADING;
                 break;
 
             case LOADING:
@@ -246,9 +248,10 @@ public class RightOdometery extends OpMode {
 
             case SCORING_JR:
                 score();
+                timer = (System.currentTimeMillis()+ 500);
                 target = lineUpOnSpecimen_T;
                 state = States.DRIVE_TO_SPECIMEN_JR_S;
-                timer = (System.currentTimeMillis()+ 1000);
+
                 break;
 
             case DRIVE_TO_SPECIMEN_JR_S:
@@ -267,6 +270,8 @@ public class RightOdometery extends OpMode {
                     state = States.LOADING_JR;
                 }
                 break;
+
+                //The other case of line up goes here
 
             case LOADING_JR:
                 robot.intakeServo.setPosition(.5);

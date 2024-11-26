@@ -77,6 +77,7 @@ public class RobotHardware {
     public Servo frontClawServo = null;
     public Servo backClawServo = null;
     public Servo hookServo = null;
+    public Servo kickServo = null;
 
     //Create Lights
     public RevBlinkinLedDriver lights;
@@ -89,7 +90,7 @@ public class RobotHardware {
     public GoBildaPinpointDriver odo = null;
 
     //Sensor Constants
-    public static final double AT_THE_WALL = .5;
+    public static final double AT_THE_WALL = 1.25;
 
     //Motor Constants
 
@@ -116,6 +117,10 @@ public class RobotHardware {
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
+
+    //Kick Servo
+    public static final double KICK_SERVO_IN = 0;
+    public static final double KICK_SERVO_OUT = .3;
 
     //Rates
     public static final int CLICKS_PER_CENTIMETER = 18;
@@ -163,6 +168,7 @@ public class RobotHardware {
         frontClawServo = hwMap.get(Servo.class, "frontClawServo");
         backClawServo = hwMap.get(Servo.class, "backClawServo");
         hookServo = hwMap.get(Servo.class, "hookServo");
+        kickServo = hwMap.get(Servo.class, "kickServo");
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
@@ -181,6 +187,7 @@ public class RobotHardware {
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
         //Schuy's one and only contribution
         hookServo.setPosition(HOOK_IN);
 

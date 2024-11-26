@@ -154,6 +154,13 @@ public class Teleop extends OpMode {
             robot.backRightMotor.setPower(backRightPower);
         }
 
+        //Kick Servo Controls for Driver
+        if (gamepad1.y)
+            robot.kickServo.setPosition(robot.KICK_SERVO_IN);
+
+        if (gamepad1.x)
+            robot.kickServo.setPosition(robot.KICK_SERVO_OUT);
+
         //Attachments
 
         //Ready to grab a specimen
@@ -214,7 +221,7 @@ public class Teleop extends OpMode {
         //
         //Hold the Arm Extension Motor at Low Power
         if (gamepad2.left_stick_button) {
-            robot.sampleMotor.setPower(-.1);
+            robot.sampleMotor.setPower(-.15);
             retractArm = true;
         }
         if (gamepad2.dpad_left) {
@@ -248,6 +255,7 @@ public class Teleop extends OpMode {
         telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
         telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
         telemetry.addData("State", state.name());
+        telemetry.addData("Kick Servo Position", robot.kickServo.getPosition());
         telemetry.update();
 
         //touch sensor for specimen lift
