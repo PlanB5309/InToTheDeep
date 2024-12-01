@@ -251,11 +251,12 @@ public class Teleop extends OpMode {
                 pos.getY(DistanceUnit.INCH),
                 pos.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Position", data);
-        telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
-        telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
-        telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
+//        telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
+//        telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
+//        telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
         telemetry.addData("State", state.name());
         telemetry.addData("Kick Servo Position", robot.kickServo.getPosition());
+        telemetry.addData("DISTANCES", robot.SpecimenDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         //touch sensor for specimen lift

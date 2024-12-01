@@ -24,6 +24,7 @@ public class RightOdometery extends OpMode {
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
     double spitTime = 0;
+    double close_to_wall;
 
 
     //Target Profiles
@@ -41,13 +42,14 @@ public class RightOdometery extends OpMode {
     Target driveToBarAgain_T = new Target (31.75, 14, 90, closer);
     Target driveToBarAgainAgain_T = new Target (31.75, 11, 90, closer);
     Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
+    Target waypointTowardsSamples_T = new Target(23, -18, -90, wayPoint);
     Target driveTowardsSamples_T = new Target( 26, -18, -90, wayPoint);
     Target lineUpSamples_T = new Target(34,-19,-90, close);
     Target pickUpSample_T = new Target(36,-30,-90, samplePickup);
     Target driveToSpecimen_T = new Target (2,-34,-90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target (5, -33, -90, specimenPickup);
     //spit out block afterwards
-    Target pickUpSpecimen_T = new Target (0, -30.5, -90, closer);
+    Target pickUpSpecimen_T = new Target (-1, -30.5, -90, closer);
     Target backUpFromWall_T = new Target (10, -30.5, -90, wayPoint);
     Target turnCorrectly2_T = new Target (28, 14, 0, wayPoint);
     Target towardsSamples2_T = new Target( 26, -30, -90, wayPoint);
@@ -106,6 +108,7 @@ public class RightOdometery extends OpMode {
         double loopTime = newTime-oldTime;
         double frequency = 1/loopTime;
         double timer = 0;
+        double time_to_reach_wall = 0;
         double distanceToWall;
 
         oldTime = newTime;
@@ -144,8 +147,14 @@ public class RightOdometery extends OpMode {
                 state = States.BACK_UP_FROM_SUBMERISBLE_S;
                 break;
 
-
             case BACK_UP_FROM_SUBMERISBLE_S:
+                if (move.moveIt(pos, target)) {
+                    target = waypointTowardsSamples_T;
+                    state = States.WAYPOINT_TOWARDS_SAMPLE_S;
+                }
+                break;
+
+            case WAYPOINT_TOWARDS_SAMPLE_S:
                 if (move.moveIt(pos, target)) {
                     target = driveTowardsSamples_T;
                     state = States.DRIVE_TOWARDS_SAMPLE_S;
@@ -195,22 +204,21 @@ public class RightOdometery extends OpMode {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(300);
                     target = pickUpSpecimen_T;
-                    state = States.REACH_WALL_EXACTLY_S;
+                    state = States.LOADING;
+//                    state = States.REACH_WALL_EXACTLY_S;
                 }
                 break;
 
             case REACH_WALL_EXACTLY_S:
-                timer = (System.currentTimeMillis()+ 750);
-                while (readSensor.distance(robot.SpecimenDistanceSensor) > robot.AT_THE_WALL){
-                    robot.backLeftMotor.setPower(.1);
-                    robot.frontLeftMotor.setPower(-.1);
-                    robot.backRightMotor.setPower(-.1);
-                    robot.frontRightMotor.setPower(.1);
-                    if (System.currentTimeMillis() > timer) {
-                        driveTrain.stop();
-                        state = States.LOADING;
-                    }
-                }
+                 distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
+                 while (distanceToWall > robot.AT_THE_WALL){
+                     robot.backLeftMotor.setPower(.1);
+                     robot.frontLeftMotor.setPower(-.1);
+                     robot.backRightMotor.setPower(-.1);
+                     robot.frontRightMotor.setPower(.1);
+                     distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
+                 }
+                 state = States.LOADING;
                 break;
 
             case LOADING:
@@ -248,17 +256,20 @@ public class RightOdometery extends OpMode {
 
             case SCORING_JR:
                 score();
-                timer = (System.currentTimeMillis()+ 500);
+                //THIS TIMER IS NOT WORKING EITHER
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+//                timer = (System.currentTimeMillis()+ 500);
+//                if (System.currentTimeMillis() > timer) {
+//                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+//                    robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+//                }
                 target = lineUpOnSpecimen_T;
                 state = States.DRIVE_TO_SPECIMEN_JR_S;
-
                 break;
 
             case DRIVE_TO_SPECIMEN_JR_S:
-                if (System.currentTimeMillis() > timer) {
-                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                    robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-                }
+
                 if (move.moveIt(pos, target)) {
                     target = pickUpThirdSpecimen_T;
                     state = States.LINE_UP_ON_SPECIMEN_S;

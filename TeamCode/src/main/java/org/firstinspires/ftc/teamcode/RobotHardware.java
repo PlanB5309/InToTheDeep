@@ -90,7 +90,7 @@ public class RobotHardware {
     public GoBildaPinpointDriver odo = null;
 
     //Sensor Constants
-    public static final double AT_THE_WALL = 1.25;
+    public static final double AT_THE_WALL = 3;
 
     //Motor Constants
 
