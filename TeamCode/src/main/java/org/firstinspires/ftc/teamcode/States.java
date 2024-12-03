@@ -14,6 +14,7 @@ public enum States {
     LOWER_SPECIMEN_LIFT_S,
     OPEN_CLAWS_S,
     BACK_UP_FROM_SUBMERISBLE_S,
+    WAYPOINT_TOWARDS_SAMPLE_S,
     DRIVE_TOWARDS_SAMPLE_S,
     LINE_UP_ON_SAMPLE_S,
     PICK_UP_SAMPLE_S,
@@ -26,6 +27,8 @@ public enum States {
     TURN_NEAR_SUBMERSIBLE_THIRD_S,
     BACK_UP_FROM_WALL_S,
     BACK_UP_FROM_WALL_JR_S,
+    REACH_WALL_EXACTLY_S,
+    REACH_WALL_EXACTLY_JR_S,
 
     //LeftOdometery States
     TO_BASKET_1_S,
@@ -33,11 +36,19 @@ public enum States {
     RAISE_EXTEND_ARM_S,
     SCORE_SAMPLE_1_S,
     RETRACT_ARM_1_S,
-    TO_BASKET_2_S,
+    AWAY_FROM_BASKET_S,
     AT_BASKET_2_S,
     LINEUP_SAMPLE_1_S,
     LOAD_SAMPLE_1_S,
+    TO_BASKET_2_S,
+    LINEUP_SAMPLE_2_S,
+    LINEUP_SAMPLE_3_S,
+    LOAD_SAMPLE_2_S,
+    LOAD_SAMPLE_3_S,
     TO_BASKET_3_S,
+    TO_BASKET_4_S,
+
+
 
     //SpecimenClawStates
     NOT_RUNNING,
@@ -47,12 +58,6 @@ public enum States {
     SCORING_JR,
     SCORING_THIRD,
     CLAWS_UP,
-    CLAWS_UP_JR,
-    CLAWS_UP_THIRD,
     LIFT_DOWN,
-    LIFT_DOWN_JR,
-    LIFT_DOWN_THIRD,
     CLAWS_DOWN,
-    CLAWS_DOWN_JR,
-    CLAWS_DOWN_THIRD,
 }

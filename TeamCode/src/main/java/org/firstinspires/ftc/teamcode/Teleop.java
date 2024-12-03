@@ -57,11 +57,7 @@ import java.util.Locale;
 public class Teleop extends OpMode {
     RobotHardware robot = new RobotHardware();
     double ArmLength = robot.SHORT_ARM;
-    long time_arm_move;
-    long time_close_claws;
-    long time_arm_move_out;
-    long time_claws_grab_confident;
-    boolean wrist_controlled = false;
+    boolean retractArm = false;
     boolean slow_mode;
     States state = States.NOT_RUNNING;
     double liftTime = 0;
@@ -158,7 +154,15 @@ public class Teleop extends OpMode {
             robot.backRightMotor.setPower(backRightPower);
         }
 
+        //Kick Servo Controls for Driver
+        if (gamepad1.y)
+            robot.kickServo.setPosition(robot.KICK_SERVO_IN);
+
+        if (gamepad1.x)
+            robot.kickServo.setPosition(robot.KICK_SERVO_OUT);
+
         //Attachments
+
         //Ready to grab a specimen
         if (gamepad2.left_bumper) {
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
@@ -215,21 +219,30 @@ public class Teleop extends OpMode {
 
         //SampleMotor
         //
-        if (gamepad2.dpad_left)
+        //Hold the Arm Extension Motor at Low Power
+        if (gamepad2.left_stick_button) {
+            robot.sampleMotor.setPower(-.15);
+            retractArm = true;
+        }
+        if (gamepad2.dpad_left) {
             robot.sampleMotor.setPower(-1);
-
-        if (gamepad2.dpad_right)
+            retractArm = false;
+        }
+        if (gamepad2.dpad_right) {
             robot.sampleMotor.setPower(1);
+            retractArm = false;
+        }
 
-        if (gamepad2.dpad_left == false && gamepad2.dpad_right == false)
+        if (gamepad2.dpad_left == false &&
+            gamepad2.dpad_right == false  &&
+            retractArm == false)
             robot.sampleMotor.setPower(0);
 
-
         //HookServo
-        if (gamepad2.y)
+        if (gamepad1.right_bumper)
             robot.hookServo.setPosition(robot.HOOK_OUT);
 
-        if (gamepad2.b)
+        if (gamepad1.left_bumper)
             robot.hookServo.setPosition(robot.HOOK_IN);
 
         Pose2D pos = robot.odo.getPosition();
@@ -238,10 +251,12 @@ public class Teleop extends OpMode {
                 pos.getY(DistanceUnit.INCH),
                 pos.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Position", data);
-        telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
-        telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
-        telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
+//        telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
+//        telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
+//        telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
         telemetry.addData("State", state.name());
+        telemetry.addData("Kick Servo Position", robot.kickServo.getPosition());
+        telemetry.addData("DISTANCES", robot.SpecimenDistanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         //touch sensor for specimen lift

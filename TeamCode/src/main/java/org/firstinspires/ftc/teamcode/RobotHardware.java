@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -70,31 +71,37 @@ public class RobotHardware {
     public DcMotor sampleMotor = null;
 
     // Motor Constants
-    //Actual number needs to be found
-
 
     //Create Servos
     public Servo intakeServo = null;
     public Servo frontClawServo = null;
     public Servo backClawServo = null;
     public Servo hookServo = null;
+    public Servo kickServo = null;
 
     //Create Lights
     public RevBlinkinLedDriver lights;
 
     //Create Sensors
+    public Rev2mDistanceSensor SpecimenDistanceSensor;
     BNO055IMU imu;
     public RevTouchSensor SpecimenTouchSensor;
     // Declare OpMode member for the Odometry Computer
     public GoBildaPinpointDriver odo = null;
 
+    //Sensor Constants
+    public static final double AT_THE_WALL = 3;
+
     //Motor Constants
+
     public static final int ABOVE_SECOND_BAR = 1955;
+    public static final int ABOVE_THE_WALL = 900;
     //THIS IS THE MOVEMENT TO SCORE THE SPECIMEN
-    public static final int BELOW_SECOND_BAR = 1450;
+    public static final int BELOW_SECOND_BAR = 1400;
     public static final int GRAB_SPECIMEN = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
-    public static final int RAISE_ARM_TO_BASKET = 5050;
+    public static final int RAISE_ARM_TO_BASKET = 3643;
+    public static final int DRIVE_HEIGHT = 1500;
 
 
     //Servo Constants
@@ -106,10 +113,14 @@ public class RobotHardware {
     public static final double FRONT_CLAW_OPEN_DOWN = .13;
     public static final double FRONT_CLAW_OPEN_UP = .85;
     public static final double HOOK_IN = .6;
-    public static final double HOOK_OUT = .4;
+    public static final double HOOK_OUT = 0;
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
+
+    //Kick Servo
+    public static final double KICK_SERVO_IN = 0;
+    public static final double KICK_SERVO_OUT = .3;
 
     //Rates
     public static final int CLICKS_PER_CENTIMETER = 18;
@@ -157,11 +168,13 @@ public class RobotHardware {
         frontClawServo = hwMap.get(Servo.class, "frontClawServo");
         backClawServo = hwMap.get(Servo.class, "backClawServo");
         hookServo = hwMap.get(Servo.class, "hookServo");
+        kickServo = hwMap.get(Servo.class, "kickServo");
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
         SpecimenTouchSensor = hwMap.get(RevTouchSensor.class, "SpecimenTouchSensor");
+        SpecimenDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "SpecimenDistanceSensor");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -174,6 +187,9 @@ public class RobotHardware {
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
+        //Schuy's one and only contribution
+        hookServo.setPosition(HOOK_IN);
 
 
 
@@ -192,7 +208,9 @@ public class RobotHardware {
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        sampleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //Not Using Encoders
+        sampleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
