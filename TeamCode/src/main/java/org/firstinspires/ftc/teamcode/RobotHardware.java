@@ -117,10 +117,12 @@ public class RobotHardware {
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
+    public static final double ARM_LIMIT = 4055;
 
     //Kick Servo
-    public static final double KICK_SERVO_IN = 0;
-    public static final double KICK_SERVO_OUT = .3;
+    public static final double KICK_SERVO_OUT = .35;
+    public static final double KICK_SERVO_MIDDLE = .7;
+    public static final double KICK_SERVO_IN = .95;
 
     //Rates
     public static final int CLICKS_PER_CENTIMETER = 18;
