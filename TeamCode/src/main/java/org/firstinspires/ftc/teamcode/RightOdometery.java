@@ -25,6 +25,13 @@ public class RightOdometery extends OpMode {
     double oldTime = 0;
     double spitTime = 0;
     double close_to_wall;
+    double newTime = 0;
+    double loopTime = 0;
+    double frequency;
+    double timer = 0;
+    double time_to_reach_wall = 0;
+    double distanceToWall;
+
 
 
     //Target Profiles
@@ -36,10 +43,11 @@ public class RightOdometery extends OpMode {
 
 
     //Targets
-    Target turnNearSubmersible_T = new Target (25, 15, 60, wayPoint);
-    Target turnNearSubmersibleAgain_T = new Target (25, 8, 60, wayPoint);
-    Target driveToBar_T = new Target(31.75, 17, 90, closer);
-    Target driveToBarAgain_T = new Target (31.75, 14, 90, closer);
+    Target turnNearSubmersible_T = new Target (25, 13, 60, wayPoint);
+    Target turnNearSubmersibleAgain_T = new Target (25, 8, 50, wayPoint);
+    Target turnNearSubmersibleAgainAgain_T = new Target (25, 8, 60, wayPoint);
+    Target driveToBar_T = new Target(31.75, 17, 90, close);
+    Target driveToBarAgain_T = new Target (31.75, 13, 90, closer);
     Target driveToBarAgainAgain_T = new Target (31.75, 11, 90, closer);
     Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
     Target waypointTowardsSamples_T = new Target(23, -18, -90, wayPoint);
@@ -51,10 +59,7 @@ public class RightOdometery extends OpMode {
     //spit out block afterwards
     Target pickUpSpecimen_T = new Target (-1, -30.5, -90, closer);
     Target backUpFromWall_T = new Target (10, -30.5, -90, wayPoint);
-    Target turnCorrectly2_T = new Target (28, 14, 0, wayPoint);
-    Target towardsSamples2_T = new Target( 26, -30, -90, wayPoint);
-    Target lineUpSamples2_T = new Target (26, -30, -90, close);
-    Target pickUpThirdSpecimen_T = new Target (0, -33, -90, specimenPickup);
+    Target pickUpThirdSpecimen_T = new Target (-1, -33, -90, specimenPickup);
     Target scoreThirdSpecimen_T = new Target (32, 16, 90, close);
     Target park_T = new Target(-30,-2,0, wayPoint);
     Target target = new Target();
@@ -103,15 +108,11 @@ public class RightOdometery extends OpMode {
 
     @Override
     public void loop() {
-        robot.odo.bulkUpdate();
-        double newTime = getRuntime();
-        double loopTime = newTime-oldTime;
-        double frequency = 1/loopTime;
-        double timer = 0;
-        double time_to_reach_wall = 0;
-        double distanceToWall;
-
+        newTime = getRuntime();
+        loopTime = newTime-oldTime;
+        frequency = 1/loopTime;
         oldTime = newTime;
+        robot.odo.bulkUpdate();
         Pose2D pos = robot.odo.getPosition();
         String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",
                 pos.getX(DistanceUnit.MM),
@@ -122,6 +123,7 @@ public class RightOdometery extends OpMode {
 
 
         switch (state){
+            //have it go further along the bar, so there is more room for the third specimen to be scored
             case START:
                 target = turnNearSubmersible_T;
                 state = States.TURN_NEAR_SUBMERSIBLE_S;
@@ -204,8 +206,8 @@ public class RightOdometery extends OpMode {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(300);
                     target = pickUpSpecimen_T;
-                    state = States.LOADING;
-//                    state = States.REACH_WALL_EXACTLY_S;
+//                    state = States.LOADING;
+                    state = States.REACH_WALL_EXACTLY_S;
                 }
                 break;
 
@@ -236,7 +238,7 @@ public class RightOdometery extends OpMode {
 
             case BACK_UP_FROM_WALL_S:
                 if (move.moveIt(pos, target)){
-                    target = turnNearSubmersible_T;
+                    target = turnNearSubmersibleAgain_T;
                     state = States.TURN_NEAR_SUBMERSIBLE_JR_S;
                 }
                 break;
@@ -252,31 +254,27 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)){
                     state = States.SCORING_JR;
                 }
+                timer = (System.currentTimeMillis()+ 500);
                 break;
 
             case SCORING_JR:
                 score();
-                //THIS TIMER IS NOT WORKING EITHER
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-//                timer = (System.currentTimeMillis()+ 500);
-//                if (System.currentTimeMillis() > timer) {
-//                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-//                    robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-//                }
                 target = lineUpOnSpecimen_T;
                 state = States.DRIVE_TO_SPECIMEN_JR_S;
                 break;
 
             case DRIVE_TO_SPECIMEN_JR_S:
-
                 if (move.moveIt(pos, target)) {
                     target = pickUpThirdSpecimen_T;
                     state = States.LINE_UP_ON_SPECIMEN_S;
                 }
                 break;
 
+                //Loading happens before hand and then it runs into the specimen on the wall
+
             case LINE_UP_ON_SPECIMEN_S:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
                 if (move.moveIt(pos, target)){
                     state = States.LOADING_JR;
                 }
@@ -299,7 +297,7 @@ public class RightOdometery extends OpMode {
 
             case BACK_UP_FROM_WALL_JR_S:
                 if (move.moveIt(pos, target)){
-                    target = turnNearSubmersibleAgain_T;
+                    target = turnNearSubmersibleAgainAgain_T;
                     state = States.TURN_NEAR_SUBMERSIBLE_THIRD_S;
                 }
                 break;
@@ -357,6 +355,7 @@ public class RightOdometery extends OpMode {
             terminateOpModeNow();
         }
     }
+
     private void score() {
         boolean done = false;
         States scoreState = States.SCORING;
@@ -365,6 +364,7 @@ public class RightOdometery extends OpMode {
             switch (scoreState) {
                 case SCORING:
                     robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
+                    //make a custom is busy where you can allow a room of wiggle room like a good enough
                     if (!robot.specimenMotor.isBusy()) {
                         scoreState = States.CLAWS_UP;
                     }

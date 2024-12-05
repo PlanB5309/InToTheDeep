@@ -97,7 +97,7 @@ public class RobotHardware {
     public static final int ABOVE_SECOND_BAR = 1955;
     public static final int ABOVE_THE_WALL = 900;
     //THIS IS THE MOVEMENT TO SCORE THE SPECIMEN
-    public static final int BELOW_SECOND_BAR = 1400;
+    public static final int BELOW_SECOND_BAR = 1250;
     public static final int GRAB_SPECIMEN = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
     public static final int RAISE_ARM_TO_BASKET = 3643;
