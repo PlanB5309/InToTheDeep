@@ -97,7 +97,7 @@ public class RobotHardware {
     public static final int ABOVE_SECOND_BAR = 1955;
     public static final int ABOVE_THE_WALL = 900;
     //THIS IS THE MOVEMENT TO SCORE THE SPECIMEN
-    public static final int BELOW_SECOND_BAR = 1400;
+    public static final int BELOW_SECOND_BAR = 1250;
     public static final int GRAB_SPECIMEN = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
     public static final int RAISE_ARM_TO_BASKET = 3643;
@@ -117,10 +117,12 @@ public class RobotHardware {
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
+    public static final double ARM_LIMIT = 4055;
 
     //Kick Servo
-    public static final double KICK_SERVO_IN = 0;
-    public static final double KICK_SERVO_OUT = .3;
+    public static final double KICK_SERVO_OUT = .35;
+    public static final double KICK_SERVO_MIDDLE = .7;
+    public static final double KICK_SERVO_IN = .95;
 
     //Rates
     public static final int CLICKS_PER_CENTIMETER = 18;
