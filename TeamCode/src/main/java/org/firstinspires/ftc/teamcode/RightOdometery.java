@@ -50,7 +50,7 @@ public class RightOdometery extends OpMode {
     Target driveToBarAgain_T = new Target (31.75, 13, 90, closer);
     Target driveToBarAgainAgain_T = new Target (31.75, 11, 90, closer);
     Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
-    Target waypointTowardsSamples_T = new Target(23, -18, -90, wayPoint);
+    Target waypointTowardsSamples_T = new Target(23, -16, -90, wayPoint);
     Target driveTowardsSamples_T = new Target( 26, -18, -90, wayPoint);
     Target lineUpSamples_T = new Target(34,-19,-90, close);
     Target pickUpSample_T = new Target(36,-30,-90, samplePickup);
@@ -214,13 +214,14 @@ public class RightOdometery extends OpMode {
             case REACH_WALL_EXACTLY_S:
                  distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
                  while (distanceToWall > robot.AT_THE_WALL){
-                     robot.backLeftMotor.setPower(.1);
-                     robot.frontLeftMotor.setPower(-.1);
-                     robot.backRightMotor.setPower(-.1);
-                     robot.frontRightMotor.setPower(.1);
+                     robot.backLeftMotor.setPower(.2);
+                     robot.frontLeftMotor.setPower(-.2);
+                     robot.backRightMotor.setPower(-.2);
+                     robot.frontRightMotor.setPower(.2);
                      distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
                  }
                  state = States.LOADING;
+                 driveTrain.stop();
                 break;
 
             case LOADING:
