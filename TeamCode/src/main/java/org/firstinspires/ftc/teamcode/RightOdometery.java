@@ -38,21 +38,22 @@ public class RightOdometery extends OpMode {
     TargetProfile wayPoint = new TargetProfile(.85,.2,5,10,3);
     TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
     TargetProfile closer = new TargetProfile(.3, .1, 1.5,3, 8);
-    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,4, 2);
+    TargetProfile samplePickup = new TargetProfile(.2, .2, 1,4, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2,3, 5);
 
 
     //Targets
-    Target turnNearSubmersible_T = new Target (25, 13, 60, wayPoint);
-    Target turnNearSubmersibleAgain_T = new Target (25, 8, 50, wayPoint);
-    Target turnNearSubmersibleAgainAgain_T = new Target (25, 8, 60, wayPoint);
+    Target turnNearSubmersible_T = new Target (25, 13, 57, wayPoint);
+    //Overshoots the turn the back right wheel hits the submersible before it is correct
+    Target turnNearSubmersibleAgain_T = new Target (25, 6, 55, wayPoint);
+    Target turnNearSubmersibleAgainAgain_T = new Target (25, 8, 55, wayPoint);
     Target driveToBar_T = new Target(31.75, 17, 90, close);
-    Target driveToBarAgain_T = new Target (31.75, 13, 90, closer);
-    Target driveToBarAgainAgain_T = new Target (31.75, 11, 90, closer);
+    Target driveToBarAgain_T = new Target (31.75, 13, 90, close);
+    Target driveToBarAgainAgain_T = new Target (31.75, 11, 90, close);
     Target backUpFromSubmersible_T = new Target(23,14,-90, wayPoint);
-    Target waypointTowardsSamples_T = new Target(23, -18, -90, wayPoint);
-    Target driveTowardsSamples_T = new Target( 26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(34,-19,-90, close);
+    Target waypointTowardsSamples_T = new Target(23, -16, -90, wayPoint);
+    Target driveTowardsSamples_T = new Target( 26, -21, -90, wayPoint);
+    Target lineUpSamples_T = new Target(36,-21,-90, close);
     Target pickUpSample_T = new Target(36,-30,-90, samplePickup);
     Target driveToSpecimen_T = new Target (2,-34,-90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target (5, -33, -90, specimenPickup);
@@ -60,7 +61,6 @@ public class RightOdometery extends OpMode {
     Target pickUpSpecimen_T = new Target (-1, -30.5, -90, closer);
     Target backUpFromWall_T = new Target (10, -30.5, -90, wayPoint);
     Target pickUpThirdSpecimen_T = new Target (-1, -33, -90, specimenPickup);
-    Target scoreThirdSpecimen_T = new Target (32, 16, 90, close);
     Target park_T = new Target(-30,-2,0, wayPoint);
     Target target = new Target();
 
@@ -205,22 +205,20 @@ public class RightOdometery extends OpMode {
                 if (System.currentTimeMillis() >= spitTime) {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(300);
-                    target = pickUpSpecimen_T;
-//                    state = States.LOADING;
+                    time_to_reach_wall = (System.currentTimeMillis()+500);
                     state = States.REACH_WALL_EXACTLY_S;
                 }
                 break;
 
             case REACH_WALL_EXACTLY_S:
-                 distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
-                 while (distanceToWall > robot.AT_THE_WALL){
-                     robot.backLeftMotor.setPower(.1);
-                     robot.frontLeftMotor.setPower(-.1);
-                     robot.backRightMotor.setPower(-.1);
-                     robot.frontRightMotor.setPower(.1);
-                     distanceToWall = readSensor.distance(robot.SpecimenDistanceSensor) - robot.AT_THE_WALL;
-                 }
-                 state = States.LOADING;
+                robot.backLeftMotor.setPower(.4);
+                robot.frontLeftMotor.setPower(-.4);
+                robot.backRightMotor.setPower(-.4);
+                robot.frontRightMotor.setPower(.4);
+                if (System.currentTimeMillis() > time_to_reach_wall){
+                    driveTrain.stop();
+                    state = States.LOADING;
+                }
                 break;
 
             case LOADING:
@@ -264,6 +262,10 @@ public class RightOdometery extends OpMode {
                 break;
 
             case DRIVE_TO_SPECIMEN_JR_S:
+                if (!robot.specimenMotor.isBusy()){
+                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                    robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                }
                 if (move.moveIt(pos, target)) {
                     target = pickUpThirdSpecimen_T;
                     state = States.LINE_UP_ON_SPECIMEN_S;
@@ -273,8 +275,6 @@ public class RightOdometery extends OpMode {
                 //Loading happens before hand and then it runs into the specimen on the wall
 
             case LINE_UP_ON_SPECIMEN_S:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
                 if (move.moveIt(pos, target)){
                     state = States.LOADING_JR;
                 }

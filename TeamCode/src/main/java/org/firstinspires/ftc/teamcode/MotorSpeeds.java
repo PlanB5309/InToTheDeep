@@ -114,10 +114,10 @@ public class MotorSpeeds {
     //Turn speed used to be 60 degrees
     private double TurnSpeed (double diff, double maxAngleDiff) {
         diff = Math.abs(diff);
-        if (diff > 45)
+        if (diff > 55)
             return robot.HIGH_TURN_POWER;
 
-        if (diff <= 45 && diff > 10 && diff > maxAngleDiff)
+        if (diff <= 55 && diff > 10 && diff > maxAngleDiff)
             return robot.MEDIUM_TURN_POWER;
 
         if (diff <= 10 && diff > maxAngleDiff)
