@@ -25,8 +25,16 @@ public class LeftOdometery extends OpMode {
     DriveTrain driveTrain = new DriveTrain(robot);
     ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
-    TargetProfile close = new TargetProfile(.4, .1, 2, 2, 4);
-    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,5, 2);
+    //Target Profiles
+    TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
+    TargetProfile wayPoint = new TargetProfile(.85, .2, 5, 10, 3);
+    TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
+    TargetProfile closer = new TargetProfile(.3, .1, 1.5, 3, 8);
+    TargetProfile samplePickup = new TargetProfile(.2, .2, 1, 4, .1);
+    TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
+//    TargetProfile close = new TargetProfile(.4, .1, 2, 2, 4);
+//    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,5, 2);
+    //Targets
     Target toBasket_T = new Target (0,-17,0,close);
     Target atBasket_T = new Target (11.5,-17,0,close);
     Target lineupSample1_T = new Target(-22,-24,-45,close);
@@ -35,7 +43,6 @@ public class LeftOdometery extends OpMode {
     Target loadSample2_T = new Target (-9,-38,-45,samplePickup);
     Target lineupSample3_T = new Target (-9,-38,-45,close);
     Target loadSample3_T = new Target (-4,-42,-25,samplePickup);
-
 
     Target target = new Target();
 
@@ -82,7 +89,7 @@ public class LeftOdometery extends OpMode {
 
         switch (state){
             case START:
-                robot.armMotor.setTargetPosition(robot.DRIVE_HEIGHT);
+                robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
                 target = toBasket_T;
                 state = States.TO_BASKET_1_S;
                 break;
@@ -90,7 +97,8 @@ public class LeftOdometery extends OpMode {
             case TO_BASKET_1_S:
                 if (move.moveIt(pos, target)) {
                     scoreSample();
-                    state = States.LINEUP_SAMPLE_1_S;
+                    state = States.DONE_FOR_NOW;
+//                    state = States.LINEUP_SAMPLE_1_S;
                     target = lineupSample1_T;
                 }
                 break;
