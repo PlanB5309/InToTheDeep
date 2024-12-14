@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -83,7 +82,6 @@ public class RobotHardware {
     public RevBlinkinLedDriver lights;
 
     //Create Sensors
-    public Rev2mDistanceSensor SpecimenDistanceSensor;
     BNO055IMU imu;
     public RevTouchSensor SpecimenTouchSensor;
     // Declare OpMode member for the Odometry Computer
@@ -102,7 +100,7 @@ public class RobotHardware {
     public static final int EXTEND_ARM_TO_BASKET = 3083;
     public static final int RAISE_ARM_TO_BASKET = 3643;
     public static final int DRIVE_HEIGHT = 1500;
-    public static final int ARM_LOCK = 0;
+    public static final int ARM_LOCK = -300;
 
 
     //Servo Constants
@@ -177,7 +175,6 @@ public class RobotHardware {
 
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
         SpecimenTouchSensor = hwMap.get(RevTouchSensor.class, "SpecimenTouchSensor");
-        SpecimenDistanceSensor = hwMap.get(Rev2mDistanceSensor.class, "SpecimenDistanceSensor");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.

@@ -59,6 +59,7 @@ public class Teleop extends OpMode {
     double ArmLength = robot.SHORT_ARM;
     boolean retractArm = false;
     boolean slow_mode;
+    boolean armStill = false;
     States state = States.NOT_RUNNING;
     double liftTime = 0;
 
@@ -176,14 +177,18 @@ public class Teleop extends OpMode {
         load();
 
         //Sample arm up and down
-        robot.armMotor.setPower(gamepad2.right_stick_y);
+        if (armStill!=true)
+            robot.armMotor.setPower(gamepad2.right_stick_y);
 
         //Sample Arm Lock The Hang
+        /*
         if (gamepad2.back) {
             robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.armMotor.setTargetPosition(robot.ARM_LOCK);
             robot.armMotor.setPower(-1);
+            armStill=true;
         }
+        */
 
         //SpecimenMotor
         if (gamepad2.dpad_up){
@@ -288,7 +293,7 @@ public class Teleop extends OpMode {
             case SCORING:
                 robot.specimenMotor.setTargetPosition(robot.BELOW_SECOND_BAR);
                 if (!robot.specimenMotor.isBusy()) {
-                    liftTime = System.currentTimeMillis() + 250;
+                    //liftTime = System.currentTimeMillis() + 250;
                     state = States.CLAWS_UP;
                 }
                 break;
