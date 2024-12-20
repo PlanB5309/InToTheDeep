@@ -52,7 +52,7 @@ public class RightOdometery extends OpMode {
     Target driveToBarAgainAgain_T = new Target(31.75, 11, 90, close);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
-    Target waypointTowardsSamples_T = new Target(23, -16, -90, wayPoint);
+    Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
     Target driveTowardsSamples_T = new Target(26, -21, -90, wayPoint);
     Target lineUpSamples_T = new Target(36, -21, -90, close);
     Target pickUpSample_T = new Target(36, -30, -90, samplePickup);
@@ -233,6 +233,9 @@ public class RightOdometery extends OpMode {
                 robot.intakeServo.setPosition(.5);
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+                timer = System.currentTimeMillis() + 150;
+                while (System.currentTimeMillis() < timer)
+                    Thread.yield();
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
                 robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.specimenMotor.setPower(1);
@@ -294,6 +297,9 @@ public class RightOdometery extends OpMode {
                 robot.intakeServo.setPosition(.5);
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+                timer = System.currentTimeMillis() + 150;
+                while (System.currentTimeMillis() < timer)
+                    Thread.yield();
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
                 robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.specimenMotor.setPower(1);

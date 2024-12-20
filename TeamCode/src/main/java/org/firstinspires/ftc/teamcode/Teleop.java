@@ -159,6 +159,7 @@ public class Teleop extends OpMode {
 
         //Ready to grab a specimen
         if (gamepad2.left_bumper) {
+            state = States.NOT_RUNNING;
             robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
             robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
             robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);

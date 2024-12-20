@@ -62,5 +62,5 @@ public enum States {
     SCORING_THIRD,
     CLAWS_UP,
     LIFT_DOWN,
-    CLAWS_DOWN,
+    CLAWS_DOWN
 }
