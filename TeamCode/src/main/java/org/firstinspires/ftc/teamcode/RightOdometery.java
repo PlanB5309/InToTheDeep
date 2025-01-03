@@ -233,7 +233,7 @@ public class RightOdometery extends OpMode {
                 robot.intakeServo.setPosition(.5);
                 robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                 robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-                timer = System.currentTimeMillis() + 150;
+                timer = System.currentTimeMillis() + 75;
                 while (System.currentTimeMillis() < timer)
                     Thread.yield();
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
