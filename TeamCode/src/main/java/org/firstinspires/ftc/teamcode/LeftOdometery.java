@@ -26,27 +26,26 @@ public class LeftOdometery extends OpMode {
     double oldTime = 0;
     //Target Profiles
     TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
-    TargetProfile wayPoint = new TargetProfile(.6, .2, 4, 10, 3);
-    TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
-    TargetProfile closer = new TargetProfile(.3, .1, 1, 3, 8);
-    TargetProfile samplePickup = new TargetProfile(.2, .2, 1, 4, .1);
+    TargetProfile wayPoint = new TargetProfile(.65, .2, 4, 10, 3);
+    TargetProfile close = new TargetProfile(.55, .1, 2, 5, 5);
+    TargetProfile closer = new TargetProfile(.35, .1, .5,2 , 8);
+    TargetProfile samplePickup = new TargetProfile(.25, .2, 2, 3, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
-//    TargetProfile close = new TargetProfile(.4, .1, 2, 2, 4);
-//    TargetProfile samplePickup = new TargetProfile(.2, .1, 1,5, 2);
+
 
     //Targets
     Target offWall_T = new Target(0,-7, 0, wayPoint);
     Target toBasket_T = new Target (8, -20, 25, wayPoint);
-    Target lineUpBasket_T = new Target (12, -13, 20, wayPoint);
-    Target atBasket_T = new Target (23.5,-9.25,45, closer);
-    Target awayFromBasket_T = new Target (9,-17,0, wayPoint);
-    Target awayFromBasketAgain_T = new Target (12, -17, 0, wayPoint);
-    Target awayFromBasketAgainAgain_T = new Target (15, -17, 0, wayPoint);
+    Target lineUpBasket_T = new Target (12, -13, 15, wayPoint);
+    Target atBasket_T = new Target (23.25,-9.5,45, closer);
+    Target awayFromBasket_T = new Target (9,-17,25, wayPoint);
+    Target awayFromBasketAgain_T = new Target (12, -17, 25, wayPoint);
+    Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
     Target lineupSample_T = new Target(3,-36.5,0, close);
-    Target lineUpSampleAgain_T = new Target (10, -36.5, 0, close);
+    Target lineUpSampleAgain_T = new Target (11, -36, 0, close);
     Target lineUpSampleAgainAgain_T = new Target (17, -36.5, 0, close);
     Target loadSample_T = new Target(11,-36.5,0, samplePickup);
-    Target loadSampleAgain_T = new Target (20,-36.5,0, samplePickup);
+    Target loadSampleAgain_T = new Target (22,-36.5,0, samplePickup);
     Target loadSampleAgainAgain_T = new Target (26, -36, 0, samplePickup);
 
 
