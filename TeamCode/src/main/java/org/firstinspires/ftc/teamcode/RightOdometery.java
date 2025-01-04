@@ -53,8 +53,10 @@ public class RightOdometery extends OpMode {
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
     Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
-    Target driveTowardsSamples_T = new Target(26, -21, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36, -21, -90, close);
+    //was -21 for the y
+    Target driveTowardsSamples_T = new Target(26, -19, -90, wayPoint);
+    //was -19 for the y
+    Target lineUpSamples_T = new Target(36, -20, -90, close);
     Target pickUpSample_T = new Target(36, -30, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
@@ -336,8 +338,10 @@ public class RightOdometery extends OpMode {
                 break;
 
             case PARK:
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                 if (move.moveIt(pos, target)) {
+                    robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                    robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+                    robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
                     target = park_T;
                     driveTrain.stop();
                 }

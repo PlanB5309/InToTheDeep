@@ -182,14 +182,13 @@ public class Teleop extends OpMode {
             robot.armMotor.setPower(gamepad2.right_stick_y);
 
         //Sample Arm Lock The Hang
-        /*
+
         if (gamepad2.back) {
             robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.armMotor.setTargetPosition(robot.ARM_LOCK);
             robot.armMotor.setPower(-1);
             armStill=true;
         }
-        */
 
         //SpecimenMotor
         if (gamepad2.dpad_up){

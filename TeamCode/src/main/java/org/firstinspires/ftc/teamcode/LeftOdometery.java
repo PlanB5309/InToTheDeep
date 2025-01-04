@@ -26,10 +26,10 @@ public class LeftOdometery extends OpMode {
     double oldTime = 0;
     //Target Profiles
     TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
-    TargetProfile wayPoint = new TargetProfile(.65, .2, 4, 10, 3);
-    TargetProfile close = new TargetProfile(.55, .1, 2, 5, 5);
-    TargetProfile closer = new TargetProfile(.35, .1, .5,2 , 8);
-    TargetProfile samplePickup = new TargetProfile(.25, .2, 2, 3, .1);
+    TargetProfile wayPoint = new TargetProfile(.7, .2, 4, 10, 3);
+    TargetProfile close = new TargetProfile(.6, .1, 2, 5, 5);
+    TargetProfile closer = new TargetProfile(.4, .1, .5,2 , 8);
+    TargetProfile samplePickup = new TargetProfile(.25, .25, 1, 3, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
 
 
@@ -38,15 +38,16 @@ public class LeftOdometery extends OpMode {
     Target toBasket_T = new Target (8, -20, 25, wayPoint);
     Target lineUpBasket_T = new Target (12, -13, 15, wayPoint);
     Target atBasket_T = new Target (23.25,-9.5,45, closer);
-    Target awayFromBasket_T = new Target (9,-17,25, wayPoint);
-    Target awayFromBasketAgain_T = new Target (12, -17, 25, wayPoint);
+    Target awayFromBasket_T = new Target (7,-15,25, wayPoint);
+    Target awayFromBasketAgain_T = new Target (14, -17, 25, wayPoint);
     Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
-    Target lineupSample_T = new Target(3,-36.5,0, close);
-    Target lineUpSampleAgain_T = new Target (11, -36, 0, close);
-    Target lineUpSampleAgainAgain_T = new Target (17, -36.5, 0, close);
-    Target loadSample_T = new Target(11,-36.5,0, samplePickup);
-    Target loadSampleAgain_T = new Target (22,-36.5,0, samplePickup);
+    Target lineupSample_T = new Target(4,-36.5,0, close);
+    Target lineUpSampleAgain_T = new Target (13, -35.5, 0, close);
+    Target lineUpSampleAgainAgain_T = new Target (12, -32.5, 0, batOutOfHell);
+    Target loadSample_T = new Target(13,-36.5,0, samplePickup);
+    Target loadSampleAgain_T = new Target (22,-35.5,0, samplePickup);
     Target loadSampleAgainAgain_T = new Target (26, -36, 0, samplePickup);
+    Target observationZonePark_T = new Target (5, -30, 0, batOutOfHell);
 
 
 
@@ -222,11 +223,15 @@ public class LeftOdometery extends OpMode {
             case AT_BASKET_AGAIN_AGAIN_S:
                 if (move.moveIt(pos,target)) {
                     scoreSample(awayFromBasketAgainAgain_T);
-                    state = States.DONE_FOR_NOW;
+                    target = lineUpSampleAgainAgain_T;
+                    state = States.LINEUP_SAMPLE_AGAIN_AGAIN_S;
                 }
                 break;
 
             case LINEUP_SAMPLE_AGAIN_AGAIN_S:
+                if (move.moveIt(pos, target)){
+                    state = States.DONE_FOR_NOW;
+                }
                 break;
 
 
