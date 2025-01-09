@@ -77,7 +77,7 @@ public class Teleop extends OpMode {
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
-
+        robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
     }
 
     @Override

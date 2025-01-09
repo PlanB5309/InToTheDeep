@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -8,22 +7,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class GyroTurn {
     RobotHardware robot;
     Telemetry telemetry;
-    LinearOpMode linearOpMode;
     double currHeading;
 
     // State used for updating telemetry
-    private Orientation angles;
-    private Acceleration gravity;
+
     private DriveTrain driveTrain;
 
-    public GyroTurn(RobotHardware robot, Telemetry telemetry, LinearOpMode linearOpMode) {
+    public GyroTurn(RobotHardware robot, Telemetry telemetry) {
         this.robot = robot;
         this.telemetry = telemetry;
-        this.linearOpMode = linearOpMode;
 
         driveTrain = new DriveTrain(robot);
     }
@@ -33,11 +30,9 @@ public class GyroTurn {
         double diff;
         double speed;
 
-        if (!linearOpMode.opModeIsActive())
-            return;
         updateHeading();
 
-        while (Math.abs(currHeading - target) > 1 && linearOpMode.opModeIsActive()) {
+        while (Math.abs(currHeading - target) > 1 ) {
 
             diff = Math.abs(currHeading - target);
             speed = TurnSpeed(diff);
@@ -86,9 +81,9 @@ public class GyroTurn {
     }
 
     public void updateHeading() {
-        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        gravity = robot.imu.getGravity();
-        currHeading = angles.firstAngle;
+        robot.odo.bulkUpdate();
+        Pose2D pos = robot.odo.getPosition();
+        currHeading = pos.getHeading(AngleUnit.DEGREES);
         telemetry.addData("Heading: ", currHeading);
         telemetry.update();
         }

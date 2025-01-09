@@ -22,7 +22,7 @@ public class LeftOdometery extends OpMode {
     double timeToStop;
     double spitTime;
     DriveTrain driveTrain = new DriveTrain(robot);
-    ReadSensor readSensor = new ReadSensor(robot, telemetry);
+    GyroTurn gyroTurn = new GyroTurn(robot,telemetry);
     double oldTime = 0;
     //Target Profiles
     TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
@@ -37,8 +37,8 @@ public class LeftOdometery extends OpMode {
     Target offWall_T = new Target(0,-7, 0, wayPoint);
     Target toBasket_T = new Target (8, -20, 25, wayPoint);
     Target lineUpBasket_T = new Target (12, -13, 15, wayPoint);
-    Target atBasket_T = new Target (23.25,-9.5,45, closer);
-    Target awayFromBasket_T = new Target (7,-15,25, wayPoint);
+    Target atBasket_T = new Target (23.75,-8,45, closer);
+    Target awayFromBasket_T = new Target (9,-13,25, wayPoint);
     Target awayFromBasketAgain_T = new Target (14, -17, 25, wayPoint);
     Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
     Target lineupSample_T = new Target(4,-36.5,0, close);
@@ -59,6 +59,7 @@ public class LeftOdometery extends OpMode {
         robot.init(hardwareMap);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+        robot.armBlockServo.setPosition(robot.BLOCK_ARM);
         motorSpeeds = new MotorSpeeds(robot, telemetry);
         move = new Move(robot, telemetry, motorSpeeds);
         state = States.START;
@@ -132,6 +133,7 @@ public class LeftOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     target = loadSample_T;
                     state = States.LOAD_SAMPLE_S;
+                    gyroTurn.goodEnough(target.h);
                 }
                 break;
 
@@ -183,6 +185,7 @@ public class LeftOdometery extends OpMode {
                 if (move.moveIt(pos,target)) {
                     target = loadSampleAgain_T;
                     state = States.LOAD_SAMPLE_AGAIN_S;
+                    gyroTurn.goodEnough(target.h);
                 }
                 break;
 
@@ -231,11 +234,13 @@ public class LeftOdometery extends OpMode {
             case LINEUP_SAMPLE_AGAIN_AGAIN_S:
                 if (move.moveIt(pos, target)){
                     state = States.DONE_FOR_NOW;
+                    gyroTurn.goodEnough(target.h);
                 }
                 break;
 
 
             case DONE_FOR_NOW:
+                robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
                 driveTrain.stop();
                 break;
         }

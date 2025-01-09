@@ -37,8 +37,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
-
 /**
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
  * Please read the explanations in that Sample about how to use this class definition.
@@ -76,7 +74,7 @@ public class RobotHardware {
     public Servo frontClawServo = null;
     public Servo backClawServo = null;
     public Servo hookServo = null;
-    public Servo kickServo = null;
+    public Servo armBlockServo = null;
 
     //Create Lights
     public RevBlinkinLedDriver lights;
@@ -97,9 +95,9 @@ public class RobotHardware {
     //THIS IS THE MOVEMENT TO SCORE THE SPECIMEN
     public static final int BELOW_SECOND_BAR = 1335;
     public static final int GRAB_SPECIMEN = 0;
-    public static final int GRAB_SAMPLE = 175;
+    public static final int GRAB_SAMPLE = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
-    public static final int RAISE_ARM_TO_BASKET = 3643;
+    public static final int RAISE_ARM_TO_BASKET = 3600;
     public static final int DRIVE_HEIGHT = 1500;
     public static final int ARM_LOCK = -300;
 
@@ -114,15 +112,16 @@ public class RobotHardware {
     public static final double FRONT_CLAW_OPEN_UP = .85;
     public static final double HOOK_IN = .6;
     public static final double HOOK_OUT = 0;
+
     //Arm
     public static final double SHORT_ARM = 1;
     public static final double GRAB_ARM = .62;
     public static final double ARM_LIMIT = 4055;
 
-    //Kick Servo
-    public static final double KICK_SERVO_OUT = .35;
-    public static final double KICK_SERVO_MIDDLE = .7;
-    public static final double KICK_SERVO_IN = .95;
+    //ArmBlockerServo
+
+    public static final double BLOCK_ARM = .54;
+    public static final double UNBLOCK_ARM = .74;
 
     //Rates
     public static final int CLICKS_PER_CENTIMETER = 18;
@@ -170,7 +169,7 @@ public class RobotHardware {
         frontClawServo = hwMap.get(Servo.class, "frontClawServo");
         backClawServo = hwMap.get(Servo.class, "backClawServo");
         hookServo = hwMap.get(Servo.class, "hookServo");
-        kickServo = hwMap.get(Servo.class, "kickServo");
+        armBlockServo = hwMap.get(Servo.class, "armBlockServo");
 
         lights = hwMap.get(RevBlinkinLedDriver.class, "lights");
 

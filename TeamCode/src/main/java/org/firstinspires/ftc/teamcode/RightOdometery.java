@@ -20,8 +20,8 @@ public class RightOdometery extends OpMode {
     MotorSpeeds motorSpeeds;
     States state;
     DriveTrain driveTrain = new DriveTrain(robot);
+    GyroTurn gyroTurn = new GyroTurn(robot,telemetry);
     double timeToStop;
-    ReadSensor readSensor = new ReadSensor(robot, telemetry);
     double oldTime = 0;
     double spitTime = 0;
     double close_to_wall;
@@ -73,6 +73,7 @@ public class RightOdometery extends OpMode {
         robot.init(hardwareMap);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+        robot.armBlockServo.setPosition(robot.BLOCK_ARM);
         //specimenMotor
         robot.specimenMotor.setTargetPosition(0);
         robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -186,14 +187,15 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     target = pickUpSample_T;
                     state = States.PICK_UP_SAMPLE_S;
+                    gyroTurn.goodEnough(target.h);
                 }
 
             case PICK_UP_SAMPLE_S:
-                robot.armMotor.setTargetPosition(100);
+                robot.armMotor.setTargetPosition(0);
                 robot.intakeServo.setPosition(0);
                 if (move.moveIt(pos, target)) {
                     robot.intakeServo.setPosition(.5);
-                    robot.armMotor.setTargetPosition(600);
+                    robot.armMotor.setTargetPosition(500);
                     robot.sampleMotor.setTargetPosition(200);
                     target = driveToSpecimen_T;
                     state = States.DRIVE_TO_SPECIMEN_S;
@@ -214,7 +216,7 @@ public class RightOdometery extends OpMode {
                 robot.intakeServo.setPosition(1);
                 if (System.currentTimeMillis() >= spitTime) {
                     robot.sampleMotor.setTargetPosition(0);
-                    robot.armMotor.setTargetPosition(300);
+                    robot.armMotor.setTargetPosition(200);
                     time_to_reach_wall = (System.currentTimeMillis() + 500);
                     state = States.REACH_WALL_EXACTLY_S;
                 }
@@ -339,6 +341,7 @@ public class RightOdometery extends OpMode {
 
             case PARK:
                 if (move.moveIt(pos, target)) {
+                    robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
                     robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
@@ -348,6 +351,7 @@ public class RightOdometery extends OpMode {
                 break;
 
             case DONE_FOR_NOW:
+                robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
                 driveTrain.stop();
                 break;
         }
