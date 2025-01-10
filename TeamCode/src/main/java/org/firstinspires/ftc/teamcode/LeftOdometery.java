@@ -27,23 +27,23 @@ public class LeftOdometery extends OpMode {
     //Target Profiles
     TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
     TargetProfile wayPoint = new TargetProfile(.7, .2, 4, 10, 3);
-    TargetProfile close = new TargetProfile(.6, .1, 2, 5, 5);
-    TargetProfile closer = new TargetProfile(.4, .1, .5,2 , 8);
+    TargetProfile close = new TargetProfile(.6, .15, 2, 5, 5);
+    TargetProfile closer = new TargetProfile(.4, .15, .5,2 , 8);
     TargetProfile samplePickup = new TargetProfile(.25, .25, 1, 3, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
-
+    TargetProfile lineUpTheBasket = new TargetProfile(.4, .15, .5, 25, 8);
 
     //Targets
     Target offWall_T = new Target(0,-7, 0, wayPoint);
     Target toBasket_T = new Target (8, -20, 25, wayPoint);
     Target lineUpBasket_T = new Target (12, -13, 15, wayPoint);
-    Target atBasket_T = new Target (23.75,-8,45, closer);
-    Target awayFromBasket_T = new Target (9,-13,25, wayPoint);
+    Target atBasket_T = new Target (23.75,-8,45, lineUpTheBasket);
+    Target awayFromBasket_T = new Target (11,-13,25, wayPoint);
     Target awayFromBasketAgain_T = new Target (14, -17, 25, wayPoint);
     Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
     Target lineupSample_T = new Target(4,-36.5,0, close);
     Target lineUpSampleAgain_T = new Target (13, -35.5, 0, close);
-    Target lineUpSampleAgainAgain_T = new Target (12, -32.5, 0, batOutOfHell);
+    Target lineUpSampleAgainAgain_T = new Target (16, -32.5, 0, batOutOfHell);
     Target loadSample_T = new Target(13,-36.5,0, samplePickup);
     Target loadSampleAgain_T = new Target (22,-35.5,0, samplePickup);
     Target loadSampleAgainAgain_T = new Target (26, -36, 0, samplePickup);
@@ -121,6 +121,7 @@ public class LeftOdometery extends OpMode {
 
             case AT_BASKET_S:
                 if (move.moveIt(pos, target)) {
+                    gyroTurn.goodEnough(target.h);
                     scoreSample(awayFromBasket_T);
                     target = lineupSample_T;
                     state = States.LINEUP_SAMPLE_S;
@@ -157,7 +158,7 @@ public class LeftOdometery extends OpMode {
                break;
 
             case WAIT_FOR_ARM_S:
-                if (!robot.armMotor.isBusy()){
+                if (!robot.armMotor.isBusy() || robot.armMotor.getCurrentPosition() > (robot.RAISE_ARM_TO_BASKET * .75)){
                     target = lineUpBasket_T;
                     state = States.LINE_UP_BASKET_AGAIN_S;
                 }
@@ -174,6 +175,7 @@ public class LeftOdometery extends OpMode {
 
             case AT_BASKET_AGAIN_S:
                 if (move.moveIt(pos,target)) {
+                    gyroTurn.goodEnough(target.h);
                     scoreSample(awayFromBasketAgain_T);
                     target = lineUpSampleAgain_T;
                     state = States.LINEUP_SAMPLE_AGAIN_S;
@@ -208,7 +210,7 @@ public class LeftOdometery extends OpMode {
                 break;
 
             case WAIT_FOR_ARM_AGAIN_S:
-                if (!robot.armMotor.isBusy()){
+                if (!robot.armMotor.isBusy() || robot.armMotor.getCurrentPosition() > (robot.RAISE_ARM_TO_BASKET * .75)){
                     target = lineUpBasket_T;
                     state = States.LINE_UP_BASKET_AGAIN_AGAIN_S;
                 }
@@ -225,6 +227,7 @@ public class LeftOdometery extends OpMode {
 
             case AT_BASKET_AGAIN_AGAIN_S:
                 if (move.moveIt(pos,target)) {
+                    gyroTurn.goodEnough(target.h);
                     scoreSample(awayFromBasketAgainAgain_T);
                     target = lineUpSampleAgainAgain_T;
                     state = States.LINEUP_SAMPLE_AGAIN_AGAIN_S;
@@ -240,7 +243,6 @@ public class LeftOdometery extends OpMode {
 
 
             case DONE_FOR_NOW:
-                robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
                 driveTrain.stop();
                 break;
         }

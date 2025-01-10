@@ -74,10 +74,14 @@ public class Teleop extends OpMode {
         robot.init(hardwareMap);
         robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+    }
+
+    @Override
+    public void start() {
+        robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
-        robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
     }
 
     @Override

@@ -46,17 +46,15 @@ public class RightOdometery extends OpMode {
     Target turnNearSubmersible_T = new Target(25, 13, 57, wayPoint);
     //Overshoots the turn the back right wheel hits the submersible before it is correct
     Target turnNearSubmersibleAgain_T = new Target(25, 6, 55, wayPoint);
-    Target turnNearSubmersibleAgainAgain_T = new Target(25, 8, 55, wayPoint);
+    Target turnNearSubmersibleAgainAgain_T = new Target(25, 4, 55, wayPoint);
     Target driveToBar_T = new Target(31.75, 17, 90, close);
     Target driveToBarAgain_T = new Target(31.75, 13, 90, close);
-    Target driveToBarAgainAgain_T = new Target(31.75, 11, 90, close);
+    Target driveToBarAgainAgain_T = new Target(31.75, 10, 90, close);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
     Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
-    //was -21 for the y
-    Target driveTowardsSamples_T = new Target(26, -19, -90, wayPoint);
-    //was -19 for the y
-    Target lineUpSamples_T = new Target(36, -20, -90, close);
+    Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
+    Target lineUpSamples_T = new Target(36, -19, -90, close);
     Target pickUpSample_T = new Target(36, -30, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
@@ -341,7 +339,6 @@ public class RightOdometery extends OpMode {
 
             case PARK:
                 if (move.moveIt(pos, target)) {
-                    robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
                     robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
@@ -351,7 +348,6 @@ public class RightOdometery extends OpMode {
                 break;
 
             case DONE_FOR_NOW:
-                robot.armBlockServo.setPosition(robot.UNBLOCK_ARM);
                 driveTrain.stop();
                 break;
         }
