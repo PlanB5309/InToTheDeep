@@ -55,7 +55,7 @@ public class RightOdometery extends OpMode {
     Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
     Target lineUpSamples_T = new Target(36, -19, -90, close);
-    Target pickUpSample_T = new Target(36, -30, -90, samplePickup);
+    Target pickUpSample_T = new Target(36, -32, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
     //spit out block afterwards

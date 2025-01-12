@@ -25,7 +25,7 @@ public class LeftOdometery extends OpMode {
     GyroTurn gyroTurn = new GyroTurn(robot,telemetry);
     double oldTime = 0;
     //Target Profiles
-    TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
+    TargetProfile batOutOfHell = new TargetProfile(1,.85,5, 15, 5);
     TargetProfile wayPoint = new TargetProfile(.7, .2, 4, 10, 3);
     TargetProfile close = new TargetProfile(.6, .15, 2, 5, 5);
     TargetProfile closer = new TargetProfile(.4, .15, .5,2 , 8);
@@ -41,9 +41,11 @@ public class LeftOdometery extends OpMode {
     Target awayFromBasket_T = new Target (11,-13,25, wayPoint);
     Target awayFromBasketAgain_T = new Target (14, -17, 25, wayPoint);
     Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
-    Target lineupSample_T = new Target(4,-36.5,0, close);
+    Target lineupSample_T = new Target(4,-36,0, close);
+    //^-36.5
     Target lineUpSampleAgain_T = new Target (13, -35.5, 0, close);
-    Target lineUpSampleAgainAgain_T = new Target (16, -32.5, 0, batOutOfHell);
+    //^-35.5
+    Target lineUpSampleAgainAgain_T = new Target (16, -36, 0, batOutOfHell);
     Target loadSample_T = new Target(13,-36.5,0, samplePickup);
     Target loadSampleAgain_T = new Target (22,-35.5,0, samplePickup);
     Target loadSampleAgainAgain_T = new Target (26, -36, 0, samplePickup);
