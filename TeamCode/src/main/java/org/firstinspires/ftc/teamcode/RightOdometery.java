@@ -186,6 +186,7 @@ public class RightOdometery extends OpMode {
                     target = pickUpSample_T;
                     state = States.PICK_UP_SAMPLE_S;
                     gyroTurn.goodEnough(target.h);
+                    gyroTurn.goodEnough(target.h);
                 }
 
             case PICK_UP_SAMPLE_S:
@@ -194,7 +195,7 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     robot.intakeServo.setPosition(.5);
                     robot.armMotor.setTargetPosition(500);
-                    robot.sampleMotor.setTargetPosition(200);
+                    robot.sampleMotor.setTargetPosition(0);
                     target = driveToSpecimen_T;
                     state = States.DRIVE_TO_SPECIMEN_S;
                 }

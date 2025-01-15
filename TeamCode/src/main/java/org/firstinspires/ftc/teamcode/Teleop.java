@@ -233,14 +233,30 @@ public class Teleop extends OpMode {
             robot.sampleMotor.setPower(-.15);
             retractArm = true;
         }
+
+        //Retracts the sampleMotor
         if (gamepad2.dpad_left) {
             robot.sampleMotor.setPower(-1);
             retractArm = false;
         }
-        if (gamepad2.dpad_right) {
-            robot.sampleMotor.setPower(1);
-            retractArm = false;
+
+        //Extends the sampleMotor
+        if (robot.armMotor.getCurrentPosition() > 1000) {
+            if (gamepad2.dpad_right) {
+                robot.sampleMotor.setPower(1);
+                retractArm = false;
+            }
         }
+        //1500 is not the accurate number just a guess
+        else {
+            if (gamepad2.dpad_right && robot.sampleMotor.getCurrentPosition() < 1500) {
+                robot.sampleMotor.setPower(1) ;
+                retractArm = false;
+            }
+        }
+
+        if (gamepad2.left_stick_button && robot.armMotor.getCurrentPosition() > 1000)
+            robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
 
         if (gamepad2.dpad_left == false &&
             gamepad2.dpad_right == false  &&
@@ -254,26 +270,17 @@ public class Teleop extends OpMode {
         if (gamepad1.left_bumper)
             robot.hookServo.setPosition(robot.HOOK_IN);
 
-//        Pose2D pos = robot.odo.getPosition();
-//        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",
-//                pos.getX(DistanceUnit.INCH),
-//                pos.getY(DistanceUnit.INCH),
-//                pos.getHeading(AngleUnit.DEGREES));
-//        telemetry.addData("Position", data);
-//        telemetry.addData("Bar Height", robot.specimenMotor.getCurrentPosition());
-//        telemetry.addData("Basket Height", robot.sampleMotor.getCurrentPosition());
-//        telemetry.addData("HOW FAR ARM MOTOR GOES UP", robot.armMotor.getCurrentPosition());
-//        telemetry.addData("State", state.name());
-//        telemetry.addData("Kick Servo Position", robot.kickServo.getPosition());
-//        telemetry.addData("DISTANCES", robot.SpecimenDistanceSensor.getDistance(DistanceUnit.INCH));
-//        telemetry.addData("Arm Height", robot.armMotor.getCurrentPosition());
-//        telemetry.update();
 
         //touch sensor for specimen lift
         if (robot.SpecimenTouchSensor.isPressed() && state != States.LOADING) {
             robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+
+        telemetry.addData("ARM MOTOR POSITION", robot.armMotor.getCurrentPosition());
+        telemetry.addData("SAMPLE MOTOR POSITION", robot.sampleMotor.getCurrentPosition());
+        telemetry.update();
+
     } //end of loop
 
         private void load(){
