@@ -38,7 +38,7 @@ public class RightOdometery extends OpMode {
     TargetProfile wayPoint = new TargetProfile(.85, .2, 5, 10, 3);
     TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
     TargetProfile closer = new TargetProfile(.3, .1, 1.5, 3, 8);
-    TargetProfile samplePickup = new TargetProfile(.2, .2, 1, 4, .1);
+    TargetProfile samplePickup = new TargetProfile(.175, .175, 1, 4, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
 
 

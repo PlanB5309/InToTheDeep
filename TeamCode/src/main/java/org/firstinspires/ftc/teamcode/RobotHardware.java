@@ -110,7 +110,7 @@ public class RobotHardware {
     public static final double FRONT_CLAW_CLOSE = 0.52;
     public static final double FRONT_CLAW_OPEN_DOWN = .13;
     public static final double FRONT_CLAW_OPEN_UP = .85;
-    public static final double HOOK_IN = .6;
+    public static final double HOOK_IN = 1;
     public static final double HOOK_OUT = 0;
 
     //Arm
@@ -132,6 +132,8 @@ public class RobotHardware {
     public final double MEDIUM_TURN_POWER = .3;
     public final double LOW_TURN_POWER = 0.1;
 
+    //Deadzone
+    public final double DEADZONE = 0.05;
 
 
 
@@ -188,10 +190,8 @@ public class RobotHardware {
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-        //Schuy's one and only contribution
+        //Schuy's not one and only contribution
         hookServo.setPosition(HOOK_IN);
-
-
 
         //Using Encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

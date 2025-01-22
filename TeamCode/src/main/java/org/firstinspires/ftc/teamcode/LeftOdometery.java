@@ -29,7 +29,7 @@ public class LeftOdometery extends OpMode {
     TargetProfile wayPoint = new TargetProfile(.7, .2, 4, 10, 3);
     TargetProfile close = new TargetProfile(.6, .15, 2, 5, 5);
     TargetProfile closer = new TargetProfile(.4, .15, .5,2 , 8);
-    TargetProfile samplePickup = new TargetProfile(.25, .25, 1, 3, .1);
+    TargetProfile samplePickup = new TargetProfile(.175, .175, 1, 3, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
     TargetProfile lineUpTheBasket = new TargetProfile(.4, .15, .5, 25, 8);
 

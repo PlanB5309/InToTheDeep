@@ -240,26 +240,21 @@ public class Teleop extends OpMode {
             retractArm = false;
         }
 
-        //Extends the sampleMotor
-        if (robot.armMotor.getCurrentPosition() > 1000) {
-            if (gamepad2.dpad_right) {
-                robot.sampleMotor.setPower(1);
-                retractArm = false;
-            }
+        if (Math.abs(gamepad2.left_stick_y) > robot.DEADZONE){
+            robot.sampleMotor.setPower(-gamepad2.left_stick_y);
+            retractArm = false;
         }
-        //1500 is not the accurate number just a guess
-        else {
-            if (gamepad2.dpad_right && robot.sampleMotor.getCurrentPosition() < 1500) {
+
+        //Extends the sampleMotor
+
+            if (gamepad2.dpad_right) {
                 robot.sampleMotor.setPower(1) ;
                 retractArm = false;
             }
-        }
-
-        if (gamepad2.left_stick_button && robot.armMotor.getCurrentPosition() > 1000)
-            robot.sampleMotor.setTargetPosition(robot.EXTEND_ARM_TO_BASKET);
 
         if (gamepad2.dpad_left == false &&
             gamepad2.dpad_right == false  &&
+            Math.abs(gamepad2.left_stick_y) < robot.DEADZONE &&
             retractArm == false)
             robot.sampleMotor.setPower(0);
 
