@@ -195,7 +195,7 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     robot.intakeServo.setPosition(.5);
                     robot.armMotor.setTargetPosition(500);
-                    robot.sampleMotor.setTargetPosition(0);
+                    robot.sampleMotor.setTargetPosition(300);
                     target = driveToSpecimen_T;
                     state = States.DRIVE_TO_SPECIMEN_S;
                 }
