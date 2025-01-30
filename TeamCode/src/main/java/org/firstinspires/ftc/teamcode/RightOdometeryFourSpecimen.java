@@ -10,10 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.Locale;
 
-
-@TeleOp(name="Robot: RightOdometry", group="Robot")
-public class RightOdometery extends OpMode {
-
+@TeleOp(name="Robot: RightOdometryFourSpecimen", group="Robot")
+public class RightOdometeryFourSpecimen extends OpMode {
 
     RobotHardware robot = new RobotHardware();
     Move move;
@@ -34,14 +32,16 @@ public class RightOdometery extends OpMode {
 
 
     //Target Profiles
-    TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
-    TargetProfile wayPoint = new TargetProfile(.85, .2, 5, 10, 3);
+    TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 6);
+    TargetProfile wayPoint = new TargetProfile(.85, .2, 5, 10, 4);
     TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
     TargetProfile closer = new TargetProfile(.3, .1, 1.5, 3, 8);
-    TargetProfile samplePickup = new TargetProfile(.175, .175, 1, 4, .1);
+    TargetProfile samplePickup = new TargetProfile(.2, .2, 1, 4, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
     TargetProfile scoreSpecimen = new TargetProfile (.5, .1, 2, 10, 5);
     TargetProfile superWayPoint = new TargetProfile(.85, .2, 5, 15, 3);
+    TargetProfile slowerWayPoint = new TargetProfile(.85, .2, 4, 8, 5);
+    TargetProfile normalSpeed = new TargetProfile(.7, .2, 3, 6, 4);
 
     //Targets
     Target turnNearSubmersible_T = new Target(25, 13, 57, wayPoint);
@@ -53,11 +53,15 @@ public class RightOdometery extends OpMode {
     Target driveToBarAgainAgain_T = new Target(31.75, 10, 90, scoreSpecimen);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
-    Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
+    Target waypointTowardsSamples_T = new Target(21, -14, -90, slowerWayPoint);
+    //was 23, 14
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
     Target lineUpSamples_T = new Target(36, -19, -90, close);
+    Target lineUpSamplesAgain_T = new Target(36, -29, -90, normalSpeed);
     Target pickUpSample_T = new Target(36, -31, -90, samplePickup);
+    Target pickUpSampleAgain_T = new Target(36, -38, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
+    Target driveToObservationZone_T = new Target(2, -34, -90, slowerWayPoint);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
     //spit out block afterwards
     Target pickUpSpecimen_T = new Target(-1, -30.5, -90, closer);
@@ -164,7 +168,7 @@ public class RightOdometery extends OpMode {
                     target = waypointTowardsSamples_T;
                     state = States.WAYPOINT_TOWARDS_SAMPLE_S;
                 }
-                    break;
+                break;
 
             case WAYPOINT_TOWARDS_SAMPLE_S:
                 if (move.moveIt(pos, target)) {
@@ -198,11 +202,11 @@ public class RightOdometery extends OpMode {
                     robot.armMotor.setTargetPosition(500);
                     robot.sampleMotor.setTargetPosition(300);
                     target = driveToSpecimen_T;
-                    state = States.DRIVE_TO_SPECIMEN_S;
+                    state = States.DRIVE_TO_OBSERVATION_ZONE_S;
                 }
                 break;
 
-            case DRIVE_TO_SPECIMEN_S:
+            case DRIVE_TO_OBSERVATION_ZONE_S:
                 robot.intakeServo.setPosition(.5);
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimen_T;
@@ -218,9 +222,56 @@ public class RightOdometery extends OpMode {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(200);
                     time_to_reach_wall = (System.currentTimeMillis() + 600);
-                    state = States.REACH_WALL_EXACTLY_S;
+                    target = lineUpSamplesAgain_T;
+                    state = States.LINE_UP_ON_SAMPLE_JR_S;
                 }
                 break;
+                //this is where we start changing things ^stays the same
+
+            case LINE_UP_ON_SAMPLE_JR_S:
+                if (move.moveIt(pos, target)) {
+                    target = pickUpSampleAgain_T;
+                    state = States.PICK_UP_SAMPLE_JR_S;
+                    gyroTurn.goodEnough(target.h);
+                    gyroTurn.goodEnough(target.h);
+                }
+                break;
+
+            //need a new target for picking up those samples
+            case PICK_UP_SAMPLE_JR_S:
+                robot.armMotor.setTargetPosition(0);
+                robot.intakeServo.setPosition(0);
+                if (move.moveIt(pos, target)) {
+                    robot.intakeServo.setPosition(.5);
+                    robot.armMotor.setTargetPosition(500);
+                    robot.sampleMotor.setTargetPosition(300);
+                    target = driveToSpecimen_T;
+                    state = States.DRIVE_TO_SPECIMEN_JR_S;
+                }
+                break;
+
+            case DRIVE_TO_SPECIMEN_JR_S:
+                robot.intakeServo.setPosition(.5);
+                if (move.moveIt(pos, target)) {
+                    target = pickUpSpecimen_T;
+                    state = States.DROP_SAMPLE_JR_S;
+                    spitTime = System.currentTimeMillis() + 500;
+                    driveTrain.stop();
+                }
+                break;
+
+            case DROP_SAMPLE_JR_S:
+                robot.intakeServo.setPosition(1);
+                if (System.currentTimeMillis() >= spitTime) {
+                    robot.sampleMotor.setTargetPosition(0);
+                    robot.armMotor.setTargetPosition(200);
+                    time_to_reach_wall = (System.currentTimeMillis() + 500);
+//                    state = States.REACH_WALL_EXACTLY_S;
+                    state = States.DONE_FOR_NOW;
+                }
+                break;
+
+                //end of new part ^
 
             case REACH_WALL_EXACTLY_S:
                 robot.backLeftMotor.setPower(.4);
@@ -280,17 +331,17 @@ public class RightOdometery extends OpMode {
             case SCORING_JR:
                 score();
                 target = lineUpOnSpecimen_T;
-                state = States.DRIVE_TO_SPECIMEN_JR_S;
+                state = States.DRIVE_TO_SPECIMEN_THIRD_S;
                 break;
 
-            case DRIVE_TO_SPECIMEN_JR_S:
+            case DRIVE_TO_SPECIMEN_THIRD_S:
                 if (!robot.specimenMotor.isBusy()) {
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
                 }
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimenAgain_T;
-                    time_to_reach_wall = (System.currentTimeMillis() + 600);
+                    time_to_reach_wall = (System.currentTimeMillis() + 500);
                     state = States.REACH_WALL_EXACTLY_JR_S;
                 }
                 break;
@@ -451,4 +502,3 @@ public class RightOdometery extends OpMode {
         return done;
     }
 }
-

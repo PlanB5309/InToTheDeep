@@ -30,6 +30,16 @@ public enum States {
     BACK_UP_FROM_WALL_JR_S,
     REACH_WALL_EXACTLY_S,
     REACH_WALL_EXACTLY_JR_S,
+    WAIT_FOR_CLAWS_S,
+    WAIT_FOR_CLAWS_JR_S,
+
+    //RightOdometeryFourSpecimen States
+
+    LINE_UP_ON_SAMPLE_JR_S,
+    PICK_UP_SAMPLE_JR_S,
+    DRIVE_TO_SPECIMEN_THIRD_S,
+    DROP_SAMPLE_JR_S,
+    DRIVE_TO_OBSERVATION_ZONE_S,
 
     //LeftOdometery States
     OFF_WALL_S,
