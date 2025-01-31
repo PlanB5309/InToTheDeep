@@ -227,7 +227,7 @@ public class RightOdometery extends OpMode {
                 robot.frontLeftMotor.setPower(-.4);
                 robot.backRightMotor.setPower(-.4);
                 robot.frontRightMotor.setPower(.4);
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (System.currentTimeMillis() > time_to_reach_wall) {
                     driveTrain.stop();
                     state = States.WAIT_FOR_CLAWS_S;
@@ -245,11 +245,7 @@ public class RightOdometery extends OpMode {
 
             case LOADING:
                 robot.intakeServo.setPosition(.5);
-                while (System.currentTimeMillis() < timer)
-                    Thread.yield();
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.specimenMotor.setPower(1);
                 if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
                     target = backUpFromWall_T;
                     state = States.BACK_UP_FROM_WALL_S;
@@ -274,7 +270,6 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     state = States.SCORING_JR;
                 }
-                timer = (System.currentTimeMillis() + 500);
                 break;
 
             case SCORING_JR:
@@ -302,7 +297,7 @@ public class RightOdometery extends OpMode {
                 robot.frontLeftMotor.setPower(-.4);
                 robot.backRightMotor.setPower(-.4);
                 robot.frontRightMotor.setPower(.4);
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (System.currentTimeMillis() > time_to_reach_wall) {
                     driveTrain.stop();
                     state = States.WAIT_FOR_CLAWS_JR_S;
@@ -320,11 +315,7 @@ public class RightOdometery extends OpMode {
 
             case LOADING_JR:
                 robot.intakeServo.setPosition(.5);
-                while (System.currentTimeMillis() < timer)
-                    Thread.yield();
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.specimenMotor.setPower(1);
                 if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
                     target = backUpFromWall_T;
                     state = States.BACK_UP_FROM_WALL_JR_S;
@@ -362,7 +353,6 @@ public class RightOdometery extends OpMode {
                     robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-                    target = park_T;
                     driveTrain.stop();
                 }
                 break;

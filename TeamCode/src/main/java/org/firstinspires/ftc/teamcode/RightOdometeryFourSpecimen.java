@@ -34,32 +34,34 @@ public class RightOdometeryFourSpecimen extends OpMode {
     //Target Profiles
     TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 6);
     TargetProfile wayPoint = new TargetProfile(.85, .2, 5, 10, 4);
-    TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
+    TargetProfile close = new TargetProfile(.5, .125, 2, 5, 5);
     TargetProfile closer = new TargetProfile(.3, .1, 1.5, 3, 8);
-    TargetProfile samplePickup = new TargetProfile(.2, .2, 1, 4, .1);
+    TargetProfile samplePickup = new TargetProfile(.275, .25, 1, 4, .1);
     TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
     TargetProfile scoreSpecimen = new TargetProfile (.5, .1, 2, 10, 5);
-    TargetProfile superWayPoint = new TargetProfile(.85, .2, 5, 15, 3);
-    TargetProfile slowerWayPoint = new TargetProfile(.85, .2, 4, 8, 5);
-    TargetProfile normalSpeed = new TargetProfile(.7, .2, 3, 6, 4);
+    TargetProfile superWayPoint = new TargetProfile(.875, .2, 5, 15, 3);
+    TargetProfile slowerWayPoint = new TargetProfile(.825, .2, 4, 8, 5);
+    TargetProfile normalSpeed = new TargetProfile(.725, .3, 3, 6, 4);
 
     //Targets
     Target turnNearSubmersible_T = new Target(25, 13, 57, wayPoint);
     //Overshoots the turn the back right wheel hits the submersible before it is correct
     Target turnNearSubmersibleAgain_T = new Target(25, 6, 55, superWayPoint);
     Target turnNearSubmersibleAgainAgain_T = new Target(25, 4, 55, superWayPoint);
+    Target turnNearSubmersibleAgainAgainAgain_T = new Target(25, 2, 55, superWayPoint);
     Target driveToBar_T = new Target(31.75, 17, 90, close);
     Target driveToBarAgain_T = new Target(31.75, 13, 90, scoreSpecimen);
     Target driveToBarAgainAgain_T = new Target(31.75, 10, 90, scoreSpecimen);
+    Target driveToBarAgainAgainAgain_T = new Target(31.75, 8, 90, scoreSpecimen);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
     Target waypointTowardsSamples_T = new Target(21, -14, -90, slowerWayPoint);
     //was 23, 14
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36, -19, -90, close);
-    Target lineUpSamplesAgain_T = new Target(36, -29, -90, normalSpeed);
+    Target lineUpSamples_T = new Target(36, -19, -90, normalSpeed);
+    Target lineUpSamplesAgain_T = new Target(34, -29, -90, normalSpeed);
     Target pickUpSample_T = new Target(36, -31, -90, samplePickup);
-    Target pickUpSampleAgain_T = new Target(36, -38, -90, samplePickup);
+    Target pickUpSampleAgain_T = new Target(35, -38, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
     Target driveToObservationZone_T = new Target(2, -34, -90, slowerWayPoint);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
@@ -170,6 +172,8 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 }
                 break;
 
+                //working on placing samples in observation zone
+
             case WAYPOINT_TOWARDS_SAMPLE_S:
                 if (move.moveIt(pos, target)) {
                     target = driveTowardsSamples_T;
@@ -221,11 +225,12 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 if (System.currentTimeMillis() >= spitTime) {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(200);
-                    time_to_reach_wall = (System.currentTimeMillis() + 600);
                     target = lineUpSamplesAgain_T;
                     state = States.LINE_UP_ON_SAMPLE_JR_S;
                 }
                 break;
+
+                //picking up a second sample to put into the observation zone
                 //this is where we start changing things ^stays the same
 
             case LINE_UP_ON_SAMPLE_JR_S:
@@ -246,11 +251,11 @@ public class RightOdometeryFourSpecimen extends OpMode {
                     robot.armMotor.setTargetPosition(500);
                     robot.sampleMotor.setTargetPosition(300);
                     target = driveToSpecimen_T;
-                    state = States.DRIVE_TO_SPECIMEN_JR_S;
+                    state = States.DRIVE_TO_SPECIMEN_S;
                 }
                 break;
 
-            case DRIVE_TO_SPECIMEN_JR_S:
+            case DRIVE_TO_SPECIMEN_S:
                 robot.intakeServo.setPosition(.5);
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimen_T;
@@ -265,20 +270,19 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 if (System.currentTimeMillis() >= spitTime) {
                     robot.sampleMotor.setTargetPosition(0);
                     robot.armMotor.setTargetPosition(200);
-                    time_to_reach_wall = (System.currentTimeMillis() + 500);
-//                    state = States.REACH_WALL_EXACTLY_S;
-                    state = States.DONE_FOR_NOW;
+                    time_to_reach_wall = (System.currentTimeMillis() + 600);
+                    state = States.REACH_WALL_EXACTLY_S;
                 }
                 break;
 
-                //end of new part ^
+                //get ready to pick up the first specimen from the wall
 
             case REACH_WALL_EXACTLY_S:
                 robot.backLeftMotor.setPower(.4);
                 robot.frontLeftMotor.setPower(-.4);
                 robot.backRightMotor.setPower(-.4);
                 robot.frontRightMotor.setPower(.4);
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (System.currentTimeMillis() > time_to_reach_wall) {
                     driveTrain.stop();
                     state = States.WAIT_FOR_CLAWS_S;
@@ -296,16 +300,14 @@ public class RightOdometeryFourSpecimen extends OpMode {
 
             case LOADING:
                 robot.intakeServo.setPosition(.5);
-                while (System.currentTimeMillis() < timer)
-                    Thread.yield();
                 robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.specimenMotor.setPower(1);
                 if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
                     target = backUpFromWall_T;
                     state = States.BACK_UP_FROM_WALL_S;
                 }
                 break;
+
+                //start moving to score the first wall specimen onto the submersible
 
             case BACK_UP_FROM_WALL_S:
                 if (move.moveIt(pos, target)) {
@@ -325,16 +327,17 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 if (move.moveIt(pos, target)) {
                     state = States.SCORING_JR;
                 }
-                timer = (System.currentTimeMillis() + 500);
                 break;
 
             case SCORING_JR:
                 score();
                 target = lineUpOnSpecimen_T;
-                state = States.DRIVE_TO_SPECIMEN_THIRD_S;
+                state = States.DRIVE_TO_SPECIMEN_JR_S;
                 break;
 
-            case DRIVE_TO_SPECIMEN_THIRD_S:
+                //get ready to pick up the second wall specimen
+
+            case DRIVE_TO_SPECIMEN_JR_S:
                 if (!robot.specimenMotor.isBusy()) {
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
@@ -353,7 +356,7 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 robot.frontLeftMotor.setPower(-.4);
                 robot.backRightMotor.setPower(-.4);
                 robot.frontRightMotor.setPower(.4);
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (System.currentTimeMillis() > time_to_reach_wall) {
                     driveTrain.stop();
                     state = States.WAIT_FOR_CLAWS_JR_S;
@@ -404,16 +407,93 @@ public class RightOdometeryFourSpecimen extends OpMode {
 
             case SCORING_THIRD:
                 score();
+                target = driveToSpecimen_T;
+                state = States.DRIVE_TO_SPECIMEN_THIRD_S;
+                break;
+
+//            case SCORING_THIRD:
+//                score();
+//                target = park_T;
+//                state = States.PARK;
+//                break;
+
+                //get ready to pick up the third wall specimen
+
+            //ALL NEW STUFF THE TARGETS NEED TO BE ADJUSTED
+
+            case DRIVE_TO_SPECIMEN_THIRD_S:
+                time_to_reach_wall = System.currentTimeMillis() + 600;
+                if (move.moveIt(pos, target)) {
+                    state = States.REACH_WALL_EXACTLY_THIRD_S;
+                }
+                break;
+
+            case REACH_WALL_EXACTLY_THIRD_S:
+                robot.backLeftMotor.setPower(.4);
+                robot.frontLeftMotor.setPower(-.4);
+                robot.backRightMotor.setPower(-.4);
+                robot.frontRightMotor.setPower(.4);
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
+                if (System.currentTimeMillis() > time_to_reach_wall) {
+                    driveTrain.stop();
+                    state = States.WAIT_FOR_CLAWS_THIRD_S;
+                }
+                break;
+
+            case WAIT_FOR_CLAWS_THIRD_S:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+                timer = System.currentTimeMillis() + 200;
+                while (System.currentTimeMillis() < timer)
+                    Thread.yield();
+                state  = States.LOADING_THIRD;
+                break;
+
+            case LOADING_THIRD:
+                robot.intakeServo.setPosition(.5);
+                while (System.currentTimeMillis() < timer)
+                    Thread.yield();
+                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.specimenMotor.setPower(1);
+                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
+                    target = backUpFromWall_T;
+                    state = States.BACK_UP_FROM_WALL_THIRD_S;
+                }
+                break;
+
+            case BACK_UP_FROM_WALL_THIRD_S:
+                if (move.moveIt(pos, target)) {
+                    target = turnNearSubmersibleAgainAgainAgain_T;
+                    state = States.TURN_NEAR_SUBMERSIBLE_FOURTH_S;
+                }
+                break;
+
+            case TURN_NEAR_SUBMERSIBLE_FOURTH_S:
+                if (move.moveIt(pos, target)) {
+                    target = driveToBarAgainAgainAgain_T;
+                    state = States.DRIVE_TO_BAR_FOURTH_S;
+                }
+                break;
+
+            case DRIVE_TO_BAR_FOURTH_S:
+                if (move.moveIt(pos, target)) {
+                    state = States.SCORING_FOURTH;
+                }
+                break;
+
+            case SCORING_FOURTH:
+                score();
                 target = park_T;
                 state = States.PARK;
                 break;
+
 
             case PARK:
                 if (move.moveIt(pos, target)) {
                     robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN);
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-                    target = park_T;
                     driveTrain.stop();
                 }
                 break;
