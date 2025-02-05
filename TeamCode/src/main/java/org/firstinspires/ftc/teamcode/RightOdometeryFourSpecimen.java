@@ -54,16 +54,26 @@ public class RightOdometeryFourSpecimen extends OpMode {
     Target driveToBarAgainAgain_T = new Target(31.75, 10, 90, scoreSpecimen);
     Target driveToBarAgainAgainAgain_T = new Target(31.75, 8, 90, scoreSpecimen);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
+
+    //all new targets for the new part, just a placeholder need to drive for accurate coordinates
+    Target strafeRightTowardsSamples_T = new Target (23, 14, 90, wayPoint);
+    Target driveForwardTowardsSamples_T = new Target (23, 14, 90, wayPoint);
+    Target driveForwardTowardsSamplesAgain_T = new Target (23, 14, 90, wayPoint);
+    Target lineUpOnSamples_T = new Target (23, 14, 90, wayPoint);
+    Target lineUpOnSamplesAgain_T = new Target (23, 14, 90, wayPoint);
+    Target driveToObservationZone_T = new Target(2, -34, -90, slowerWayPoint);
+    Target driveToObservationZoneAgain_T = new Target(2, -34, -90, slowerWayPoint);
+
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
     Target waypointTowardsSamples_T = new Target(21, -14, -90, slowerWayPoint);
     //was 23, 14
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36, -19, -90, normalSpeed);
-    Target lineUpSamplesAgain_T = new Target(34, -29, -90, normalSpeed);
+//    Target lineUpSamples_T = new Target(36, -19, -90, normalSpeed);
+//    Target lineUpSamplesAgain_T = new Target(34, -29, -90, normalSpeed);
     Target pickUpSample_T = new Target(36, -31, -90, samplePickup);
     Target pickUpSampleAgain_T = new Target(35, -38, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
-    Target driveToObservationZone_T = new Target(2, -34, -90, slowerWayPoint);
+
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
     //spit out block afterwards
     Target pickUpSpecimen_T = new Target(-1, -30.5, -90, closer);
@@ -160,98 +170,63 @@ public class RightOdometeryFourSpecimen extends OpMode {
 
             case BACK_UP_FROM_SUBMERISBLE_S:
                 if (move.moveIt(pos, target)) {
-                    target = spinAtSubmersible_T;
-                    state = States.WAYPOINT_TOWARDS_SAMPLE_S;
+                    target = strafeRightTowardsSamples_T;
+                    state = States.STRAFE_RIGHT_TOWARDS_SAMPLES_S;
+                }
+                break;
+                //after this I need to have the robot drive backwards, no turning, and then to strafe to the right
+
+            case STRAFE_RIGHT_TOWARDS_SAMPLES_S:
+                if (move.moveIt(pos, target)) {
+                    target = driveForwardTowardsSamples_T;
+                    state = States.DRIVE_FORWARD_TOWARDS_SAMPLES_S;
                 }
                 break;
 
-            case SPIN_AT_SUBMERSIBLE_S:
-                if (spin(pos, target)) {
-                    target = waypointTowardsSamples_T;
-                    state = States.WAYPOINT_TOWARDS_SAMPLE_S;
+            case DRIVE_FORWARD_TOWARDS_SAMPLES_S:
+                if (move.moveIt(pos, target)) {
+                    target = lineUpOnSamples_T;
+                    state = States.LINEUP_SAMPLE_S;
                 }
                 break;
 
-                //working on placing samples in observation zone
-
-            case WAYPOINT_TOWARDS_SAMPLE_S:
+            case LINEUP_SAMPLE_S:
                 if (move.moveIt(pos, target)) {
-                    target = driveTowardsSamples_T;
-                    state = States.DRIVE_TOWARDS_SAMPLE_S;
-                }
-                break;
-
-            case DRIVE_TOWARDS_SAMPLE_S:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
-                if (move.moveIt(pos, target)) {
-                    target = lineUpSamples_T;
-                    state = States.LINE_UP_ON_SAMPLE_S;
-                }
-                break;
-
-            case LINE_UP_ON_SAMPLE_S:
-                if (move.moveIt(pos, target)) {
-                    target = pickUpSample_T;
-                    state = States.PICK_UP_SAMPLE_S;
-                    gyroTurn.goodEnough(target.h);
-                    gyroTurn.goodEnough(target.h);
-                }
-
-            case PICK_UP_SAMPLE_S:
-                robot.armMotor.setTargetPosition(0);
-                robot.intakeServo.setPosition(0);
-                if (move.moveIt(pos, target)) {
-                    robot.intakeServo.setPosition(.5);
-                    robot.armMotor.setTargetPosition(500);
-                    robot.sampleMotor.setTargetPosition(300);
-                    target = driveToSpecimen_T;
+                    target = driveToObservationZone_T;
                     state = States.DRIVE_TO_OBSERVATION_ZONE_S;
                 }
                 break;
 
+                //for the target here just have it drive backwards
             case DRIVE_TO_OBSERVATION_ZONE_S:
+                if (move.moveIt(pos, target)) {
+                    target = driveForwardTowardsSamplesAgain_T;
+                    state = States.DRIVE_FORWARD_TOWARDS_SAMPLES_JR_S;
+                }
+                break;
+
+            case DRIVE_FORWARD_TOWARDS_SAMPLES_JR_S:
+                if (move.moveIt(pos, target)) {
+                    target = lineUpOnSamplesAgain_T;
+                    state = States.LINEUP_SAMPLE_JR_S;
+                }
+                break;
+
+            case LINEUP_SAMPLE_JR_S:
+                if (move.moveIt(pos, target)) {
+                    target = driveToObservationZoneAgain_T;
+                    state = States.DRIVE_TO_OBSERVATION_ZONE_JR_S;
+                }
+                break;
+
+                //for the target drive backwards from the forward coordinates
+            case DRIVE_TO_OBSERVATION_ZONE_JR_S:
                 robot.intakeServo.setPosition(.5);
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimen_T;
-                    state = States.DROP_SAMPLE_S;
-                    spitTime = System.currentTimeMillis() + 500;
-                    driveTrain.stop();
-                }
-                break;
-
-            case DROP_SAMPLE_S:
-                robot.intakeServo.setPosition(1);
-                if (System.currentTimeMillis() >= spitTime) {
-                    robot.sampleMotor.setTargetPosition(0);
-                    robot.armMotor.setTargetPosition(200);
-                    target = lineUpSamplesAgain_T;
-                    state = States.LINE_UP_ON_SAMPLE_JR_S;
-                }
-                break;
-
-                //picking up a second sample to put into the observation zone
-                //this is where we start changing things ^stays the same
-
-            case LINE_UP_ON_SAMPLE_JR_S:
-                if (move.moveIt(pos, target)) {
-                    target = pickUpSampleAgain_T;
-                    state = States.PICK_UP_SAMPLE_JR_S;
-                    gyroTurn.goodEnough(target.h);
-                    gyroTurn.goodEnough(target.h);
-                }
-                break;
-
-            //need a new target for picking up those samples
-            case PICK_UP_SAMPLE_JR_S:
-                robot.armMotor.setTargetPosition(0);
-                robot.intakeServo.setPosition(0);
-                if (move.moveIt(pos, target)) {
-                    robot.intakeServo.setPosition(.5);
-                    robot.armMotor.setTargetPosition(500);
-                    robot.sampleMotor.setTargetPosition(300);
-                    target = driveToSpecimen_T;
                     state = States.DRIVE_TO_SPECIMEN_S;
+                    gyroTurn.goodEnough(-90);
+                    driveTrain.stop();
                 }
                 break;
 
@@ -264,17 +239,6 @@ public class RightOdometeryFourSpecimen extends OpMode {
                     driveTrain.stop();
                 }
                 break;
-
-            case DROP_SAMPLE_JR_S:
-                robot.intakeServo.setPosition(1);
-                if (System.currentTimeMillis() >= spitTime) {
-                    robot.sampleMotor.setTargetPosition(0);
-                    robot.armMotor.setTargetPosition(200);
-                    time_to_reach_wall = (System.currentTimeMillis() + 600);
-                    state = States.REACH_WALL_EXACTLY_S;
-                }
-                break;
-
                 //get ready to pick up the first specimen from the wall
 
             case REACH_WALL_EXACTLY_S:

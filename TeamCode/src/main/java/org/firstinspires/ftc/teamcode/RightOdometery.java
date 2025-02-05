@@ -204,6 +204,7 @@ public class RightOdometery extends OpMode {
 
             case DRIVE_TO_SPECIMEN_S:
                 robot.intakeServo.setPosition(.5);
+                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimen_T;
                     state = States.DROP_SAMPLE_S;
@@ -211,6 +212,7 @@ public class RightOdometery extends OpMode {
                     driveTrain.stop();
                 }
                 break;
+
 
             case DROP_SAMPLE_S:
                 robot.intakeServo.setPosition(1);
@@ -227,7 +229,6 @@ public class RightOdometery extends OpMode {
                 robot.frontLeftMotor.setPower(-.4);
                 robot.backRightMotor.setPower(-.4);
                 robot.frontRightMotor.setPower(.4);
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (System.currentTimeMillis() > time_to_reach_wall) {
                     driveTrain.stop();
                     state = States.WAIT_FOR_CLAWS_S;
@@ -282,6 +283,7 @@ public class RightOdometery extends OpMode {
                 if (!robot.specimenMotor.isBusy()) {
                     robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
                     robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                    robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 }
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimenAgain_T;
@@ -297,7 +299,6 @@ public class RightOdometery extends OpMode {
                 robot.frontLeftMotor.setPower(-.4);
                 robot.backRightMotor.setPower(-.4);
                 robot.frontRightMotor.setPower(.4);
-                robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                 if (System.currentTimeMillis() > time_to_reach_wall) {
                     driveTrain.stop();
                     state = States.WAIT_FOR_CLAWS_JR_S;

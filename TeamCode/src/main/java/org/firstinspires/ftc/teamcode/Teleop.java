@@ -63,6 +63,7 @@ public class Teleop extends OpMode {
     States state = States.NOT_RUNNING;
     double liftTime = 0;
 
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -267,11 +268,17 @@ public class Teleop extends OpMode {
 
 
         //touch sensor for specimen lift
-        if (robot.SpecimenTouchSensor.isPressed() && state != States.LOADING) {
+        if (robot.SpecimenTouchSensor.isPressed() && state == States.NOT_RUNNING) {
             robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
+        Pose2D pos = robot.odo.getPosition();
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",
+                pos.getX(DistanceUnit.INCH),
+                pos.getY(DistanceUnit.INCH),
+                pos.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Position", data);
         telemetry.addData("ARM MOTOR POSITION", robot.armMotor.getCurrentPosition());
         telemetry.addData("SAMPLE MOTOR POSITION", robot.sampleMotor.getCurrentPosition());
         telemetry.update();
