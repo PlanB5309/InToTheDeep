@@ -32,6 +32,7 @@ public enum States {
     REACH_WALL_EXACTLY_JR_S,
     WAIT_FOR_CLAWS_S,
     WAIT_FOR_CLAWS_JR_S,
+    PARK_PREP,
 
     //RightOdometeryFourSpecimen States
 

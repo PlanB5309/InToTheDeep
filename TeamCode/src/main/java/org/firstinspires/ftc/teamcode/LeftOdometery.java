@@ -50,6 +50,9 @@ public class LeftOdometery extends OpMode {
     Target loadSampleAgain_T = new Target (22,-35.5,0, samplePickup);
     Target loadSampleAgainAgain_T = new Target (26, -36, 0, samplePickup);
     Target observationZonePark_T = new Target (5, -30, 0, batOutOfHell);
+    Target parkPrep_T = new Target (10, -55, 0, wayPoint);
+    Target acentZonePark_T = new Target (-10, -55, 0, wayPoint);
+
 
 
 
@@ -124,7 +127,7 @@ public class LeftOdometery extends OpMode {
             case AT_BASKET_S:
                 if (move.moveIt(pos, target)) {
                     gyroTurn.goodEnough(target.h);
-                    scoreSample(awayFromBasket_T);
+                    scoreSample(awayFromBasket_T, 300);
                     target = lineupSample_T;
                     state = States.LINEUP_SAMPLE_S;
 
@@ -178,7 +181,7 @@ public class LeftOdometery extends OpMode {
             case AT_BASKET_AGAIN_S:
                 if (move.moveIt(pos,target)) {
                     gyroTurn.goodEnough(target.h);
-                    scoreSample(awayFromBasketAgain_T);
+                    scoreSample(awayFromBasketAgain_T, 300);
                     target = lineUpSampleAgain_T;
                     state = States.LINEUP_SAMPLE_AGAIN_S;
                 }
@@ -230,19 +233,33 @@ public class LeftOdometery extends OpMode {
             case AT_BASKET_AGAIN_AGAIN_S:
                 if (move.moveIt(pos,target)) {
                     gyroTurn.goodEnough(target.h);
-                    scoreSample(awayFromBasketAgainAgain_T);
-                    target = lineUpSampleAgainAgain_T;
-                    state = States.LINEUP_SAMPLE_AGAIN_AGAIN_S;
+                    scoreSample(parkPrep_T, 500);
+                    state = States.PARK_PREP;
                 }
                 break;
 
-            case LINEUP_SAMPLE_AGAIN_AGAIN_S:
-                if (move.moveIt(pos, target)){
+            case PARK_PREP:
+                if (move.moveIt(pos,target)) {
+                    target = acentZonePark_T;
+                    state = States.PARK;
+                }
+                break;
+
+            case PARK:
+                if (move.moveIt(pos,target)){
+                    robot.armMotor.setTargetPosition(robot.RAISE_ARM_FOR_PARK);
+                    robot.armMotor.setPower(1);
+                    robot.hookServo.setPosition(robot.HOOK_IN);
                     state = States.DONE_FOR_NOW;
-                    gyroTurn.goodEnough(target.h);
                 }
-                break;
 
+            /*case LINEUP_SAMPLE_AGAIN_AGAIN_S:
+             if (move.moveIt(pos, target)){
+                state = States.DONE_FOR_NOW;
+                gyroTurn.goodEnough(target.h);
+            }
+            break;
+            */
 
             case DONE_FOR_NOW:
                 driveTrain.stop();
@@ -262,7 +279,7 @@ public class LeftOdometery extends OpMode {
             terminateOpModeNow();
         }
     }
-    private void scoreSample(Target awayFromBasket){
+    private void scoreSample(Target awayFromBasket, int armHeight){
         boolean done = false;
         States score_s = States.SCORE_SAMPLE_S;
         spitTime = System.currentTimeMillis() + 1000;
@@ -287,7 +304,7 @@ public class LeftOdometery extends OpMode {
 
                 case AWAY_FROM_BASKET_S:
                     if (move.moveIt(pos, awayFromBasket)) {
-                        robot.armMotor.setTargetPosition(300);
+                        robot.armMotor.setTargetPosition(armHeight);
                         while (robot.armMotor.isBusy())
                             Thread.yield();
                         done = true;

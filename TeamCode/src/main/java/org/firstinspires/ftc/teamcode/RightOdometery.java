@@ -55,7 +55,7 @@ public class RightOdometery extends OpMode {
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
     Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36, -19, -90, close);
+    Target lineUpSamples_T = new Target(36, -19.5, -90, close);
     Target pickUpSample_T = new Target(36, -31, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
@@ -217,10 +217,9 @@ public class RightOdometery extends OpMode {
             case DROP_SAMPLE_S:
                 robot.intakeServo.setPosition(1);
                 if (System.currentTimeMillis() >= spitTime) {
-                    robot.sampleMotor.setTargetPosition(0);
+                    robot.sampleMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
                     robot.armMotor.setTargetPosition(200);
-                    time_to_reach_wall = (System.currentTimeMillis() + 600);
-                    state = States.REACH_WALL_EXACTLY_S;
+                    state = States.LOADING;
                 }
                 break;
 
@@ -245,12 +244,10 @@ public class RightOdometery extends OpMode {
                 break;
 
             case LOADING:
+                load();
                 robot.intakeServo.setPosition(.5);
-                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
-                    target = backUpFromWall_T;
-                    state = States.BACK_UP_FROM_WALL_S;
-                }
+                target = backUpFromWall_T;
+                state = States.BACK_UP_FROM_WALL_S;
                 break;
 
             case BACK_UP_FROM_WALL_S:
@@ -288,7 +285,7 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     target = pickUpSpecimenAgain_T;
                     time_to_reach_wall = (System.currentTimeMillis() + 600);
-                    state = States.REACH_WALL_EXACTLY_JR_S;
+                    state = States.LOADING_JR;
                 }
                 break;
 
@@ -315,12 +312,9 @@ public class RightOdometery extends OpMode {
                 break;
 
             case LOADING_JR:
-                robot.intakeServo.setPosition(.5);
-                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
-                    target = backUpFromWall_T;
-                    state = States.BACK_UP_FROM_WALL_JR_S;
-                }
+                load();
+                target = backUpFromWall_T;
+                state = States.BACK_UP_FROM_WALL_JR_S;
                 break;
 
             case BACK_UP_FROM_WALL_JR_S:
@@ -440,6 +434,31 @@ public class RightOdometery extends OpMode {
             robot.frontLeftMotor.setPower(.1);
         }
         return done;
+    }
+
+    private void load(){
+        // Strafe to wall
+        time_to_reach_wall = (System.currentTimeMillis() + 600);
+        robot.backLeftMotor.setPower(.4);
+        robot.frontLeftMotor.setPower(-.4);
+        robot.backRightMotor.setPower(-.4);
+        robot.frontRightMotor.setPower(.4);
+        robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
+        while (System.currentTimeMillis() < time_to_reach_wall)
+            Thread.yield();
+        driveTrain.stop();
+
+        // Closing Claws
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+        timer = System.currentTimeMillis() + 1000;
+        while (System.currentTimeMillis() < timer)
+            Thread.yield();
+
+        // Raise Specimen Lift
+        robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+        while (robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL)
+            Thread.yield();
     }
 }
 

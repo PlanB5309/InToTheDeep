@@ -98,7 +98,8 @@ public class RobotHardware {
     public static final int GRAB_SPECIMEN_WALL = 100;
     public static final int GRAB_SAMPLE = 0;
     public static final int EXTEND_ARM_TO_BASKET = 3083;
-    public static final int RAISE_ARM_TO_BASKET = 3600;
+    public static final int RAISE_ARM_TO_BASKET = 3702;
+    public static final int RAISE_ARM_FOR_PARK = 3305;
     public static final int DRIVE_HEIGHT = 1500;
     public static final int ARM_LOCK = -300;
 
