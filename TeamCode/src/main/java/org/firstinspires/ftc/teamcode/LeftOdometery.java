@@ -21,17 +21,23 @@ public class LeftOdometery extends OpMode {
     States state;
     double timeToStop;
     double spitTime;
+    double timeToPark;
+    double timeToTouchBar;
     DriveTrain driveTrain = new DriveTrain(robot);
     GyroTurn gyroTurn = new GyroTurn(robot,telemetry);
     double oldTime = 0;
     //Target Profiles
-    TargetProfile batOutOfHell = new TargetProfile(1,.85,5, 15, 5);
-    TargetProfile wayPoint = new TargetProfile(.7, .2, 4, 10, 3);
-    TargetProfile close = new TargetProfile(.6, .15, 2, 5, 5);
-    TargetProfile closer = new TargetProfile(.4, .15, .5,2 , 8);
-    TargetProfile samplePickup = new TargetProfile(.175, .175, 1, 3, .1);
-    TargetProfile specimenPickup = new TargetProfile(.85, .1, 2, 3, 5);
-    TargetProfile lineUpTheBasket = new TargetProfile(.4, .15, .5, 25, 8);
+     TargetProfile batOutOfHell = new TargetProfile(1,.85,10, 15, 5);
+    TargetProfile wayPoint = new TargetProfile(.85, .2, 5, 10, 3);
+//    TargetProfile close = new TargetProfile(.5, .1, 2, 5, 5);
+//    TargetProfile closer = new TargetProfile(.3, .1, 1.5, 3, 8);
+//    TargetProfile superWayPoint = new TargetProfile(.85, .2, 5, 15, 3);
+
+//    TargetProfile batOutOfHell = new TargetProfile(1,.85,5, 15, 5);
+//    TargetProfile wayPoint = new TargetProfile(.7, .2, 4, 10, 3);
+    TargetProfile close = new TargetProfile(.625, .175, 2, 5, 5);
+    TargetProfile samplePickup = new TargetProfile(.2, .2, 1, 3, .1);
+    TargetProfile lineUpTheBasket = new TargetProfile(.45, .15, .5, 25, 8);
 
     //Targets
     Target offWall_T = new Target(0,-7, 0, wayPoint);
@@ -40,17 +46,16 @@ public class LeftOdometery extends OpMode {
     Target atBasket_T = new Target (23.75,-8,45, lineUpTheBasket);
     Target awayFromBasket_T = new Target (11,-13,25, wayPoint);
     Target awayFromBasketAgain_T = new Target (14, -17, 25, wayPoint);
-    Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
     Target lineupSample_T = new Target(4,-35,0, close);
-    //^-36.5
     Target lineUpSampleAgain_T = new Target (13, -35.5, 0, close);
-    //^-35.5
-    Target lineUpSampleAgainAgain_T = new Target (16, -36, 0, batOutOfHell);
     Target loadSample_T = new Target(13,-36.5,0, samplePickup);
     Target loadSampleAgain_T = new Target (22,-35.5,0, samplePickup);
+    Target parkPrep_T = new Target (10, -55, 0, wayPoint);
+
+    Target awayFromBasketAgainAgain_T = new Target (16, -17, 25, wayPoint);
+    Target lineUpSampleAgainAgain_T = new Target (16, -36, 0, batOutOfHell);
     Target loadSampleAgainAgain_T = new Target (26, -36, 0, samplePickup);
     Target observationZonePark_T = new Target (5, -30, 0, batOutOfHell);
-    Target parkPrep_T = new Target (10, -55, 0, wayPoint);
     Target acentZonePark_T = new Target (-10, -55, 0, wayPoint);
 
 
@@ -149,6 +154,7 @@ public class LeftOdometery extends OpMode {
                 if (move.moveIt(pos,target)){
                     robot.intakeServo.setPosition(.5);
                     robot.armMotor.setTargetPosition(300);
+                    robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
                     target = toBasket_T;
                     state = States.TO_BASKET_AGAIN_S;
                 }
@@ -157,7 +163,6 @@ public class LeftOdometery extends OpMode {
                 //SCORE FIRST FIELD SAMPLE
             case TO_BASKET_AGAIN_S:
                if (move.moveIt(pos, target)){
-                   robot.armMotor.setTargetPosition(robot.RAISE_ARM_TO_BASKET);
                    state = States.WAIT_FOR_ARM_S;
                }
                break;
@@ -233,33 +238,31 @@ public class LeftOdometery extends OpMode {
             case AT_BASKET_AGAIN_AGAIN_S:
                 if (move.moveIt(pos,target)) {
                     gyroTurn.goodEnough(target.h);
-                    scoreSample(parkPrep_T, 500);
-                    state = States.PARK_PREP;
-                }
-                break;
-
-            case PARK_PREP:
-                if (move.moveIt(pos,target)) {
-                    target = acentZonePark_T;
+                    scoreSample(parkPrep_T, 3305);
+                    timeToPark = System.currentTimeMillis() + 250;
                     state = States.PARK;
                 }
+
                 break;
 
             case PARK:
-                if (move.moveIt(pos,target)){
-                    robot.armMotor.setTargetPosition(robot.RAISE_ARM_FOR_PARK);
-                    robot.armMotor.setPower(1);
-                    robot.hookServo.setPosition(robot.HOOK_IN);
+                robot.backLeftMotor.setPower(-1);
+                robot.backRightMotor.setPower(-1);
+                robot.frontRightMotor.setPower(-1);
+                robot.frontLeftMotor.setPower(-1);
+                if (System.currentTimeMillis() > timeToPark) {
+                    timeToTouchBar = System.currentTimeMillis() + 250;
+                    driveTrain.stop();
+                    state = States.TOUCH_BAR;
+                }
+                break;
+
+            case TOUCH_BAR:
+                if (System.currentTimeMillis() > timeToTouchBar) {
+                    robot.hookServo.setPosition(robot.HOOK_OUT);
                     state = States.DONE_FOR_NOW;
                 }
-
-            /*case LINEUP_SAMPLE_AGAIN_AGAIN_S:
-             if (move.moveIt(pos, target)){
-                state = States.DONE_FOR_NOW;
-                gyroTurn.goodEnough(target.h);
-            }
-            break;
-            */
+                break;
 
             case DONE_FOR_NOW:
                 driveTrain.stop();
@@ -279,7 +282,8 @@ public class LeftOdometery extends OpMode {
             terminateOpModeNow();
         }
     }
-    private void scoreSample(Target awayFromBasket, int armHeight){
+
+    private void scoreSample(Target nextTarget, int armHeight){
         boolean done = false;
         States score_s = States.SCORE_SAMPLE_S;
         spitTime = System.currentTimeMillis() + 1000;
@@ -303,7 +307,7 @@ public class LeftOdometery extends OpMode {
                     break;
 
                 case AWAY_FROM_BASKET_S:
-                    if (move.moveIt(pos, awayFromBasket)) {
+                    if (move.moveIt(pos, nextTarget)) {
                         robot.armMotor.setTargetPosition(armHeight);
                         while (robot.armMotor.isBusy())
                             Thread.yield();

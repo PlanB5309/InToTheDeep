@@ -33,6 +33,7 @@ public enum States {
     WAIT_FOR_CLAWS_S,
     WAIT_FOR_CLAWS_JR_S,
     PARK_PREP,
+    TOUCH_BAR,
 
     //RightOdometeryFourSpecimen States
 
