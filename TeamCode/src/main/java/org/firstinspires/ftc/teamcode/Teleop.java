@@ -186,6 +186,14 @@ public class Teleop extends OpMode {
         if (armStill!=true)
             robot.armMotor.setPower(gamepad2.right_stick_y);
 
+        //Arm motor reset
+        if (gamepad2.start){
+            robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
         //Sample Arm Lock The Hang
 
         if (gamepad2.back) {
@@ -268,10 +276,14 @@ public class Teleop extends OpMode {
 
 
         //touch sensor for specimen lift
-        if (robot.SpecimenTouchSensor.isPressed() && state == States.NOT_RUNNING) {
+        if (robot.SpecimenTouchSensor.isPressed()) {
             robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+//        if (robot.SpecimenTouchSensor.isPressed() && state == States.NOT_RUNNING) {
+//            robot.specimenMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            robot.specimenMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        }
 
         Pose2D pos = robot.odo.getPosition();
         String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}",

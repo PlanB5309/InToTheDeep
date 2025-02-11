@@ -155,10 +155,10 @@ public class RightOdometery extends OpMode {
             case BACK_UP_FROM_SUBMERISBLE_S:
                 if (move.moveIt(pos, target)) {
                     target = spinAtSubmersible_T;
-                    state = States.WAYPOINT_TOWARDS_SAMPLE_S;
+                    state = States.SPIN_AT_SUBMERSIBLE_S;
                 }
                 break;
-
+//this gets skipped
             case SPIN_AT_SUBMERSIBLE_S:
                 if (spin(pos, target)) {
                     target = waypointTowardsSamples_T;
@@ -451,7 +451,7 @@ public class RightOdometery extends OpMode {
         // Closing Claws
         robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
         robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-        timer = System.currentTimeMillis() + 1000;
+        timer = System.currentTimeMillis() + 750;
         while (System.currentTimeMillis() < timer)
             Thread.yield();
 

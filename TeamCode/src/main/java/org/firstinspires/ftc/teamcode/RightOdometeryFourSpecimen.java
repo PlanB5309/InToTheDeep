@@ -54,18 +54,17 @@ public class RightOdometeryFourSpecimen extends OpMode {
     Target driveToBarAgainAgain_T = new Target(31.75, 10, 90, scoreSpecimen);
     Target driveToBarAgainAgainAgain_T = new Target(31.75, 8, 90, scoreSpecimen);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
+    Target lineUpSamples_T = new Target(36, -19.5, -90, close);
 
     //all new targets for the new part, just a placeholder need to drive for accurate coordinates
-    Target strafeRightTowardsSamples_T = new Target (23, 14, 90, wayPoint);
-    Target driveForwardTowardsSamples_T = new Target (23, 14, 90, wayPoint);
-    Target driveForwardTowardsSamplesAgain_T = new Target (23, 14, 90, wayPoint);
-    Target lineUpOnSamples_T = new Target (23, 14, 90, wayPoint);
-    Target lineUpOnSamplesAgain_T = new Target (23, 14, 90, wayPoint);
-    Target driveToObservationZone_T = new Target(2, -34, -90, slowerWayPoint);
-    Target driveToObservationZoneAgain_T = new Target(2, -34, -90, slowerWayPoint);
+    Target strafeLeftTowardsSamples_T = new Target (49, -23, -90, normalSpeed);
+    Target driveForwardTowardsSamples_T = new Target (49, -33, -90, normalSpeed);
+    Target driveForwardTowardsSamplesAgain_T = new Target (49, -42, -90, normalSpeed);
+    Target driveToObservationZone_T = new Target(9, -33, -90, slowerWayPoint);
+    Target driveToObservationZoneAgain_T = new Target(9, -42, -90, slowerWayPoint);
 
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
-    Target waypointTowardsSamples_T = new Target(21, -14, -90, slowerWayPoint);
+    Target waypointTowardsSamples_T = new Target(23, -15, -90, slowerWayPoint);
     //was 23, 14
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
 //    Target lineUpSamples_T = new Target(36, -19, -90, normalSpeed);
@@ -170,13 +169,43 @@ public class RightOdometeryFourSpecimen extends OpMode {
 
             case BACK_UP_FROM_SUBMERISBLE_S:
                 if (move.moveIt(pos, target)) {
-                    target = strafeRightTowardsSamples_T;
-                    state = States.STRAFE_RIGHT_TOWARDS_SAMPLES_S;
+                    target = spinAtSubmersible_T;
+                    state = States.SPIN_AT_SUBMERSIBLE_S;
                 }
                 break;
-                //after this I need to have the robot drive backwards, no turning, and then to strafe to the right
 
-            case STRAFE_RIGHT_TOWARDS_SAMPLES_S:
+            case SPIN_AT_SUBMERSIBLE_S:
+                if (spin(pos, target)) {
+                    target = waypointTowardsSamples_T;
+                    state = States.WAYPOINT_TOWARDS_SAMPLE_S;
+                }
+                break;
+
+            case WAYPOINT_TOWARDS_SAMPLE_S:
+                if (move.moveIt(pos, target)) {
+                    target = driveTowardsSamples_T;
+                    state = States.DRIVE_TOWARDS_SAMPLE_S;
+                }
+                break;
+
+            case DRIVE_TOWARDS_SAMPLE_S:
+                robot.frontClawServo.setPosition(robot.FRONT_CLAW_OPEN_DOWN);
+                robot.backClawServo.setPosition(robot.BACK_CLAW_OPEN_DOWN);
+                if (move.moveIt(pos, target)) {
+                    target = lineUpSamples_T;
+                    state = States.LINE_UP_ON_SAMPLE_S;
+                }
+                break;
+
+            case LINE_UP_ON_SAMPLE_S:
+                if (move.moveIt(pos, target)) {
+                    target = strafeLeftTowardsSamples_T;
+                    state = States.STRAFE_LEFT_TOWARDS_SAMPLES_S;
+                    gyroTurn.goodEnough(target.h);
+                    gyroTurn.goodEnough(target.h);
+                }
+
+            case STRAFE_LEFT_TOWARDS_SAMPLES_S:
                 if (move.moveIt(pos, target)) {
                     target = driveForwardTowardsSamples_T;
                     state = States.DRIVE_FORWARD_TOWARDS_SAMPLES_S;
@@ -185,34 +214,28 @@ public class RightOdometeryFourSpecimen extends OpMode {
 
             case DRIVE_FORWARD_TOWARDS_SAMPLES_S:
                 if (move.moveIt(pos, target)) {
-                    target = lineUpOnSamples_T;
+                    target = driveToObservationZone_T;
                     state = States.LINEUP_SAMPLE_S;
                 }
                 break;
 
-            case LINEUP_SAMPLE_S:
-                if (move.moveIt(pos, target)) {
-                    target = driveToObservationZone_T;
-                    state = States.DRIVE_TO_OBSERVATION_ZONE_S;
-                }
-                break;
 
                 //for the target here just have it drive backwards
             case DRIVE_TO_OBSERVATION_ZONE_S:
                 if (move.moveIt(pos, target)) {
+                    target = driveForwardTowardsSamples_T;
+                    state = States.DRIVE_FORWARD_TOWARDS_SAMPLES_JR_S;
+                }
+                break;
+
+            case STRAFE_LEFT_TOWARDS_SAMPLES_AGAIN_S:
+                if (move.moveIt(pos, target)){
                     target = driveForwardTowardsSamplesAgain_T;
                     state = States.DRIVE_FORWARD_TOWARDS_SAMPLES_JR_S;
                 }
                 break;
 
             case DRIVE_FORWARD_TOWARDS_SAMPLES_JR_S:
-                if (move.moveIt(pos, target)) {
-                    target = lineUpOnSamplesAgain_T;
-                    state = States.LINEUP_SAMPLE_JR_S;
-                }
-                break;
-
-            case LINEUP_SAMPLE_JR_S:
                 if (move.moveIt(pos, target)) {
                     target = driveToObservationZoneAgain_T;
                     state = States.DRIVE_TO_OBSERVATION_ZONE_JR_S;
@@ -263,12 +286,10 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 break;
 
             case LOADING:
+                load();
                 robot.intakeServo.setPosition(.5);
-                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
-                    target = backUpFromWall_T;
-                    state = States.BACK_UP_FROM_WALL_S;
-                }
+                target = backUpFromWall_T;
+                state = States.BACK_UP_FROM_WALL_S;
                 break;
 
                 //start moving to score the first wall specimen onto the submersible
@@ -337,16 +358,9 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 break;
 
             case LOADING_JR:
-                robot.intakeServo.setPosition(.5);
-                while (System.currentTimeMillis() < timer)
-                    Thread.yield();
-                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.specimenMotor.setPower(1);
-                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
-                    target = backUpFromWall_T;
-                    state = States.BACK_UP_FROM_WALL_JR_S;
-                }
+                load();
+                target = backUpFromWall_T;
+                state = States.BACK_UP_FROM_WALL_JR_S;
                 break;
 
             case BACK_UP_FROM_WALL_JR_S:
@@ -414,16 +428,9 @@ public class RightOdometeryFourSpecimen extends OpMode {
                 break;
 
             case LOADING_THIRD:
-                robot.intakeServo.setPosition(.5);
-                while (System.currentTimeMillis() < timer)
-                    Thread.yield();
-                robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
-                robot.specimenMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.specimenMotor.setPower(1);
-                if (!robot.specimenMotor.isBusy() || robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL) {
-                    target = backUpFromWall_T;
-                    state = States.BACK_UP_FROM_WALL_THIRD_S;
-                }
+                load();
+                target = backUpFromWall_T;
+                state = States.BACK_UP_FROM_WALL_THIRD_S;
                 break;
 
             case BACK_UP_FROM_WALL_THIRD_S:
@@ -512,6 +519,31 @@ public class RightOdometeryFourSpecimen extends OpMode {
                     break;
             }
         }
+    }
+
+    private void load(){
+        // Strafe to wall
+        time_to_reach_wall = (System.currentTimeMillis() + 600);
+        robot.backLeftMotor.setPower(.4);
+        robot.frontLeftMotor.setPower(-.4);
+        robot.backRightMotor.setPower(-.4);
+        robot.frontRightMotor.setPower(.4);
+        robot.specimenMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
+        while (System.currentTimeMillis() < time_to_reach_wall)
+            Thread.yield();
+        driveTrain.stop();
+
+        // Closing Claws
+        robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
+        robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
+        timer = System.currentTimeMillis() + 1000;
+        while (System.currentTimeMillis() < timer)
+            Thread.yield();
+
+        // Raise Specimen Lift
+        robot.specimenMotor.setTargetPosition(robot.ABOVE_SECOND_BAR);
+        while (robot.specimenMotor.getCurrentPosition() > robot.ABOVE_THE_WALL)
+            Thread.yield();
     }
 
     private boolean spin(Pose2D pos, Target target) {
