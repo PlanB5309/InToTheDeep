@@ -31,6 +31,7 @@ public class RightOdometery extends OpMode {
     double timer = 0;
     double time_to_reach_wall = 0;
     double distanceToWall;
+    double time_to_reach_submersible = 0;
 
 
     //Target Profiles
@@ -52,11 +53,14 @@ public class RightOdometery extends OpMode {
     Target driveToBarAgain_T = new Target(31.75, 13, 90, scoreSpecimen);
     Target driveToBarAgainAgain_T = new Target(31.75, 10, 90, scoreSpecimen);
     Target backUpFromSubmersible_T = new Target(23, 14, 90, wayPoint);
+
     Target spinAtSubmersible_T = new Target(23, 14, -90, close);
+
     Target waypointTowardsSamples_T = new Target(23, -15, -90, wayPoint);
     Target driveTowardsSamples_T = new Target(26, -18, -90, wayPoint);
-    Target lineUpSamples_T = new Target(36, -19.5, -90, close);
-    Target pickUpSample_T = new Target(36, -31, -90, samplePickup);
+
+    Target lineUpSamples_T = new Target(35.5, -19.5, -90, close);
+    Target pickUpSample_T = new Target(35.5, -31, -90, samplePickup);
     Target driveToSpecimen_T = new Target(2, -34, -90, specimenPickup);
     Target lineUpOnSpecimen_T = new Target(5, -33, -90, specimenPickup);
     //spit out block afterwards
@@ -158,13 +162,12 @@ public class RightOdometery extends OpMode {
                     state = States.SPIN_AT_SUBMERSIBLE_S;
                 }
                 break;
-//this gets skipped
+
             case SPIN_AT_SUBMERSIBLE_S:
-                if (spin(pos, target)) {
-                    target = waypointTowardsSamples_T;
-                    state = States.WAYPOINT_TOWARDS_SAMPLE_S;
-                }
-                    break;
+                gyroTurn.goodEnough(spinAtSubmersible_T.h);
+                target = waypointTowardsSamples_T;
+                state = States.WAYPOINT_TOWARDS_SAMPLE_S;
+                break;
 
             case WAYPOINT_TOWARDS_SAMPLE_S:
                 if (move.moveIt(pos, target)) {
@@ -186,8 +189,8 @@ public class RightOdometery extends OpMode {
                 if (move.moveIt(pos, target)) {
                     target = pickUpSample_T;
                     state = States.PICK_UP_SAMPLE_S;
-                    gyroTurn.goodEnough(target.h);
-                    gyroTurn.goodEnough(target.h);
+                    gyroTurn.goodEnough(pickUpSample_T.h);
+                    gyroTurn.goodEnough(pickUpSample_T.h);
                 }
 
             case PICK_UP_SAMPLE_S:
@@ -217,30 +220,10 @@ public class RightOdometery extends OpMode {
             case DROP_SAMPLE_S:
                 robot.intakeServo.setPosition(1);
                 if (System.currentTimeMillis() >= spitTime) {
-                    robot.sampleMotor.setTargetPosition(robot.GRAB_SPECIMEN_WALL);
+                    robot.sampleMotor.setTargetPosition(300);
                     robot.armMotor.setTargetPosition(200);
                     state = States.LOADING;
                 }
-                break;
-
-            case REACH_WALL_EXACTLY_S:
-                robot.backLeftMotor.setPower(.4);
-                robot.frontLeftMotor.setPower(-.4);
-                robot.backRightMotor.setPower(-.4);
-                robot.frontRightMotor.setPower(.4);
-                if (System.currentTimeMillis() > time_to_reach_wall) {
-                    driveTrain.stop();
-                    state = States.WAIT_FOR_CLAWS_S;
-                }
-                break;
-
-            case WAIT_FOR_CLAWS_S:
-                robot.frontClawServo.setPosition(robot.FRONT_CLAW_CLOSE);
-                robot.backClawServo.setPosition(robot.BACK_CLAW_CLOSE);
-                timer = System.currentTimeMillis() + 200;
-                while (System.currentTimeMillis() < timer)
-                    Thread.yield();
-                state  = States.LOADING;
                 break;
 
             case LOADING:
@@ -333,6 +316,18 @@ public class RightOdometery extends OpMode {
 
             case DRIVE_TO_BAR_THIRD_S:
                 if (move.moveIt(pos, target)) {
+                    state = States.REACH_SUBMERSIBLE_EXACTLY_S;
+                    time_to_reach_submersible = System.currentTimeMillis() + 500;
+                }
+                break;
+
+            case REACH_SUBMERSIBLE_EXACTLY_S:
+                robot.backLeftMotor.setPower(.4);
+                robot.frontLeftMotor.setPower(-.4);
+                robot.backRightMotor.setPower(-.4);
+                robot.frontRightMotor.setPower(.4);
+                if (System.currentTimeMillis() > time_to_reach_submersible) {
+                    driveTrain.stop();
                     state = States.SCORING_THIRD;
                 }
                 break;
@@ -404,41 +399,11 @@ public class RightOdometery extends OpMode {
         }
     }
 
-    private boolean spin(Pose2D pos, Target target) {
-        boolean done;
-        done = false;
-        if (Math.abs(pos.getHeading(AngleUnit.DEGREES) - Math.abs(target.h)) < target.tp.maxAngle)
-            done = true;
-        if (Math.abs(pos.getHeading(AngleUnit.DEGREES) - Math.abs(target.h)) > 90){
-            robot.backRightMotor.setPower(-1);
-            robot.frontRightMotor.setPower(-1);
-            robot.backLeftMotor.setPower(1);
-            robot.frontLeftMotor.setPower(1);
-        }
-        if (Math.abs(pos.getHeading(AngleUnit.DEGREES) - Math.abs(target.h)) > 60){
-            robot.backRightMotor.setPower(-.7);
-            robot.frontRightMotor.setPower(-.7);
-            robot.backLeftMotor.setPower(.7);
-            robot.frontLeftMotor.setPower(.7);
-        }
-        if (Math.abs(pos.getHeading(AngleUnit.DEGREES) - Math.abs(target.h)) > 15){
-            robot.backRightMotor.setPower(-.4);
-            robot.frontRightMotor.setPower(-.4);
-            robot.backLeftMotor.setPower(.4);
-            robot.frontLeftMotor.setPower(.4);
-        }
-        if (Math.abs(pos.getHeading(AngleUnit.DEGREES) - Math.abs(target.h)) > 5){
-            robot.backRightMotor.setPower(-.1);
-            robot.frontRightMotor.setPower(-.1);
-            robot.backLeftMotor.setPower(.1);
-            robot.frontLeftMotor.setPower(.1);
-        }
-        return done;
-    }
 
     private void load(){
         // Strafe to wall
         time_to_reach_wall = (System.currentTimeMillis() + 600);
+        robot.sampleMotor.setTargetPosition(0);
         robot.backLeftMotor.setPower(.4);
         robot.frontLeftMotor.setPower(-.4);
         robot.backRightMotor.setPower(-.4);
@@ -461,4 +426,3 @@ public class RightOdometery extends OpMode {
             Thread.yield();
     }
 }
-
