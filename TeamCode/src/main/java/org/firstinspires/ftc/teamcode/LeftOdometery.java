@@ -43,7 +43,7 @@ public class LeftOdometery extends OpMode {
     Target offWall_T = new Target(0,-7, 0, wayPoint);
     Target toBasket_T = new Target (8, -20, 25, wayPoint);
     Target lineUpBasket_T = new Target (12, -13, 15, wayPoint);
-    Target atBasket_T = new Target (23.75,-8,45, lineUpTheBasket);
+    Target atBasket_T = new Target (23.5,-7.75,45, lineUpTheBasket);
     Target awayFromBasket_T = new Target (11,-13,25, wayPoint);
     Target awayFromBasketAgain_T = new Target (14, -17, 25, wayPoint);
     Target lineupSample_T = new Target(4,-35,0, close);
@@ -220,7 +220,7 @@ public class LeftOdometery extends OpMode {
                 break;
 
             case WAIT_FOR_ARM_AGAIN_S:
-                if (!robot.armMotor.isBusy() || robot.armMotor.getCurrentPosition() > (robot.RAISE_ARM_TO_BASKET * .80)){
+                if (!robot.armMotor.isBusy() || robot.armMotor.getCurrentPosition() > (robot.RAISE_ARM_TO_BASKET * .85)){
                     target = lineUpBasket_T;
                     state = States.LINE_UP_BASKET_AGAIN_AGAIN_S;
                 }
