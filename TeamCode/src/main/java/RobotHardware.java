@@ -27,10 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 
 /*
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
@@ -62,20 +67,33 @@ public class RobotHardware {
     private DcMotor rightLaunch = null;
     private DcMotor leftLaunch = null;
     private DcMotor activeIntake = null;
+    public Limelight3A limelight;
 
     // Define servos
     private Servo kicker = null;
     private Servo revolver = null;
     private Servo angle = null;
 
+    // object for pin point computer
+    public GoBildaPinpointDriver odo = null;
+
     // Define Revolver constants.
     // Make them public so they CAN be used by the calling OpMode
-    public static final double LAUNCH_1 =  0.1;
-    public static final double LOAD_1   =  0.5;
-    public static final double LAUNCH_2 =  0.2;
-    public static final double LOAD_2   = -0.6;
-    public static final double LAUNCH_3 =  0.3;
-    public static final double LOAD_3   =  0.7 ;
+    public static final double LOAD_1 =  .079;
+    public static final double LAUNCH_1 = .491;
+    public static final double LOAD_2 = .32;
+    public static final double LAUNCH_2   = .714;
+    public static final double LOAD_3   =  .58;
+    public static final double LAUNCH_3 =  .96;
+    public static final double KICK_POSITION = 0;
+    public static final double KICK_RESET = .4;
+    public static final double CLICKS_PER_CENTIMETER = 23;
+    static final double        DRIVE_SPEED             = 0.6;
+    static final double        TURN_SPEED              = 0.5;
+
+    // Set Turn Speed Constants
+    public final double HIGH_TURN_POWER = 0.52;
+    public final double LOW_TURN_POWER = 0.1;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware (LinearOpMode opmode) {
@@ -96,6 +114,7 @@ public class RobotHardware {
         leftLaunch = myOpMode.hardwareMap.get(DcMotor.class, "leftLaunch");
         activeIntake = myOpMode.hardwareMap.get(DcMotor.class, "activeIntake");
 
+
         // Define the servos in the hardware map
         kicker = myOpMode.hardwareMap.get(Servo.class, "kicker");
         revolver = myOpMode.hardwareMap.get(Servo.class, "revolver");
@@ -106,10 +125,11 @@ public class RobotHardware {
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        activeIntake.setDirection(DcMotor.Direction.REVERSE);
 
         // Reverse one of the launch motors
-        rightLaunch.setDirection(DcMotor.Direction.REVERSE);
-        leftLaunch.setDirection(DcMotor.Direction.FORWARD);
+        rightLaunch.setDirection(DcMotor.Direction.FORWARD);
+        leftLaunch.setDirection(DcMotor.Direction.REVERSE);
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -118,6 +138,14 @@ public class RobotHardware {
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         leftLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        odo = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+        odo.resetPosAndIMU();
+
+        // Map the limelight object from the hardware map
+        limelight = myOpMode.hardwareMap.get(Limelight3A .class, "limelight");
+        myOpMode.telemetry.setMsTransmissionInterval(11);
+        limelight.pipelineSwitch(0);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -160,6 +188,22 @@ public class RobotHardware {
         rightDrive.setPower(rightWheel);
     }
 
+    public void bumpAnglePosition() {
+        angle.setPosition(angle.getPosition() +.0001);
+    }
+
+    public void lowerAnglePosition() {
+        angle.setPosition(angle.getPosition() -.0001);
+    }
+
+    public double getAnglePosition() {
+        return angle.getPosition();
+    }
+
+    public void setAngle(double setAngle){
+        angle.setPosition(setAngle);
+    }
+
     public void setRevolverPosition(double barrelSetting) {
         revolver.setPosition(barrelSetting);
     }
@@ -167,5 +211,84 @@ public class RobotHardware {
     public void setLaunchSpeed(double speed) {
         leftLaunch.setPower(speed);
         rightLaunch.setPower(speed);
+    }
+
+    public void setIntakeSpeed(double speed) {
+        activeIntake.setPower(speed);
+    }
+
+    public void incAngle(double degrees) {
+        angle.setPosition(angle.getPosition() + degrees);
+    }
+
+    public double getAngle() {
+        return angle.getPosition();
+    }
+
+    public void setKickerPosition(double degrees) {
+        kicker.setPosition(degrees);
+    }
+
+    public double getFireSpeed() {
+        return leftLaunch.getPower();
+    }
+
+    public double getLeftDriveEncoderValue() {
+        return leftDrive.getCurrentPosition();
+    }
+
+    public double getRightDriveEncoderValue() {
+        return rightDrive.getCurrentPosition();
+    }
+
+    //Below are functions that will hopefully simplify common actions during autonomous
+    public void turn(double degrees) {
+        //rotates the robot by degrees
+    }
+
+    public void move(double distance) {
+        //moves the robot forward by distance (backward if negative)
+    }
+
+    public int getPattern() {
+        //reads the pattern QR code and returns the position of the green ball in the sequence
+        return 0;
+    }
+
+    // public void findTrajectory(double distance, double height, double gravity, double windResistance) {
+    // hopefully will find the right angle and speed to shoot the ball to some point at a specific distance and height from the robot
+    //}
+    public void resetDriveEncoders () {
+        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    // Set targets for the encoders to run to position
+    public void setTargets(int target) {
+        leftDrive.setTargetPosition(target);
+        rightDrive.setTargetPosition(target);
+        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public void driveWhileBusy(double speed, double timeout) {
+        ElapsedTime runtime = new ElapsedTime();
+        runtime.reset();
+        leftDrive.setPower(speed);
+        rightDrive.setPower(speed);
+        while ((leftDrive.isBusy() || rightDrive.isBusy()) &&
+                runtime.seconds() < timeout) {
+            // Display it for the driver.
+            myOpMode.telemetry.addData("Currently at",  " at %7d :%7d",
+                    leftDrive.getCurrentPosition(), rightDrive.getCurrentPosition());
+            myOpMode.telemetry.update();
+        }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+        // Turn off RUN_TO_POSITION
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

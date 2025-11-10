@@ -73,15 +73,23 @@ public class Tele_Op extends LinearOpMode {
     public void runOpMode() {
         double drive        = 0;
         double turn         = 0;
-        double arm          = 0;
-        double handOffset   = 0;
+        double launchSpeed  = .5;
+        double launchStandBy= .7;
+        double intakeSpeed  = 0;
+        boolean launcherRunning = false;
+        boolean rightButtonPressed = false;
+        boolean leftButtonPressed = false;
+
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
+        robot.resetDriveEncoders();
 
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses START)
         waitForStart();
+
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -95,29 +103,82 @@ public class Tele_Op extends LinearOpMode {
             // Combine drive and turn for blended motion. Use RobotHardware class
             robot.driveRobot(drive, turn);
 
-            if (gamepad2.x)
+            robot.setLaunchSpeed(launchSpeed);
+
+            robot.setIntakeSpeed(intakeSpeed);
+
+
+            if (gamepad2.right_trigger > .5)
+                robot.setKickerPosition(RobotHardware.KICK_POSITION);
+            else
+                robot.setKickerPosition(RobotHardware.KICK_RESET);
+
+
+            if (gamepad2.dpad_left) {
                 robot.setRevolverPosition(RobotHardware.LOAD_1);
+                //intakeSpeed = 1;
+                //launchStandBy = launchSpeed;
+                launchSpeed = 0;
+            }
 
-            if (gamepad2.y)
+            if (gamepad2.dpad_up) {
+                robot.setRevolverPosition(RobotHardware.LOAD_2);
+                //intakeSpeed = 1;
+                //launchStandBy = launchSpeed;
+                launchSpeed = 0;
+            }
+
+            if (gamepad2.dpad_right) {
+                robot.setRevolverPosition(RobotHardware.LOAD_3);
+                //intakeSpeed = 1;
+                //launchStandBy = launchSpeed;
+                launchSpeed = 0;
+            }
+
+            if (gamepad2.x) {
                 robot.setRevolverPosition(RobotHardware.LAUNCH_1);
+                launchSpeed = launchStandBy;
+                intakeSpeed = 0;
+            }
 
-            if (gamepad2.left_bumper)
-                robot.setLaunchSpeed(.5);
+            if (gamepad2.y) {
+                robot.setRevolverPosition(RobotHardware.LAUNCH_2);
+                launchSpeed = launchStandBy;
+                intakeSpeed = 0;
+            }
 
-            if (gamepad2.right_bumper)
-                robot.setLaunchSpeed(0);
+            if (gamepad2.b) {
+                robot.setRevolverPosition(RobotHardware.LAUNCH_3);
+                launchSpeed = launchStandBy;
+                intakeSpeed = 0;
+            }
+
+            if (gamepad2.left_stick_button)
+                robot.bumpAnglePosition();
+
+            if (gamepad2.right_stick_button)
+                robot.lowerAnglePosition();
+
+            if (gamepad2.right_bumper) {
+                if (rightButtonPressed == false)
+                    launchSpeed += .05;
+                rightButtonPressed = true;
+            }
+            else rightButtonPressed = false;
+
+            if (gamepad2.left_bumper) {
+                if (leftButtonPressed == false)
+                    launchSpeed -= .05;
+                leftButtonPressed = true;
+            }
+            else leftButtonPressed = false;
 
             // Send telemetry messages to explain controls and show robot status
-            telemetry.addData("Drive", "Left Stick");
-            telemetry.addData("Turn", "Right Stick");
-            telemetry.addData("Arm Up/Down", "Y & A Buttons");
-            telemetry.addData("Hand Open/Closed", "Left and Right Bumpers");
-            telemetry.addData("-", "-------");
-
-            telemetry.addData("Drive Power", "%.2f", drive);
-            telemetry.addData("Turn Power",  "%.2f", turn);
-            telemetry.addData("Arm Power",  "%.2f", arm);
-            telemetry.addData("Hand Position",  "Offset = %.2f", handOffset);
+            telemetry.addData("angle position", robot.getAnglePosition());
+            telemetry.addData("launcher speed", robot.getFireSpeed());
+            telemetry.addData("var launcher speed", launchSpeed);
+            telemetry.addData("left motor encoder",robot.getLeftDriveEncoderValue());
+            telemetry.addData("right motor encoder", robot.getRightDriveEncoderValue());
             telemetry.update();
 
         }
