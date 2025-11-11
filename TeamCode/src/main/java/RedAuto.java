@@ -83,7 +83,7 @@ public class RedAuto extends LinearOpMode {
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
-    patterns pattern = patterns.PPG;
+    patterns pattern = patterns.PGP;
 
 
     @Override
@@ -102,7 +102,7 @@ public class RedAuto extends LinearOpMode {
         //gyroTurn.goodEnough(15);
         LLStatus status = robot.limelight.getStatus();
         LLResult result = robot.limelight.getLatestResult();
-        sleep(3000);
+        sleep(500);
         if (result.isValid()) {
 
             // Access fiducial results
@@ -121,21 +121,26 @@ public class RedAuto extends LinearOpMode {
         }
         telemetry.addData("Pattern", pattern);
         telemetry.update();
-        sleep(27000);
+        sleep(1000);
 
-        //insert read obelisk
         gyroTurn.goodEnough(-45);
         robot.setLaunchSpeed(.78);
-        robot.setAngle(.14);
+        robot.setAngle(.15);
         sleep(1000);
         switch (pattern){
             case PPG:
+                telemetry.addData("PPG",pattern);
+                telemetry.update();
                 kickpattern(robot.LAUNCH_1, robot.LAUNCH_3, robot.LAUNCH_2);
                 break;
             case PGP:
+                telemetry.addData("PGP",pattern);
+                telemetry.update();
                 kickpattern(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
                 break;
             case GPP:
+                telemetry.addData("GPP",pattern);
+                telemetry.update();
                 kickpattern(robot.LAUNCH_2, robot.LAUNCH_1, robot.LAUNCH_3);
                 break;
         }
@@ -144,10 +149,13 @@ public class RedAuto extends LinearOpMode {
 
     private void kickpattern(double first, double second, double third){
         robot.setRevolverPosition(first);
+        sleep(1500);
         kickball();
         robot.setRevolverPosition(second);
+        sleep(1500);
         kickball();
         robot.setRevolverPosition(third);
+        sleep(1500);
         kickball();
     }
     // Drive the robot forward this distance at the given speed using the
@@ -166,9 +174,9 @@ public class RedAuto extends LinearOpMode {
 
     private void kickball() {
         robot.setKickerPosition(RobotHardware.KICK_POSITION);
-        sleep(500);
+        sleep(1000);
         robot.setKickerPosition(RobotHardware.KICK_RESET);
-        sleep(500);
+        sleep(1500);
     }
 
 }
