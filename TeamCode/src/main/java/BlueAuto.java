@@ -27,8 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import java.util.List;
 
 /*
  * This OpMode illustrates the concept of driving a path based on encoder counts.
@@ -86,30 +90,53 @@ public class BlueAuto extends LinearOpMode {
         robot.init();
 
         robot.resetDriveEncoders();
+        robot.limelight.start();
 
         // Wait for the game to start (driver presses START)
-        waitForStart();
 
+        waitForStart();
         backward(81.28 * robot.CLICKS_PER_CENTIMETER, .5);
-        gyroTurn.goodEnough(-15);
-        sleep(1000);
-        //insert read obelisk
+        pattern = readObelisk();
+
+        telemetry.addData("Pattern", pattern);
+        telemetry.update();
+
+        // towards goal
+        robot.setLaunchSpeed(.78);  // spin up launch while turning
         gyroTurn.goodEnough(45);
-        robot.setLaunchSpeed(.78);
-        robot.setAngle(.14);
+        robot.setAngle(.15);
         sleep(1000);
-        switch (pattern){
+        switch (pattern) {
             case PPG:
-                kickpattern(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
+                telemetry.addData("PPG", pattern);
+                telemetry.update();
+                kickpattern(robot.LAUNCH_1, robot.LAUNCH_3, robot.LAUNCH_2);
                 break;
             case PGP:
-                kickpattern(robot.LAUNCH_2, robot.LAUNCH_3, robot.LAUNCH_1);
+                telemetry.addData("PGP", pattern);
+                telemetry.update();
+                kickpattern(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
                 break;
             case GPP:
-                kickpattern(robot.LAUNCH_3, robot.LAUNCH_1, robot.LAUNCH_2);
+                telemetry.addData("GPP", pattern);
+                telemetry.update();
+                kickpattern(robot.LAUNCH_2, robot.LAUNCH_1, robot.LAUNCH_3);
                 break;
         }
-
+        gyroTurn.goodEnough(0);
+        backward(15 * robot.CLICKS_PER_CENTIMETER, .5);
+        gyroTurn.goodEnough(-90);
+        backward(23 * robot.CLICKS_PER_CENTIMETER, .4);
+        robot.setIntakeSpeed(1);
+        robot.setRevolverPosition(robot.LOAD_1);
+        sleep(1000);
+        backward(6 * 2.54 * robot.CLICKS_PER_CENTIMETER, .1);
+        robot.setRevolverPosition(robot.LOAD_3);
+        sleep(1000);
+        backward(4 * 2.54 * robot.CLICKS_PER_CENTIMETER, .1);
+        robot.setRevolverPosition(robot.LOAD_2);
+        sleep(1200);
+        backward(5 * 2.54 * robot.CLICKS_PER_CENTIMETER, .1);
     }
 
     private void kickpattern(double first, double second, double third){
@@ -140,5 +167,24 @@ public class BlueAuto extends LinearOpMode {
         robot.setKickerPosition(RobotHardware.KICK_RESET);
         sleep(500);
     }
+    private patterns readObelisk() {
+        patterns patternFound = patterns.PPG;  // default
 
+        LLResult result = robot.limelight.getLatestResult();
+        while(result.isValid() == false && opModeIsActive()) {
+            result = robot.limelight.getLatestResult();
+            telemetry.addData("result is Valid", result.isValid());
+            telemetry.update();
+        }
+
+        List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
+        for (LLResultTypes.FiducialResult fr : fiducialResults) {
+            telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+            telemetry.update();
+            if (fr.getFiducialId() == 21) patternFound = patterns.GPP;
+            if (fr.getFiducialId() == 22) patternFound = patterns.PGP;
+            if (fr.getFiducialId() == 23) patternFound = patterns.PPG;
+        }
+        return patternFound;
+    }
 }

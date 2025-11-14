@@ -116,21 +116,21 @@ public class Tele_Op extends LinearOpMode {
 
             if (gamepad2.dpad_left) {
                 robot.setRevolverPosition(RobotHardware.LOAD_1);
-                //intakeSpeed = 1;
+                intakeSpeed = 1;
                 //launchStandBy = launchSpeed;
                 launchSpeed = 0;
             }
 
             if (gamepad2.dpad_up) {
                 robot.setRevolverPosition(RobotHardware.LOAD_2);
-                //intakeSpeed = 1;
+                intakeSpeed = 1;
                 //launchStandBy = launchSpeed;
                 launchSpeed = 0;
             }
 
             if (gamepad2.dpad_right) {
                 robot.setRevolverPosition(RobotHardware.LOAD_3);
-                //intakeSpeed = 1;
+                intakeSpeed = 1;
                 //launchStandBy = launchSpeed;
                 launchSpeed = 0;
             }

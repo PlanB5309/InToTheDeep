@@ -79,12 +79,12 @@ public class RobotHardware {
 
     // Define Revolver constants.
     // Make them public so they CAN be used by the calling OpMode
-    public static final double LOAD_1 =  .079;
-    public static final double LAUNCH_1 = .455;
-    public static final double LOAD_2 = .32;
-    public static final double LAUNCH_2   = .714;
-    public static final double LOAD_3   =  .58;
-    public static final double LAUNCH_3 =  .97;
+    public static final double LOAD_1 =  .11;
+    public static final double LAUNCH_1 = .47;
+    public static final double LOAD_2 = .34;
+    public static final double LAUNCH_2   = .725;
+    public static final double LOAD_3   =  .63;
+    public static final double LAUNCH_3 =  .98;
     public static final double KICK_POSITION = 0;
     public static final double KICK_RESET = .4;
     public static final double CLICKS_PER_CENTIMETER = 23;
