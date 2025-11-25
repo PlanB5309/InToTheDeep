@@ -70,6 +70,7 @@ public class RedAuto extends LinearOpMode {
     // Prefix any hardware functions with "robot." to access this class.
     RobotHardware robot       = new RobotHardware(this);
     GyroTurn gyroTurn = new GyroTurn(robot,telemetry);
+    Shoot shoot = new Shoot(robot, telemetry,this);
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
@@ -88,7 +89,7 @@ public class RedAuto extends LinearOpMode {
 
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
@@ -114,19 +115,20 @@ public class RedAuto extends LinearOpMode {
             case PPG:
                 telemetry.addData("PPG", pattern);
                 telemetry.update();
-                kickpattern(robot.LAUNCH_1, robot.LAUNCH_3, robot.LAUNCH_2);
+                shoot.threeBalls(robot.LAUNCH_1, robot.LAUNCH_3, robot.LAUNCH_2);
                 break;
             case PGP:
                 telemetry.addData("PGP", pattern);
                 telemetry.update();
-                kickpattern(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
+                shoot.threeBalls(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
                 break;
             case GPP:
                 telemetry.addData("GPP", pattern);
                 telemetry.update();
-                kickpattern(robot.LAUNCH_2, robot.LAUNCH_1, robot.LAUNCH_3);
+                shoot.threeBalls(robot.LAUNCH_2, robot.LAUNCH_1, robot.LAUNCH_3);
                 break;
         }
+        robot.setLaunchSpeed(0);
         gyroTurn.goodEnough(0);
         backward(15 * robot.CLICKS_PER_CENTIMETER, .5);
         gyroTurn.goodEnough(90);
@@ -143,23 +145,6 @@ public class RedAuto extends LinearOpMode {
         backward(5*2.54*robot.CLICKS_PER_CENTIMETER,.1);
     }
 
-    private void kickpattern(double first, double second, double third){
-        if (opModeIsActive()) {
-            robot.setRevolverPosition(first);
-            sleep(1500);
-            kickball();
-        }
-        if (opModeIsActive()) {
-            robot.setRevolverPosition(second);
-            sleep(1500);
-            kickball();
-        }
-        if (opModeIsActive()) {
-            robot.setRevolverPosition(third);
-            sleep(1500);
-            kickball();
-        }
-    }
     // Drive the robot forward this distance at the given speed using the
     // motor encoders of the drive train
     private void forward(double distance, double speed) {
@@ -174,14 +159,6 @@ public class RedAuto extends LinearOpMode {
         robot.driveWhileBusy(-speed, 3.0);
     }
 
-    private void kickball() {
-        if (opModeIsActive()) {
-            robot.setKickerPosition(RobotHardware.KICK_POSITION);
-            sleep(1000);
-        }
-        robot.setKickerPosition(RobotHardware.KICK_RESET);
-        sleep(1500);
-    }
     //  This routine uses the lime light camera to read the obelisk and returns the
     //  pattern for this run.  If no pattern can be determined it returns PPG as a default
     private patterns readObelisk() {

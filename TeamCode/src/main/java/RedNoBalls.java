@@ -29,10 +29,14 @@
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import java.util.List;
+import java.util.regex.Pattern;
 
 /*
  * This OpMode illustrates the concept of driving a path based on encoder counts.
@@ -60,13 +64,15 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: BlueAuto", group="Robot")
-public class BlueAuto extends LinearOpMode {
+@Autonomous(name="Robot: RedNoBalls", group="Robot")
+public class RedNoBalls extends LinearOpMode {
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
     RobotHardware robot       = new RobotHardware(this);
     GyroTurn gyroTurn = new GyroTurn(robot,telemetry);
-    Shoot shoot = new Shoot(robot, telemetry, this);
+    Shoot shoot = new Shoot(robot, telemetry,this);
+    Load load = new Load (robot, telemetry, this);
+    Drive drive = new Drive (robot, telemetry, this);
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
@@ -81,7 +87,7 @@ public class BlueAuto extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
-    patterns pattern = patterns.PPG;
+    patterns pattern = patterns.PGP;
 
 
     @Override
@@ -96,48 +102,55 @@ public class BlueAuto extends LinearOpMode {
         // Wait for the game to start (driver presses START)
 
         waitForStart();
-        backward(81.28 * robot.CLICKS_PER_CENTIMETER, .5);
+        forward(66.04 * robot.CLICKS_PER_CENTIMETER, .5);
         pattern = readObelisk();
+        gyroTurn.goodEnough(90);
 
         telemetry.addData("Pattern", pattern);
         telemetry.update();
 
+        load.threeBalls(robot.LOAD_2, robot.LOAD_1, robot.LOAD_3);
+
+        drive.forward(66.04,.5);
+
+
+
         // towards goal
-        robot.setLaunchSpeed(.78);  // spin up launch while turning
-        gyroTurn.goodEnough(45);
-        robot.setAngle(.15);
-        sleep(1000);
-        switch (pattern) {
-            case PPG:
-                telemetry.addData("PPG", pattern);
-                telemetry.update();
-                shoot.threeBalls(robot.LAUNCH_1, robot.LAUNCH_3, robot.LAUNCH_2);
-                break;
-            case PGP:
-                telemetry.addData("PGP", pattern);
-                telemetry.update();
-                shoot.threeBalls(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
-                break;
-            case GPP:
-                telemetry.addData("GPP", pattern);
-                telemetry.update();
-                shoot.threeBalls(robot.LAUNCH_2, robot.LAUNCH_1, robot.LAUNCH_3);
-                break;
-        }
-        gyroTurn.goodEnough(0);
-        backward(15 * robot.CLICKS_PER_CENTIMETER, .5);
-        gyroTurn.goodEnough(-90);
-        backward(23 * robot.CLICKS_PER_CENTIMETER, .4);
-        robot.setIntakeSpeed(1);
-        robot.setRevolverPosition(robot.LOAD_1);
-        sleep(1000);
-        backward(6 * 2.54 * robot.CLICKS_PER_CENTIMETER, .1);
-        robot.setRevolverPosition(robot.LOAD_3);
-        sleep(1000);
-        backward(4 * 2.54 * robot.CLICKS_PER_CENTIMETER, .1);
-        robot.setRevolverPosition(robot.LOAD_2);
-        sleep(1200);
-        backward(5 * 2.54 * robot.CLICKS_PER_CENTIMETER, .1);
+//        robot.setLaunchSpeed(.78);  // spin up launch while turning
+//        gyroTurn.goodEnough(-45);
+//        robot.setAngle(.15);
+//        sleep(1000);
+//        switch (pattern) {
+//            case PPG:
+//                telemetry.addData("PPG", pattern);
+//                telemetry.update();
+//                shoot.threeBalls(robot.LAUNCH_1, robot.LAUNCH_3, robot.LAUNCH_2);
+//                break;
+//            case PGP:
+//                telemetry.addData("PGP", pattern);
+//                telemetry.update();
+//                shoot.threeBalls(robot.LAUNCH_1, robot.LAUNCH_2, robot.LAUNCH_3);
+//                break;
+//            case GPP:
+//                telemetry.addData("GPP", pattern);
+//                telemetry.update();
+//                shoot.threeBalls(robot.LAUNCH_2, robot.LAUNCH_1, robot.LAUNCH_3);
+//                break;
+//        }
+//        gyroTurn.goodEnough(0);
+//        backward(15 * robot.CLICKS_PER_CENTIMETER, .5);
+//        gyroTurn.goodEnough(90);
+//        backward(23 * robot.CLICKS_PER_CENTIMETER, .4);
+//        robot.setIntakeSpeed(1);
+//        robot.setRevolverPosition(robot.LOAD_1);
+//        sleep(1000);
+//        backward(6*2.54*robot.CLICKS_PER_CENTIMETER,.1);
+//        robot.setRevolverPosition(robot.LOAD_3);
+//        sleep(1000);
+//        backward(4*2.54*robot.CLICKS_PER_CENTIMETER,.1);
+//        robot.setRevolverPosition(robot.LOAD_2);
+//        sleep(1200);
+//        backward(5*2.54*robot.CLICKS_PER_CENTIMETER,.1);
     }
 
     // Drive the robot forward this distance at the given speed using the
@@ -154,6 +167,8 @@ public class BlueAuto extends LinearOpMode {
         robot.driveWhileBusy(-speed, 3.0);
     }
 
+    //  This routine uses the lime light camera to read the obelisk and returns the
+    //  pattern for this run.  If no pattern can be determined it returns PPG as a default
     private patterns readObelisk() {
         patterns patternFound = patterns.PPG;  // default
 

@@ -27,9 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
 /*
@@ -73,9 +78,12 @@ public class Tele_Op extends LinearOpMode {
     public void runOpMode() {
         double drive        = 0;
         double turn         = 0;
-        double launchSpeed  = .5;
-        double launchStandBy= .7;
+        double launchSpeed  = .73;
+        double launchStandBy= .73;
+        double launchAngle  = .29;
         double intakeSpeed  = 0;
+        double currHeading;
+        double distanceToGoal = -1;
         boolean launcherRunning = false;
         boolean rightButtonPressed = false;
         boolean leftButtonPressed = false;
@@ -83,7 +91,9 @@ public class Tele_Op extends LinearOpMode {
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
+        robot.limelight.start();
         robot.resetDriveEncoders();
+        robot.limelight.pipelineSwitch(1);
 
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses START)
@@ -93,6 +103,10 @@ public class Tele_Op extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            Pose2D pos = robot.odo.getPosition();
+            currHeading = pos.getHeading(AngleUnit.DEGREES);
+            robot.limelight.updateRobotOrientation(currHeading);
+            distanceToGoal = getDistance();
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
@@ -138,49 +152,68 @@ public class Tele_Op extends LinearOpMode {
             if (gamepad2.x) {
                 robot.setRevolverPosition(RobotHardware.LAUNCH_1);
                 launchSpeed = launchStandBy;
+                robot.setAngle(launchAngle);
                 intakeSpeed = 0;
             }
 
             if (gamepad2.y) {
                 robot.setRevolverPosition(RobotHardware.LAUNCH_2);
                 launchSpeed = launchStandBy;
+                robot.setAngle(launchAngle);
                 intakeSpeed = 0;
             }
 
             if (gamepad2.b) {
                 robot.setRevolverPosition(RobotHardware.LAUNCH_3);
                 launchSpeed = launchStandBy;
+                robot.setAngle(launchAngle);
                 intakeSpeed = 0;
             }
 
-            if (gamepad2.left_stick_button)
-                robot.bumpAnglePosition();
+            //if (gamepad2.left_stick_button)
+            //    robot.bumpAnglePosition();
+//
+//            if (gamepad2.right_stick_button)
+//                robot.lowerAnglePosition();
 
-            if (gamepad2.right_stick_button)
-                robot.lowerAnglePosition();
-
-            if (gamepad2.right_bumper) {
-                if (rightButtonPressed == false)
-                    launchSpeed += .05;
-                rightButtonPressed = true;
-            }
-            else rightButtonPressed = false;
-
-            if (gamepad2.left_bumper) {
-                if (leftButtonPressed == false)
-                    launchSpeed -= .05;
-                leftButtonPressed = true;
-            }
-            else leftButtonPressed = false;
+//            if (gamepad2.right_bumper) {
+//                if (rightButtonPressed == false)
+//                    launchSpeed += .05;
+//                rightButtonPressed = true;
+//            }
+//            else rightButtonPressed = false;
+//
+//            if (gamepad2.left_bumper) {
+//                if (leftButtonPressed == false)
+//                    launchSpeed -= .05;
+//                leftButtonPressed = true;
+//            }
+//            else leftButtonPressed = false;
 
             // Send telemetry messages to explain controls and show robot status
-            telemetry.addData("angle position", robot.getAnglePosition());
-            telemetry.addData("launcher speed", robot.getFireSpeed());
-            telemetry.addData("var launcher speed", launchSpeed);
-            telemetry.addData("left motor encoder",robot.getLeftDriveEncoderValue());
-            telemetry.addData("right motor encoder", robot.getRightDriveEncoderValue());
-            telemetry.update();
+//            telemetry.addData("angle position", robot.getAnglePosition());
+//            telemetry.addData("launcher speed", robot.getFireSpeed());
+//            telemetry.addData("var launcher speed", launchSpeed);
+//            telemetry.addData("left motor encoder",robot.getLeftDriveEncoderValue());
+//            telemetry.addData("right motor encoder", robot.getRightDriveEncoderValue());
+//            telemetry.update();
 
         }
+    }
+    private double getDistance() {
+        double distance = -1;
+        LLResult llResult = robot.limelight.getLatestResult();
+        if (llResult.isValid()) {
+            Pose3D robotPose = llResult.getBotpose_MT2();
+            telemetry.addData("Target X:", llResult.getTx());
+            telemetry.addData("Target Area", llResult.getTa());
+            double area = llResult.getTa();
+            telemetry.addData("robotPose", robotPose.toString());
+            telemetry.addData("Distance", distance);
+            telemetry.update();
+            double constant = 63.31904;
+            distance = constant / Math.sqrt(area);
+        }
+        return distance;
     }
 }
